@@ -1,0 +1,22 @@
+{
+  "name": "Gymloft Progressie",
+  "short_name": "Progressie",
+  "description": "Progressie tracking platform voor Gymloft",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/gymloft-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/gymloft-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
