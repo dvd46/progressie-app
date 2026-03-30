@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <radialGradient id="silverFill" cx="38%" cy="30%" r="72%">
+      <stop offset="0%"   stop-color="#FFFFFF"/>
+      <stop offset="35%"  stop-color="#D8D8D8"/>
+      <stop offset="75%"  stop-color="#B0B0B0"/>
+      <stop offset="100%" stop-color="#686868"/>
+    </radialGradient>
+    <radialGradient id="silverGloss" cx="32%" cy="22%" r="48%">
+      <stop offset="0%"   stop-color="rgba(255,255,255,0.75)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+    <filter id="silverShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" flood-color="rgba(0,0,0,0.3)"/>
+    </filter>
+  </defs>
+
+  <!-- Main circle -->
+  <circle cx="16" cy="16" r="14.5" fill="url(#silverFill)" filter="url(#silverShadow)"/>
+
+  <!-- Metallic border -->
+  <circle cx="16" cy="16" r="14.5" fill="none" stroke="#808080" stroke-width="1.2"/>
+  <circle cx="16" cy="16" r="13.2" fill="none" stroke="rgba(220,220,220,0.55)" stroke-width="0.5"/>
+
+  <!-- Large "2" -->
+  <text x="13.5" y="23.5"
+        text-anchor="middle"
+        font-family="'Arial Black', 'Arial', sans-serif"
+        font-size="17"
+        font-weight="900"
+        fill="#404040">2</text>
+
+  <!-- "nd" superscript -->
+  <text x="22.5" y="15.5"
+        text-anchor="middle"
+        font-family="'Arial', sans-serif"
+        font-size="6.5"
+        font-weight="700"
+        fill="#505050">nd</text>
+
+  <!-- Gloss highlight -->
+  <ellipse cx="12.5" cy="10" rx="5.5" ry="3.5" fill="url(#silverGloss)"/>
+</svg>
