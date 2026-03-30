@@ -1732,6 +1732,8 @@ async function deleteKlant() {
   try {
     const { error } = await sb.from('klanten').delete().eq('id', k.id);
     if (error) throw error;
+    // Verwijder ook auth-account zodat herregistratie mogelijk is
+    if (k.email) await sb.rpc('delete_auth_user_by_email', { user_email: k.email });
     klanten = klanten.filter(c=>c.id!==k.id);
     showToast('Klant verwijderd', 'success');
     showView('overzicht');

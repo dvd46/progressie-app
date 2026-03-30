@@ -203,12 +203,21 @@ create trigger on_auth_user_created
 
 -- ── COACH BEHEER FUNCTIES ────────────────────────────────────────────
 
--- Verwijder auth-account volledig (zodat herregistratie mogelijk is)
+-- Verwijder auth-account volledig via ID (zodat herregistratie mogelijk is)
 create or replace function delete_auth_user(user_id uuid)
 returns void
 security definer set search_path = public language plpgsql as $$
 begin
   delete from auth.users where id = user_id;
+end;
+$$;
+
+-- Verwijder auth-account via e-mail (voor klanten zonder gekend user_id)
+create or replace function delete_auth_user_by_email(user_email text)
+returns void
+security definer set search_path = public language plpgsql as $$
+begin
+  delete from auth.users where email = user_email;
 end;
 $$;
 
