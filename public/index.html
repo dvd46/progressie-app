@@ -367,8 +367,7 @@ textarea { resize: vertical; min-height: 58px; }
     </div>
   </div>
   <div class="tab-bar">
-    <button class="tab active" onclick="switchTab('training')">Training</button>
-    <button class="tab" onclick="switchTab('welzijn')">Welzijn</button>
+    <button class="tab active" onclick="switchTab('training')">Fysiek</button>
     <button class="tab" onclick="switchTab('lifestyle')">Lifestyle</button>
     <button class="tab" onclick="switchTab('gegevens')">Gegevens</button>
   </div>
@@ -439,111 +438,112 @@ textarea { resize: vertical; min-height: 58px; }
     </div>
   </div>
 
-  <!-- WELZIJN -->
-  <div class="tab-content" id="tab-welzijn">
-    <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
-      <div class="panel">
-        <div class="panel-title">Welzijn Enquête</div>
-        <div class="form-group"><label class="form-label">Datum</label><input type="date" id="enqDatum"/></div>
 
-        <div class="enq-section">
-          <div style="font-size:13px;font-weight:700;color:#6EF08C;margin-bottom:12px;">🌙 SLAAP</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
-            <div>
-              <label class="form-label">Aantal uren geslapen</label>
-              <input type="number" id="enqUren" placeholder="bv. 7.5" step="0.5" min="0" max="24" style="margin-top:4px;"/>
+  <!-- LIFESTYLE (bevat welzijn + lifestyle) -->
+  <div class="tab-content" id="tab-lifestyle">
+    <!-- WELZIJN SECTIE -->
+    <div id="tab-welzijn" style="margin-bottom:8px;">
+      <div class="panel-title" style="margin-bottom:16px;">Welzijn</div>
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
+        <div class="panel">
+          <div class="panel-title">Welzijn Enquête</div>
+          <div class="form-group"><label class="form-label">Datum</label><input type="date" id="enqDatum"/></div>
+          <div class="enq-section">
+            <div style="font-size:13px;font-weight:700;color:#6EF08C;margin-bottom:12px;">🌙 SLAAP</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
+              <div>
+                <label class="form-label">Aantal uren geslapen</label>
+                <input type="number" id="enqUren" placeholder="bv. 7.5" step="0.5" min="0" max="24" style="margin-top:4px;"/>
+              </div>
+              <div>
+                <label class="form-label">Hoe lang voor je insliep?</label>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+                  <button class="enq-chip" data-group="inslaap" data-val="&lt; 15 min" onclick="enqChipClick(this)">&lt; 15 min</button>
+                  <button class="enq-chip" data-group="inslaap" data-val="15–30 min" onclick="enqChipClick(this)">15–30 min</button>
+                  <button class="enq-chip" data-group="inslaap" data-val="30–60 min" onclick="enqChipClick(this)">30–60 min</button>
+                  <button class="enq-chip" data-group="inslaap" data-val="&gt; 60 min" onclick="enqChipClick(this)">&gt; 60 min</button>
+                </div>
+              </div>
             </div>
-            <div>
-              <label class="form-label">Hoe lang voor je insliep?</label>
+            <div style="margin-bottom:10px;">
+              <label class="form-label">'s Nachts wakker gelegen?</label>
               <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-                <button class="enq-chip" data-group="inslaap" data-val="&lt; 15 min" onclick="enqChipClick(this)">&lt; 15 min</button>
-                <button class="enq-chip" data-group="inslaap" data-val="15–30 min" onclick="enqChipClick(this)">15–30 min</button>
-                <button class="enq-chip" data-group="inslaap" data-val="30–60 min" onclick="enqChipClick(this)">30–60 min</button>
-                <button class="enq-chip" data-group="inslaap" data-val="&gt; 60 min" onclick="enqChipClick(this)">&gt; 60 min</button>
-              </div>
-            </div>
-          </div>
-          <div style="margin-bottom:10px;">
-            <label class="form-label">'s Nachts wakker gelegen?</label>
-            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-              <button class="enq-chip" data-group="wakker" data-val="Nee" onclick="enqChipClick(this)">Nee</button>
-              <button class="enq-chip" data-group="wakker" data-val="1–2x" onclick="enqChipClick(this)">1–2x</button>
-              <button class="enq-chip" data-group="wakker" data-val="Meerdere keren" onclick="enqChipClick(this)">Meerdere keren</button>
-            </div>
-          </div>
-          <div>
-            <label class="form-label">Hoe voelde je je bij het opstaan?</label>
-            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-              <button class="enq-chip" data-group="opstaan" data-val="Uitgerust" onclick="enqChipClick(this)">Uitgerust</button>
-              <button class="enq-chip" data-group="opstaan" data-val="Goed" onclick="enqChipClick(this)">Goed</button>
-              <button class="enq-chip" data-group="opstaan" data-val="Moe" onclick="enqChipClick(this)">Moe</button>
-              <button class="enq-chip" data-group="opstaan" data-val="Zeer moe" onclick="enqChipClick(this)">Zeer moe</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="enq-section">
-          <div style="font-size:13px;font-weight:700;color:#e63946;margin-bottom:12px;">⚡ STRESS &amp; ENERGIE</div>
-          <div style="margin-bottom:10px;">
-            <label class="form-label">Bron van stress (meerdere mogelijk)</label>
-            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-              <button class="enq-chip multi" data-group="stress_bronnen" data-val="Werk" onclick="enqChipClick(this)">Werk</button>
-              <button class="enq-chip multi" data-group="stress_bronnen" data-val="Privé" onclick="enqChipClick(this)">Privé</button>
-              <button class="enq-chip multi" data-group="stress_bronnen" data-val="Training" onclick="enqChipClick(this)">Training</button>
-              <button class="enq-chip multi" data-group="stress_bronnen" data-val="Anders" onclick="enqChipClick(this)">Anders</button>
-            </div>
-          </div>
-          <div style="margin-bottom:10px;">
-            <label class="form-label">Fysieke klachten (meerdere mogelijk)</label>
-            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-              <button class="enq-chip multi" data-group="klachten" data-val="Spierspanning" onclick="enqChipClick(this)">Spierspanning</button>
-              <button class="enq-chip multi" data-group="klachten" data-val="Hoofdpijn" onclick="enqChipClick(this)">Hoofdpijn</button>
-              <button class="enq-chip multi" data-group="klachten" data-val="Vermoeidheid" onclick="enqChipClick(this)">Vermoeidheid</button>
-              <button class="enq-chip multi" data-group="klachten" data-val="Buikklachten" onclick="enqChipClick(this)">Buikklachten</button>
-              <button class="enq-chip multi" data-group="klachten" data-val="Geen" onclick="enqChipClick(this)">Geen</button>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div>
-              <label class="form-label">Energieniveau vandaag (1–10)</label>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-                <button class="enq-chip" data-group="energie" data-val="1" onclick="enqChipClick(this)">1</button>
-                <button class="enq-chip" data-group="energie" data-val="2" onclick="enqChipClick(this)">2</button>
-                <button class="enq-chip" data-group="energie" data-val="3" onclick="enqChipClick(this)">3</button>
-                <button class="enq-chip" data-group="energie" data-val="4" onclick="enqChipClick(this)">4</button>
-                <button class="enq-chip" data-group="energie" data-val="5" onclick="enqChipClick(this)">5</button>
-                <button class="enq-chip" data-group="energie" data-val="6" onclick="enqChipClick(this)">6</button>
-                <button class="enq-chip" data-group="energie" data-val="7" onclick="enqChipClick(this)">7</button>
-                <button class="enq-chip" data-group="energie" data-val="8" onclick="enqChipClick(this)">8</button>
-                <button class="enq-chip" data-group="energie" data-val="9" onclick="enqChipClick(this)">9</button>
-                <button class="enq-chip" data-group="energie" data-val="10" onclick="enqChipClick(this)">10</button>
+                <button class="enq-chip" data-group="wakker" data-val="Nee" onclick="enqChipClick(this)">Nee</button>
+                <button class="enq-chip" data-group="wakker" data-val="1–2x" onclick="enqChipClick(this)">1–2x</button>
+                <button class="enq-chip" data-group="wakker" data-val="Meerdere keren" onclick="enqChipClick(this)">Meerdere keren</button>
               </div>
             </div>
             <div>
-              <label class="form-label">Herstelgevoel na training</label>
+              <label class="form-label">Hoe voelde je je bij het opstaan?</label>
               <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-                <button class="enq-chip" data-group="herstel" data-val="Uitstekend" onclick="enqChipClick(this)">Uitstekend</button>
-                <button class="enq-chip" data-group="herstel" data-val="Goed" onclick="enqChipClick(this)">Goed</button>
-                <button class="enq-chip" data-group="herstel" data-val="Redelijk" onclick="enqChipClick(this)">Redelijk</button>
-                <button class="enq-chip" data-group="herstel" data-val="Slecht" onclick="enqChipClick(this)">Slecht</button>
-                <button class="enq-chip" data-group="herstel" data-val="Geen training" onclick="enqChipClick(this)">Geen training</button>
+                <button class="enq-chip" data-group="opstaan" data-val="Uitgerust" onclick="enqChipClick(this)">Uitgerust</button>
+                <button class="enq-chip" data-group="opstaan" data-val="Goed" onclick="enqChipClick(this)">Goed</button>
+                <button class="enq-chip" data-group="opstaan" data-val="Moe" onclick="enqChipClick(this)">Moe</button>
+                <button class="enq-chip" data-group="opstaan" data-val="Zeer moe" onclick="enqChipClick(this)">Zeer moe</button>
               </div>
             </div>
           </div>
+          <div class="enq-section">
+            <div style="font-size:13px;font-weight:700;color:#e63946;margin-bottom:12px;">⚡ STRESS &amp; ENERGIE</div>
+            <div style="margin-bottom:10px;">
+              <label class="form-label">Bron van stress (meerdere mogelijk)</label>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+                <button class="enq-chip multi" data-group="stress_bronnen" data-val="Werk" onclick="enqChipClick(this)">Werk</button>
+                <button class="enq-chip multi" data-group="stress_bronnen" data-val="Privé" onclick="enqChipClick(this)">Privé</button>
+                <button class="enq-chip multi" data-group="stress_bronnen" data-val="Training" onclick="enqChipClick(this)">Training</button>
+                <button class="enq-chip multi" data-group="stress_bronnen" data-val="Anders" onclick="enqChipClick(this)">Anders</button>
+              </div>
+            </div>
+            <div style="margin-bottom:10px;">
+              <label class="form-label">Fysieke klachten (meerdere mogelijk)</label>
+              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+                <button class="enq-chip multi" data-group="klachten" data-val="Spierspanning" onclick="enqChipClick(this)">Spierspanning</button>
+                <button class="enq-chip multi" data-group="klachten" data-val="Hoofdpijn" onclick="enqChipClick(this)">Hoofdpijn</button>
+                <button class="enq-chip multi" data-group="klachten" data-val="Vermoeidheid" onclick="enqChipClick(this)">Vermoeidheid</button>
+                <button class="enq-chip multi" data-group="klachten" data-val="Buikklachten" onclick="enqChipClick(this)">Buikklachten</button>
+                <button class="enq-chip multi" data-group="klachten" data-val="Geen" onclick="enqChipClick(this)">Geen</button>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+              <div>
+                <label class="form-label">Energieniveau vandaag (1–10)</label>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+                  <button class="enq-chip" data-group="energie" data-val="1" onclick="enqChipClick(this)">1</button>
+                  <button class="enq-chip" data-group="energie" data-val="2" onclick="enqChipClick(this)">2</button>
+                  <button class="enq-chip" data-group="energie" data-val="3" onclick="enqChipClick(this)">3</button>
+                  <button class="enq-chip" data-group="energie" data-val="4" onclick="enqChipClick(this)">4</button>
+                  <button class="enq-chip" data-group="energie" data-val="5" onclick="enqChipClick(this)">5</button>
+                  <button class="enq-chip" data-group="energie" data-val="6" onclick="enqChipClick(this)">6</button>
+                  <button class="enq-chip" data-group="energie" data-val="7" onclick="enqChipClick(this)">7</button>
+                  <button class="enq-chip" data-group="energie" data-val="8" onclick="enqChipClick(this)">8</button>
+                  <button class="enq-chip" data-group="energie" data-val="9" onclick="enqChipClick(this)">9</button>
+                  <button class="enq-chip" data-group="energie" data-val="10" onclick="enqChipClick(this)">10</button>
+                </div>
+              </div>
+              <div>
+                <label class="form-label">Herstelgevoel na training</label>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+                  <button class="enq-chip" data-group="herstel" data-val="Uitstekend" onclick="enqChipClick(this)">Uitstekend</button>
+                  <button class="enq-chip" data-group="herstel" data-val="Goed" onclick="enqChipClick(this)">Goed</button>
+                  <button class="enq-chip" data-group="herstel" data-val="Redelijk" onclick="enqChipClick(this)">Redelijk</button>
+                  <button class="enq-chip" data-group="herstel" data-val="Slecht" onclick="enqChipClick(this)">Slecht</button>
+                  <button class="enq-chip" data-group="herstel" data-val="Geen training" onclick="enqChipClick(this)">Geen training</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="welzijnExtraSecties"></div>
+          <button class="btn btn-primary" style="width:100%;" onclick="saveEnquete()">Opslaan</button>
         </div>
-
-        <div id="welzijnExtraSecties"></div>
-        <button class="btn btn-primary" style="width:100%;" onclick="saveEnquete()">Opslaan</button>
-      </div>
-      <div class="panel">
-        <div class="panel-title">Overzicht</div>
-        <div id="enqueteLijst"><div class="empty">Nog geen enquêtes.</div></div>
+        <div class="panel">
+          <div class="panel-title">Overzicht</div>
+          <div id="enqueteLijst"><div class="empty">Nog geen enquêtes.</div></div>
+        </div>
       </div>
     </div>
-  </div>
-
-  <!-- LIFESTYLE -->
-  <div class="tab-content" id="tab-lifestyle">
+    <hr style="border:none;border-top:2px solid var(--border);margin:24px 0;">
+    <!-- LIFESTYLE SECTIE -->
+    <div class="panel-title" style="margin-bottom:16px;">Lifestyle</div>
     <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
       <div class="panel">
         <div class="panel-title">Lifestyle Vragenlijst</div>
@@ -1656,11 +1656,10 @@ async function uploadFoto(e) {
 }
 
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['training','welzijn','lifestyle','gegevens'][i]===name));
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['training','lifestyle','gegevens'][i]===name));
   document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  if (name === 'welzijn') { renderEnqueteLijst(); renderExtraFormSecties('welzijn'); }
-  if (name === 'lifestyle') { renderLifestyleLijst(); initLsDatum(); renderExtraFormSecties('lifestyle'); }
+  if (name === 'lifestyle') { renderEnqueteLijst(); renderExtraFormSecties('welzijn'); renderLifestyleLijst(); initLsDatum(); renderExtraFormSecties('lifestyle'); }
 }
 
 // ══════════════════════════════════════════════════════════════════════
