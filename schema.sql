@@ -20,6 +20,7 @@ create table if not exists oefeningen (
   id uuid default gen_random_uuid() primary key,
   naam text not null unique,
   foto text, -- base64 of URL
+  lager_is_beter boolean default false,
   created_at timestamptz default now()
 );
 

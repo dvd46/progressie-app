@@ -2839,16 +2839,19 @@ function renderInstellingen() {
 }
 
 function getLagerIsBeter(id) {
-  const prefs = JSON.parse(localStorage.getItem('lager_is_beter') || '{}');
-  return !!prefs[id];
+  const oef = oefeningen.find(o => o.id === id);
+  return !!(oef?.lager_is_beter);
 }
 
-function toggleLagerIsBeter(id) {
-  const prefs = JSON.parse(localStorage.getItem('lager_is_beter') || '{}');
-  prefs[id] = !prefs[id];
-  localStorage.setItem('lager_is_beter', JSON.stringify(prefs));
+async function toggleLagerIsBeter(id) {
+  const oef = oefeningen.find(o => o.id === id);
+  if (!oef) return;
+  const nieuw = !oef.lager_is_beter;
+  const { error } = await sb.from('oefeningen').update({ lager_is_beter: nieuw }).eq('id', id);
+  if (error) return showToast('Fout: ' + error.message, 'error');
+  oef.lager_is_beter = nieuw;
   renderInstellingen();
-  showToast(prefs[id] ? '↓ Laag = beter ingesteld' : '↑ Hoog = beter ingesteld', 'success');
+  showToast(nieuw ? '↓ Laag = beter ingesteld' : '↑ Hoog = beter ingesteld', 'success');
 }
 
 async function addGlobaleOef() {
