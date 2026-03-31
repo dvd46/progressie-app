@@ -622,35 +622,72 @@ textarea { resize: vertical; min-height: 58px; }
 
         <div class="enq-section">
           <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">🍽️ VOEDING</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px;">
-            <div>
-              <label class="form-label">Aantal maaltijden per dag</label>
-              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-                <button class="enq-chip" data-group="ls_maaltijden" data-val="1–2" onclick="lsChipClick(this)">1–2</button>
-                <button class="enq-chip" data-group="ls_maaltijden" data-val="3" onclick="lsChipClick(this)">3</button>
-                <button class="enq-chip" data-group="ls_maaltijden" data-val="4–5" onclick="lsChipClick(this)">4–5</button>
-                <button class="enq-chip" data-group="ls_maaltijden" data-val="5+" onclick="lsChipClick(this)">5+</button>
-              </div>
-            </div>
-            <div>
-              <label class="form-label">Waterinname per dag</label>
-              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-                <button class="enq-chip" data-group="ls_water" data-val="&lt; 1L" onclick="lsChipClick(this)">&lt; 1L</button>
-                <button class="enq-chip" data-group="ls_water" data-val="1–2L" onclick="lsChipClick(this)">1–2L</button>
-                <button class="enq-chip" data-group="ls_water" data-val="2–3L" onclick="lsChipClick(this)">2–3L</button>
-                <button class="enq-chip" data-group="ls_water" data-val="3L+" onclick="lsChipClick(this)">3L+</button>
-              </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoe zou je je algemene voedingspatroon beoordelen? <span style="color:var(--muted);font-weight:400">(afgelopen 4 weken, 1=ongezond – 10=gezond)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_voeding_kwaliteit" data-val="1" onclick="lsChipClick(this)">1</button>
+              <button class="enq-chip" data-group="ls_voeding_kwaliteit" data-val="2" onclick="lsChipClick(this)">2</button>
+              <button class="enq-chip" data-group="ls_voeding_kwaliteit" data-val="3" onclick="lsChipClick(this)">3</button>
+              <button class="enq-chip" data-group="ls_voeding_kwaliteit" data-val="4" onclick="lsChipClick(this)">4</button>
+              <button class="enq-chip" data-group="ls_voeding_kwaliteit" data-val="5" onclick="lsChipClick(this)">5</button>
+              <button class="enq-chip" data-group="ls_voeding_kwaliteit" data-val="6" onclick="lsChipClick(this)">6</button>
+              <button class="enq-chip" data-group="ls_voeding_kwaliteit" data-val="7" onclick="lsChipClick(this)">7</button>
+              <button class="enq-chip" data-group="ls_voeding_kwaliteit" data-val="8" onclick="lsChipClick(this)">8</button>
+              <button class="enq-chip" data-group="ls_voeding_kwaliteit" data-val="9" onclick="lsChipClick(this)">9</button>
+              <button class="enq-chip" data-group="ls_voeding_kwaliteit" data-val="10" onclick="lsChipClick(this)">10</button>
             </div>
           </div>
           <div style="margin-bottom:10px;">
-            <label class="form-label">Eetpatroon (meerdere mogelijk)</label>
+            <label class="form-label">Heb je veel last van cravings de laatste maand?</label>
             <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-              <button class="enq-chip multi" data-group="ls_eetpatroon" data-val="Gevarieerd" onclick="lsChipClick(this)">Gevarieerd</button>
-              <button class="enq-chip multi" data-group="ls_eetpatroon" data-val="Veel suiker" onclick="lsChipClick(this)">Veel suiker</button>
-              <button class="enq-chip multi" data-group="ls_eetpatroon" data-val="Veel fastfood" onclick="lsChipClick(this)">Veel fastfood</button>
-              <button class="enq-chip multi" data-group="ls_eetpatroon" data-val="Weinig groenten" onclick="lsChipClick(this)">Weinig groenten</button>
-              <button class="enq-chip multi" data-group="ls_eetpatroon" data-val="Vegetarisch" onclick="lsChipClick(this)">Vegetarisch</button>
-              <button class="enq-chip multi" data-group="ls_eetpatroon" data-val="Vegan" onclick="lsChipClick(this)">Vegan</button>
+              <button class="enq-chip" data-group="ls_cravings" data-val="0" onclick="lsChipClick(this)">Nooit</button>
+              <button class="enq-chip" data-group="ls_cravings" data-val="1" onclick="lsChipClick(this)">Zelden</button>
+              <button class="enq-chip" data-group="ls_cravings" data-val="2" onclick="lsChipClick(this)">Soms</button>
+              <button class="enq-chip" data-group="ls_cravings" data-val="3" onclick="lsChipClick(this)">Vaak</button>
+              <button class="enq-chip" data-group="ls_cravings" data-val="4" onclick="lsChipClick(this)">Altijd</button>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoeveel cafeïne neem je in per dag?</label>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_cafeine" data-val="0" onclick="lsChipClick(this)">Geen</button>
+              <button class="enq-chip" data-group="ls_cafeine" data-val="1" onclick="lsChipClick(this)">1 kopje</button>
+              <button class="enq-chip" data-group="ls_cafeine" data-val="2" onclick="lsChipClick(this)">2–3 kopjes</button>
+              <button class="enq-chip" data-group="ls_cafeine" data-val="3" onclick="lsChipClick(this)">4–5 kopjes</button>
+              <button class="enq-chip" data-group="ls_cafeine" data-val="4" onclick="lsChipClick(this)">5+ kopjes</button>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoe voel je je bij jouw waterconsumptie doorheen de dag? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_water_gevoel" data-val="1" onclick="lsChipClick(this)">1</button>
+              <button class="enq-chip" data-group="ls_water_gevoel" data-val="2" onclick="lsChipClick(this)">2</button>
+              <button class="enq-chip" data-group="ls_water_gevoel" data-val="3" onclick="lsChipClick(this)">3</button>
+              <button class="enq-chip" data-group="ls_water_gevoel" data-val="4" onclick="lsChipClick(this)">4</button>
+              <button class="enq-chip" data-group="ls_water_gevoel" data-val="5" onclick="lsChipClick(this)">5</button>
+              <button class="enq-chip" data-group="ls_water_gevoel" data-val="6" onclick="lsChipClick(this)">6</button>
+              <button class="enq-chip" data-group="ls_water_gevoel" data-val="7" onclick="lsChipClick(this)">7</button>
+              <button class="enq-chip" data-group="ls_water_gevoel" data-val="8" onclick="lsChipClick(this)">8</button>
+              <button class="enq-chip" data-group="ls_water_gevoel" data-val="9" onclick="lsChipClick(this)">9</button>
+              <button class="enq-chip" data-group="ls_water_gevoel" data-val="10" onclick="lsChipClick(this)">10</button>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoe voel je je over je consumptie van groenten & fruit per dag?</label>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_groenten_gevoel" data-val="0" onclick="lsChipClick(this)">Te weinig</button>
+              <button class="enq-chip" data-group="ls_groenten_gevoel" data-val="1" onclick="lsChipClick(this)">Voldoende</button>
+              <button class="enq-chip" data-group="ls_groenten_gevoel" data-val="2" onclick="lsChipClick(this)">Goed</button>
+              <button class="enq-chip" data-group="ls_groenten_gevoel" data-val="3" onclick="lsChipClick(this)">Uitstekend</button>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Consumptie van onbewerkte vlees- en visproducten?</label>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_vlees_vis" data-val="0" onclick="lsChipClick(this)">Geen (plantaardig)</button>
+              <button class="enq-chip" data-group="ls_vlees_vis" data-val="1" onclick="lsChipClick(this)">1–2× per week</button>
+              <button class="enq-chip" data-group="ls_vlees_vis" data-val="2" onclick="lsChipClick(this)">3–4× per week</button>
+              <button class="enq-chip" data-group="ls_vlees_vis" data-val="3" onclick="lsChipClick(this)">Dagelijks</button>
             </div>
           </div>
         </div>
@@ -745,6 +782,18 @@ textarea { resize: vertical; min-height: 58px; }
       <div class="panel">
         <div class="panel-title">Overzicht</div>
         <div id="lifestyleLijst"><div class="empty">Nog geen ingevulde lijsten.</div></div>
+      </div>
+    </div>
+    <!-- VOEDING GRAFIEKEN -->
+    <div id="voedingChartsContainer" style="margin-top:16px;display:none;">
+      <div class="panel-title" style="margin-bottom:12px;">Voeding Grafieken</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;"><canvas id="cVoedingKwaliteit"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cCravings"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cCafeine"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cWaterGevoel"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cGroentenGevoel"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cVleesVis"></canvas></div>
       </div>
     </div>
   </div>
@@ -1730,7 +1779,7 @@ function switchTab(name) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['training','lifestyle','gegevens'][i]===name));
   document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  if (name === 'lifestyle') { renderEnqueteLijst(); renderSlaapCharts(); renderExtraFormSecties('welzijn'); renderLifestyleLijst(); initLsDatum(); renderExtraFormSecties('lifestyle'); }
+  if (name === 'lifestyle') { renderEnqueteLijst(); renderSlaapCharts(); renderExtraFormSecties('welzijn'); renderLifestyleLijst(); renderVoedingCharts(); initLsDatum(); renderExtraFormSecties('lifestyle'); }
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -2248,6 +2297,45 @@ function renderSlaapCharts() {
   if (felm) felm.innerHTML = factoren.length ? factoren.join('') : '<span style="color:var(--muted);font-size:12px;">Nog geen factoren ingevuld.</span>';
 }
 
+// ── VOEDING GRAFIEKEN ────────────────────────────────────────────────
+let voedingCharts = {};
+function renderVoedingCharts() {
+  const list = getLifestyles().filter(e =>
+    e.voeding_kwaliteit != null || e.cravings != null || e.cafeine != null ||
+    e.water_gevoel != null || e.groenten_gevoel != null || e.vlees_vis != null
+  ).slice().reverse();
+  const container = document.getElementById('voedingChartsContainer');
+  if (!container) return;
+  if (!list.length) { container.style.display = 'none'; return; }
+  container.style.display = '';
+  const labels = list.map(e => e.datum);
+  const cravingsLbl = ['Nooit','Zelden','Soms','Vaak','Altijd'];
+  const cafeineLbl = ['Geen','1 kopje','2–3','4–5','5+'];
+  const groLbl = ['Te weinig','Voldoende','Goed','Uitstekend'];
+  const vleesLbl = ['Geen','1–2×/week','3–4×/week','Dagelijks'];
+  const chartDefs = [
+    { id:'cVoedingKwaliteit', label:'Voedingskwaliteit (1–10)', data:list.map(e=>e.voeding_kwaliteit??null), color:'#6EF08C', yMin:1, yMax:10 },
+    { id:'cCravings', label:'Cravings', data:list.map(e=>e.cravings??null), color:'#f4a261', yMin:0, yMax:4, yLabels:cravingsLbl },
+    { id:'cCafeine', label:'Cafeïne per dag', data:list.map(e=>e.cafeine??null), color:'#8B5E3C', yMin:0, yMax:4, yLabels:cafeineLbl },
+    { id:'cWaterGevoel', label:'Waterconsumptie gevoel (1–10)', data:list.map(e=>e.water_gevoel??null), color:'#4cc9f0', yMin:1, yMax:10 },
+    { id:'cGroentenGevoel', label:'Groenten & fruit', data:list.map(e=>e.groenten_gevoel??null), color:'#a8dadc', yMin:0, yMax:3, yLabels:groLbl },
+    { id:'cVleesVis', label:'Vlees & vis consumptie', data:list.map(e=>e.vlees_vis??null), color:'#e63946', yMin:0, yMax:3, yLabels:vleesLbl }
+  ];
+  chartDefs.forEach(def => {
+    const canvas = document.getElementById(def.id); if (!canvas) return;
+    if (voedingCharts[def.id]) { voedingCharts[def.id].destroy(); delete voedingCharts[def.id]; }
+    const validData = def.data.filter(d => d !== null);
+    if (!validData.length) { canvas.parentElement.style.display='none'; return; }
+    canvas.parentElement.style.display='';
+    const yOpts = { min:def.yMin, max:def.yMax, grid:{color:'rgba(255,255,255,0.05)'}, ticks:{ color:'#888', font:{size:10}, stepSize:1, callback: def.yLabels ? v => def.yLabels[v] ?? v : undefined } };
+    voedingCharts[def.id] = new Chart(canvas, {
+      type:'line',
+      data:{ labels, datasets:[{ label:def.label, data:def.data, borderColor:def.color, backgroundColor:def.color+'22', borderWidth:2, pointRadius:4, tension:0.3, fill:true, spanGaps:true }] },
+      options:{ responsive:true, plugins:{ legend:{display:false}, title:{display:true,text:def.label,color:'#ccc',font:{size:11}} }, scales:{ x:{ticks:{color:'#888',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}}, y:yOpts } }
+    });
+  });
+}
+
 // ══════════════════════════════════════════════════════════════════════
 //  LIFESTYLE TAB
 // ══════════════════════════════════════════════════════════════════════
@@ -2280,15 +2368,18 @@ function lsChipClick(btn) {
 function saveLifestyle() {
   const datum = document.getElementById('lsDatum').value;
   if (!datum) return showToast('Kies een datum.', 'error');
-  const defaultKeys = ['ls_maaltijden','ls_water','ls_eetpatroon','ls_activiteit','ls_stappen','ls_alcohol','ls_roken','ls_scherm','ls_werk','ls_ontspan','ls_groenten'];
+  const defaultKeys = ['ls_voeding_kwaliteit','ls_cravings','ls_cafeine','ls_water_gevoel','ls_groenten_gevoel','ls_vlees_vis','ls_activiteit','ls_stappen','ls_alcohol','ls_roken','ls_scherm','ls_werk','ls_ontspan'];
   const extraFields = {};
   Object.keys(lsState).forEach(k => { if (!defaultKeys.includes(k)) extraFields[k] = lsState[k]; });
   const entry = {
     id: Date.now(),
     datum,
-    maaltijden: lsState.ls_maaltijden || null,
-    water: lsState.ls_water || null,
-    eetpatroon: lsState.ls_eetpatroon || [],
+    voeding_kwaliteit: lsState.ls_voeding_kwaliteit != null ? parseInt(lsState.ls_voeding_kwaliteit) : null,
+    cravings: lsState.ls_cravings != null ? parseInt(lsState.ls_cravings) : null,
+    cafeine: lsState.ls_cafeine != null ? parseInt(lsState.ls_cafeine) : null,
+    water_gevoel: lsState.ls_water_gevoel != null ? parseInt(lsState.ls_water_gevoel) : null,
+    groenten_gevoel: lsState.ls_groenten_gevoel != null ? parseInt(lsState.ls_groenten_gevoel) : null,
+    vlees_vis: lsState.ls_vlees_vis != null ? parseInt(lsState.ls_vlees_vis) : null,
     activiteit: lsState.ls_activiteit || null,
     stappen: lsState.ls_stappen || null,
     alcohol: lsState.ls_alcohol || null,
@@ -2307,6 +2398,7 @@ function saveLifestyle() {
   document.getElementById('lsNotities').value = '';
   document.getElementById('lsDatum').value = today();
   renderLifestyleLijst();
+  renderVoedingCharts();
   showToast('Lifestyle opgeslagen', 'success');
 }
 
@@ -2315,9 +2407,17 @@ function renderLifestyleLijst() {
   const el = document.getElementById('lifestyleLijst');
   if (!list.length) { el.innerHTML = '<div class="empty">Nog geen ingevulde lijsten.</div>'; return; }
   el.innerHTML = list.map(e => {
+    const cravingsLbl = ['Nooit','Zelden','Soms','Vaak','Altijd'];
+    const cafeineLbl = ['Geen','1 kopje','2–3 kopjes','4–5 kopjes','5+ kopjes'];
+    const groLbl = ['Te weinig','Voldoende','Goed','Uitstekend'];
+    const vleesLbl = ['Geen (plantaardig)','1–2× per week','3–4× per week','Dagelijks'];
     const tags = [
-      e.maaltijden ? `🍽️ ${e.maaltijden}` : null,
-      e.water ? `💧 ${e.water}` : null,
+      e.voeding_kwaliteit != null ? `🍽️ kwaliteit: ${e.voeding_kwaliteit}/10` : null,
+      e.cravings != null ? `🍬 cravings: ${cravingsLbl[e.cravings]||e.cravings}` : null,
+      e.cafeine != null ? `☕ ${cafeineLbl[e.cafeine]||e.cafeine}` : null,
+      e.water_gevoel != null ? `💧 water: ${e.water_gevoel}/10` : null,
+      e.groenten_gevoel != null ? `🥦 groenten: ${groLbl[e.groenten_gevoel]||e.groenten_gevoel}` : null,
+      e.vlees_vis != null ? `🥩 vlees/vis: ${vleesLbl[e.vlees_vis]||e.vlees_vis}` : null,
       e.activiteit ? `🚶 ${e.activiteit}` : null,
       e.alcohol ? `🍺 ${e.alcohol}` : null,
       e.roken ? `🚬 ${e.roken}` : null,
