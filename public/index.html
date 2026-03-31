@@ -313,19 +313,19 @@ textarea { resize: vertical; min-height: 58px; }
     <nav class="sidebar-nav" id="coachNav">
       <button class="nav-btn active" id="navOverzicht" onclick="showView('overzicht')">Klanten</button>
       <button class="nav-btn" id="navLeaderboard" onclick="showView('leaderboard')">Leaderboard</button>
-      <button class="nav-btn" id="navConnecties" onclick="showView('connecties')">Connecties</button>
+      <button class="nav-btn" id="navConnecties" onclick="showView('connecties')">Activiteiten</button>
       <button class="nav-btn" id="navCoaches" onclick="showView('coaches')">Coaches</button>
       <button class="nav-btn" id="navInstellingen" onclick="showView('instellingen')">Instellingen</button>
     </nav>
     <nav class="sidebar-nav" id="clientNav" style="display:none;">
       <button class="nav-btn active" id="cNavProfiel" onclick="showClientView('client-profiel')">Mijn Profiel</button>
       <button class="nav-btn" id="cNavLeaderboard" onclick="showClientView('client-leaderboard')">Leaderboard</button>
-      <button class="nav-btn" id="cNavConnecties" onclick="showClientView('connecties')">Connecties</button>
+      <button class="nav-btn" id="cNavConnecties" onclick="showClientView('connecties')">Activiteiten</button>
     </nav>
     <nav class="sidebar-nav" id="memberNav" style="display:none;">
       <button class="nav-btn active" id="mNavProfiel" onclick="showMemberView('member-profiel')">Mijn Profiel</button>
       <button class="nav-btn" id="mNavLeaderboard" onclick="showMemberView('client-leaderboard')">Leaderboard</button>
-      <button class="nav-btn" id="mNavConnecties" onclick="showMemberView('connecties')">Connecties</button>
+      <button class="nav-btn" id="mNavConnecties" onclick="showMemberView('connecties')">Activiteiten</button>
     </nav>
     <div class="sidebar-bottom">
       <button class="nav-btn danger" onclick="doLogout()">Uitloggen</button>
@@ -441,187 +441,154 @@ textarea { resize: vertical; min-height: 58px; }
   </div>
 
 
-  <!-- LIFESTYLE (bevat welzijn + lifestyle) -->
+  <!-- LIFESTYLE (unified) -->
   <div class="tab-content" id="tab-lifestyle">
-    <!-- WELZIJN SECTIE -->
-    <div id="tab-welzijn" style="margin-bottom:8px;">
-      <div class="panel-title" style="margin-bottom:16px;">Slaap &amp; Stress</div>
-      <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
-        <div class="panel">
-          <div class="panel-title">Slaap &amp; Stress Enquête</div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
-          <div class="form-group"><label class="form-label">Datum</label><input type="date" id="enqDatum"/></div>
-          <div class="enq-section">
-            <div style="font-size:13px;font-weight:700;color:#6EF08C;margin-bottom:12px;">🌙 SLAAP</div>
-            <div style="margin-bottom:10px;">
-              <label class="form-label">Hoe zou je je algemene slaapkwaliteit beoordelen? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-                <button class="enq-chip" data-group="slaap_kwaliteit" data-val="1" onclick="enqChipClick(this)">1</button>
-                <button class="enq-chip" data-group="slaap_kwaliteit" data-val="2" onclick="enqChipClick(this)">2</button>
-                <button class="enq-chip" data-group="slaap_kwaliteit" data-val="3" onclick="enqChipClick(this)">3</button>
-                <button class="enq-chip" data-group="slaap_kwaliteit" data-val="4" onclick="enqChipClick(this)">4</button>
-                <button class="enq-chip" data-group="slaap_kwaliteit" data-val="5" onclick="enqChipClick(this)">5</button>
-                <button class="enq-chip" data-group="slaap_kwaliteit" data-val="6" onclick="enqChipClick(this)">6</button>
-                <button class="enq-chip" data-group="slaap_kwaliteit" data-val="7" onclick="enqChipClick(this)">7</button>
-                <button class="enq-chip" data-group="slaap_kwaliteit" data-val="8" onclick="enqChipClick(this)">8</button>
-                <button class="enq-chip" data-group="slaap_kwaliteit" data-val="9" onclick="enqChipClick(this)">9</button>
-                <button class="enq-chip" data-group="slaap_kwaliteit" data-val="10" onclick="enqChipClick(this)">10</button>
-              </div>
-            </div>
-            <div style="margin-bottom:10px;">
-              <label class="form-label">Schermtijd 1 uur voor het slapengaan?</label>
-              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-                <button class="enq-chip" data-group="schermtijd" data-val="Nooit" onclick="enqChipClick(this)">Nooit</button>
-                <button class="enq-chip" data-group="schermtijd" data-val="Zelden" onclick="enqChipClick(this)">Zelden</button>
-                <button class="enq-chip" data-group="schermtijd" data-val="Soms" onclick="enqChipClick(this)">Soms</button>
-                <button class="enq-chip" data-group="schermtijd" data-val="Vaak" onclick="enqChipClick(this)">Vaak</button>
-                <button class="enq-chip" data-group="schermtijd" data-val="Altijd" onclick="enqChipClick(this)">Altijd</button>
-              </div>
-            </div>
-            <div style="margin-bottom:10px;">
-              <label class="form-label">Hoe consistent was je slaapschema? <span style="color:var(--muted);font-weight:400">(1=onregelmatig – 10=perfect)</span></label>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-                <button class="enq-chip" data-group="slaap_consistentie" data-val="1" onclick="enqChipClick(this)">1</button>
-                <button class="enq-chip" data-group="slaap_consistentie" data-val="2" onclick="enqChipClick(this)">2</button>
-                <button class="enq-chip" data-group="slaap_consistentie" data-val="3" onclick="enqChipClick(this)">3</button>
-                <button class="enq-chip" data-group="slaap_consistentie" data-val="4" onclick="enqChipClick(this)">4</button>
-                <button class="enq-chip" data-group="slaap_consistentie" data-val="5" onclick="enqChipClick(this)">5</button>
-                <button class="enq-chip" data-group="slaap_consistentie" data-val="6" onclick="enqChipClick(this)">6</button>
-                <button class="enq-chip" data-group="slaap_consistentie" data-val="7" onclick="enqChipClick(this)">7</button>
-                <button class="enq-chip" data-group="slaap_consistentie" data-val="8" onclick="enqChipClick(this)">8</button>
-                <button class="enq-chip" data-group="slaap_consistentie" data-val="9" onclick="enqChipClick(this)">9</button>
-                <button class="enq-chip" data-group="slaap_consistentie" data-val="10" onclick="enqChipClick(this)">10</button>
-              </div>
-            </div>
-            <div style="margin-bottom:10px;">
-              <label class="form-label">Hoe voel je je als je opstaat? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-                <button class="enq-chip" data-group="opstaan_gevoel" data-val="1" onclick="enqChipClick(this)">1</button>
-                <button class="enq-chip" data-group="opstaan_gevoel" data-val="2" onclick="enqChipClick(this)">2</button>
-                <button class="enq-chip" data-group="opstaan_gevoel" data-val="3" onclick="enqChipClick(this)">3</button>
-                <button class="enq-chip" data-group="opstaan_gevoel" data-val="4" onclick="enqChipClick(this)">4</button>
-                <button class="enq-chip" data-group="opstaan_gevoel" data-val="5" onclick="enqChipClick(this)">5</button>
-                <button class="enq-chip" data-group="opstaan_gevoel" data-val="6" onclick="enqChipClick(this)">6</button>
-                <button class="enq-chip" data-group="opstaan_gevoel" data-val="7" onclick="enqChipClick(this)">7</button>
-                <button class="enq-chip" data-group="opstaan_gevoel" data-val="8" onclick="enqChipClick(this)">8</button>
-                <button class="enq-chip" data-group="opstaan_gevoel" data-val="9" onclick="enqChipClick(this)">9</button>
-                <button class="enq-chip" data-group="opstaan_gevoel" data-val="10" onclick="enqChipClick(this)">10</button>
-              </div>
-            </div>
-            <div style="margin-bottom:10px;">
-              <label class="form-label">Hoe vaak word je gemiddeld wakker 's nachts?</label>
-              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-                <button class="enq-chip" data-group="nacht_wakker" data-val="1" onclick="enqChipClick(this)">1×</button>
-                <button class="enq-chip" data-group="nacht_wakker" data-val="2" onclick="enqChipClick(this)">2×</button>
-                <button class="enq-chip" data-group="nacht_wakker" data-val="3" onclick="enqChipClick(this)">3×</button>
-                <button class="enq-chip" data-group="nacht_wakker" data-val="4" onclick="enqChipClick(this)">4×</button>
-                <button class="enq-chip" data-group="nacht_wakker" data-val="5" onclick="enqChipClick(this)">5×</button>
-                <button class="enq-chip" data-group="nacht_wakker" data-val="6" onclick="enqChipClick(this)">&gt;5×</button>
-              </div>
-            </div>
-            <div>
-              <label class="form-label">Grootste factoren die je slaap negatief beïnvloeden?</label>
-              <textarea id="enqSlaapFactoren" placeholder="Bv. stress, schermtijd, pijn, lawaai…" rows="2" style="margin-top:4px;"></textarea>
-            </div>
-          </div>
-          <div class="enq-section">
-            <div style="font-size:13px;font-weight:700;color:#e63946;margin-bottom:12px;">⚡ STRESS &amp; ENERGIE</div>
-            <div style="margin-bottom:10px;">
-              <label class="form-label">Hoe zou je jouw algemene stressniveau beoordelen? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-                <button class="enq-chip" data-group="stress_niveau" data-val="1" onclick="enqChipClick(this)">1</button>
-                <button class="enq-chip" data-group="stress_niveau" data-val="2" onclick="enqChipClick(this)">2</button>
-                <button class="enq-chip" data-group="stress_niveau" data-val="3" onclick="enqChipClick(this)">3</button>
-                <button class="enq-chip" data-group="stress_niveau" data-val="4" onclick="enqChipClick(this)">4</button>
-                <button class="enq-chip" data-group="stress_niveau" data-val="5" onclick="enqChipClick(this)">5</button>
-                <button class="enq-chip" data-group="stress_niveau" data-val="6" onclick="enqChipClick(this)">6</button>
-                <button class="enq-chip" data-group="stress_niveau" data-val="7" onclick="enqChipClick(this)">7</button>
-                <button class="enq-chip" data-group="stress_niveau" data-val="8" onclick="enqChipClick(this)">8</button>
-                <button class="enq-chip" data-group="stress_niveau" data-val="9" onclick="enqChipClick(this)">9</button>
-                <button class="enq-chip" data-group="stress_niveau" data-val="10" onclick="enqChipClick(this)">10</button>
-              </div>
-            </div>
-            <div style="margin-bottom:10px;">
-              <label class="form-label">Hoe vaak voelde je je mentaal uitgeput de laatste maand? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-                <button class="enq-chip" data-group="mentaal_uitgeput" data-val="1" onclick="enqChipClick(this)">1</button>
-                <button class="enq-chip" data-group="mentaal_uitgeput" data-val="2" onclick="enqChipClick(this)">2</button>
-                <button class="enq-chip" data-group="mentaal_uitgeput" data-val="3" onclick="enqChipClick(this)">3</button>
-                <button class="enq-chip" data-group="mentaal_uitgeput" data-val="4" onclick="enqChipClick(this)">4</button>
-                <button class="enq-chip" data-group="mentaal_uitgeput" data-val="5" onclick="enqChipClick(this)">5</button>
-                <button class="enq-chip" data-group="mentaal_uitgeput" data-val="6" onclick="enqChipClick(this)">6</button>
-                <button class="enq-chip" data-group="mentaal_uitgeput" data-val="7" onclick="enqChipClick(this)">7</button>
-                <button class="enq-chip" data-group="mentaal_uitgeput" data-val="8" onclick="enqChipClick(this)">8</button>
-                <button class="enq-chip" data-group="mentaal_uitgeput" data-val="9" onclick="enqChipClick(this)">9</button>
-                <button class="enq-chip" data-group="mentaal_uitgeput" data-val="10" onclick="enqChipClick(this)">10</button>
-              </div>
-            </div>
-            <div style="margin-bottom:10px;">
-              <label class="form-label">Hoe vaak nam je bewust tijd voor ontspanning? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
-              <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
-                <button class="enq-chip" data-group="ontspanning" data-val="1" onclick="enqChipClick(this)">1</button>
-                <button class="enq-chip" data-group="ontspanning" data-val="2" onclick="enqChipClick(this)">2</button>
-                <button class="enq-chip" data-group="ontspanning" data-val="3" onclick="enqChipClick(this)">3</button>
-                <button class="enq-chip" data-group="ontspanning" data-val="4" onclick="enqChipClick(this)">4</button>
-                <button class="enq-chip" data-group="ontspanning" data-val="5" onclick="enqChipClick(this)">5</button>
-                <button class="enq-chip" data-group="ontspanning" data-val="6" onclick="enqChipClick(this)">6</button>
-                <button class="enq-chip" data-group="ontspanning" data-val="7" onclick="enqChipClick(this)">7</button>
-                <button class="enq-chip" data-group="ontspanning" data-val="8" onclick="enqChipClick(this)">8</button>
-                <button class="enq-chip" data-group="ontspanning" data-val="9" onclick="enqChipClick(this)">9</button>
-                <button class="enq-chip" data-group="ontspanning" data-val="10" onclick="enqChipClick(this)">10</button>
-              </div>
-            </div>
-            <div>
-              <label class="form-label">Grootste bronnen van stress? <span style="color:var(--muted);font-weight:400">(meerdere mogelijk)</span></label>
-              <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
-                <button class="enq-chip multi" data-group="stress_bronnen" data-val="Relationeel" onclick="enqChipClick(this)">Relationeel</button>
-                <button class="enq-chip multi" data-group="stress_bronnen" data-val="Professioneel" onclick="enqChipClick(this)">Professioneel</button>
-                <button class="enq-chip multi" data-group="stress_bronnen" data-val="Persoonlijke thema's" onclick="enqChipClick(this)">Persoonlijke thema's</button>
-                <button class="enq-chip multi" data-group="stress_bronnen" data-val="Financieel" onclick="enqChipClick(this)">Financieel</button>
-                <button class="enq-chip multi" data-group="stress_bronnen" data-val="Niet van toepassing" onclick="enqStressAndersToggle(this,'stress_bronnen')">Niet van toepassing</button>
-                <button class="enq-chip multi" data-group="stress_bronnen" data-val="Andere" onclick="enqStressAndersToggle(this,'stress_bronnen')">Andere: namelijk…</button>
-              </div>
-              <div id="enqStressAndersWrap" style="display:none;margin-top:8px;">
-                <input type="text" id="enqStressAnders" placeholder="Omschrijf de andere bron van stress…" style="width:100%;"/>
-              </div>
-            </div>
-          </div>
-          <div id="welzijnExtraSecties"></div>
-          <button class="btn btn-primary" style="width:100%;" onclick="saveEnquete()">Opslaan</button>
-        </div>
-        <div class="panel">
-          <div class="panel-title">Overzicht</div>
-          <div id="enqueteLijst"><div class="empty">Nog geen enquêtes.</div></div>
-        </div>
-      </div>
-    </div>
-    <!-- SLAAP GRAFIEKEN -->
-    <div id="slaapChartsContainer" style="margin-top:16px;display:none;">
-      <div class="panel-title" style="margin-bottom:12px;">Slaap Grafieken</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSchermtijd"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSlaapConsistentie"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cOpstaanGevoel"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cNachtWakker"></canvas></div>
-        <div class="panel" style="padding:12px;">
-          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div>
-          <div id="slaapFactorenTekst" style="font-size:12px;line-height:1.8;color:var(--text);"></div>
-        </div>
-        <div class="panel" style="padding:12px;"><canvas id="cStressNiveau"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cMentaalUitgeput"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cOntspanning"></canvas></div>
-      </div>
-    </div>
-    <hr style="border:none;border-top:2px solid var(--border);margin:24px 0;">
-    <!-- LIFESTYLE SECTIE -->
-    <div class="panel-title" style="margin-bottom:16px;">Voeding &amp; Lifestyle</div>
     <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
       <div class="panel">
-        <div class="panel-title">Voeding &amp; Lifestyle Enquête</div>
+        <div class="panel-title">Lifestyle Enquête</div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
         <div class="form-group"><label class="form-label">Datum</label><input type="date" id="lsDatum"/></div>
 
+        <!-- SLAAP section -->
+        <div class="enq-section">
+          <div style="font-size:13px;font-weight:700;color:#6EF08C;margin-bottom:12px;">🌙 SLAAP</div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoe zou je je algemene slaapkwaliteit beoordelen? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="1" onclick="lsChipClick(this)">1</button>
+              <button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="2" onclick="lsChipClick(this)">2</button>
+              <button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="3" onclick="lsChipClick(this)">3</button>
+              <button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="4" onclick="lsChipClick(this)">4</button>
+              <button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="5" onclick="lsChipClick(this)">5</button>
+              <button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="6" onclick="lsChipClick(this)">6</button>
+              <button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="7" onclick="lsChipClick(this)">7</button>
+              <button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="8" onclick="lsChipClick(this)">8</button>
+              <button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="9" onclick="lsChipClick(this)">9</button>
+              <button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="10" onclick="lsChipClick(this)">10</button>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Schermtijd 1 uur voor het slapengaan?</label>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_schermtijd" data-val="Nooit" onclick="lsChipClick(this)">Nooit</button>
+              <button class="enq-chip" data-group="ls_schermtijd" data-val="Zelden" onclick="lsChipClick(this)">Zelden</button>
+              <button class="enq-chip" data-group="ls_schermtijd" data-val="Soms" onclick="lsChipClick(this)">Soms</button>
+              <button class="enq-chip" data-group="ls_schermtijd" data-val="Vaak" onclick="lsChipClick(this)">Vaak</button>
+              <button class="enq-chip" data-group="ls_schermtijd" data-val="Altijd" onclick="lsChipClick(this)">Altijd</button>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoe consistent was je slaapschema? <span style="color:var(--muted);font-weight:400">(1=onregelmatig – 10=perfect)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_slaap_consistentie" data-val="1" onclick="lsChipClick(this)">1</button>
+              <button class="enq-chip" data-group="ls_slaap_consistentie" data-val="2" onclick="lsChipClick(this)">2</button>
+              <button class="enq-chip" data-group="ls_slaap_consistentie" data-val="3" onclick="lsChipClick(this)">3</button>
+              <button class="enq-chip" data-group="ls_slaap_consistentie" data-val="4" onclick="lsChipClick(this)">4</button>
+              <button class="enq-chip" data-group="ls_slaap_consistentie" data-val="5" onclick="lsChipClick(this)">5</button>
+              <button class="enq-chip" data-group="ls_slaap_consistentie" data-val="6" onclick="lsChipClick(this)">6</button>
+              <button class="enq-chip" data-group="ls_slaap_consistentie" data-val="7" onclick="lsChipClick(this)">7</button>
+              <button class="enq-chip" data-group="ls_slaap_consistentie" data-val="8" onclick="lsChipClick(this)">8</button>
+              <button class="enq-chip" data-group="ls_slaap_consistentie" data-val="9" onclick="lsChipClick(this)">9</button>
+              <button class="enq-chip" data-group="ls_slaap_consistentie" data-val="10" onclick="lsChipClick(this)">10</button>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoe voel je je als je opstaat? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_opstaan_gevoel" data-val="1" onclick="lsChipClick(this)">1</button>
+              <button class="enq-chip" data-group="ls_opstaan_gevoel" data-val="2" onclick="lsChipClick(this)">2</button>
+              <button class="enq-chip" data-group="ls_opstaan_gevoel" data-val="3" onclick="lsChipClick(this)">3</button>
+              <button class="enq-chip" data-group="ls_opstaan_gevoel" data-val="4" onclick="lsChipClick(this)">4</button>
+              <button class="enq-chip" data-group="ls_opstaan_gevoel" data-val="5" onclick="lsChipClick(this)">5</button>
+              <button class="enq-chip" data-group="ls_opstaan_gevoel" data-val="6" onclick="lsChipClick(this)">6</button>
+              <button class="enq-chip" data-group="ls_opstaan_gevoel" data-val="7" onclick="lsChipClick(this)">7</button>
+              <button class="enq-chip" data-group="ls_opstaan_gevoel" data-val="8" onclick="lsChipClick(this)">8</button>
+              <button class="enq-chip" data-group="ls_opstaan_gevoel" data-val="9" onclick="lsChipClick(this)">9</button>
+              <button class="enq-chip" data-group="ls_opstaan_gevoel" data-val="10" onclick="lsChipClick(this)">10</button>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoe vaak word je gemiddeld wakker 's nachts?</label>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_nacht_wakker" data-val="1" onclick="lsChipClick(this)">1×</button>
+              <button class="enq-chip" data-group="ls_nacht_wakker" data-val="2" onclick="lsChipClick(this)">2×</button>
+              <button class="enq-chip" data-group="ls_nacht_wakker" data-val="3" onclick="lsChipClick(this)">3×</button>
+              <button class="enq-chip" data-group="ls_nacht_wakker" data-val="4" onclick="lsChipClick(this)">4×</button>
+              <button class="enq-chip" data-group="ls_nacht_wakker" data-val="5" onclick="lsChipClick(this)">5×</button>
+              <button class="enq-chip" data-group="ls_nacht_wakker" data-val="6" onclick="lsChipClick(this)">&gt;5×</button>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Grootste factoren die je slaap negatief beïnvloeden?</label>
+            <textarea id="lsSlaapFactoren" placeholder="Bv. stress, schermtijd, pijn, lawaai…" rows="2" style="margin-top:4px;"></textarea>
+          </div>
+        </div>
+
+        <!-- STRESS section -->
+        <div class="enq-section">
+          <div style="font-size:13px;font-weight:700;color:#e63946;margin-bottom:12px;">⚡ STRESS &amp; ENERGIE</div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoe zou je jouw algemene stressniveau beoordelen? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_stress_niveau" data-val="1" onclick="lsChipClick(this)">1</button>
+              <button class="enq-chip" data-group="ls_stress_niveau" data-val="2" onclick="lsChipClick(this)">2</button>
+              <button class="enq-chip" data-group="ls_stress_niveau" data-val="3" onclick="lsChipClick(this)">3</button>
+              <button class="enq-chip" data-group="ls_stress_niveau" data-val="4" onclick="lsChipClick(this)">4</button>
+              <button class="enq-chip" data-group="ls_stress_niveau" data-val="5" onclick="lsChipClick(this)">5</button>
+              <button class="enq-chip" data-group="ls_stress_niveau" data-val="6" onclick="lsChipClick(this)">6</button>
+              <button class="enq-chip" data-group="ls_stress_niveau" data-val="7" onclick="lsChipClick(this)">7</button>
+              <button class="enq-chip" data-group="ls_stress_niveau" data-val="8" onclick="lsChipClick(this)">8</button>
+              <button class="enq-chip" data-group="ls_stress_niveau" data-val="9" onclick="lsChipClick(this)">9</button>
+              <button class="enq-chip" data-group="ls_stress_niveau" data-val="10" onclick="lsChipClick(this)">10</button>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoe vaak voelde je je mentaal uitgeput de laatste maand? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="1" onclick="lsChipClick(this)">1</button>
+              <button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="2" onclick="lsChipClick(this)">2</button>
+              <button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="3" onclick="lsChipClick(this)">3</button>
+              <button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="4" onclick="lsChipClick(this)">4</button>
+              <button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="5" onclick="lsChipClick(this)">5</button>
+              <button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="6" onclick="lsChipClick(this)">6</button>
+              <button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="7" onclick="lsChipClick(this)">7</button>
+              <button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="8" onclick="lsChipClick(this)">8</button>
+              <button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="9" onclick="lsChipClick(this)">9</button>
+              <button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="10" onclick="lsChipClick(this)">10</button>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label class="form-label">Hoe vaak nam je bewust tijd voor ontspanning? <span style="color:var(--muted);font-weight:400">(1–10)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
+              <button class="enq-chip" data-group="ls_ontspanning" data-val="1" onclick="lsChipClick(this)">1</button>
+              <button class="enq-chip" data-group="ls_ontspanning" data-val="2" onclick="lsChipClick(this)">2</button>
+              <button class="enq-chip" data-group="ls_ontspanning" data-val="3" onclick="lsChipClick(this)">3</button>
+              <button class="enq-chip" data-group="ls_ontspanning" data-val="4" onclick="lsChipClick(this)">4</button>
+              <button class="enq-chip" data-group="ls_ontspanning" data-val="5" onclick="lsChipClick(this)">5</button>
+              <button class="enq-chip" data-group="ls_ontspanning" data-val="6" onclick="lsChipClick(this)">6</button>
+              <button class="enq-chip" data-group="ls_ontspanning" data-val="7" onclick="lsChipClick(this)">7</button>
+              <button class="enq-chip" data-group="ls_ontspanning" data-val="8" onclick="lsChipClick(this)">8</button>
+              <button class="enq-chip" data-group="ls_ontspanning" data-val="9" onclick="lsChipClick(this)">9</button>
+              <button class="enq-chip" data-group="ls_ontspanning" data-val="10" onclick="lsChipClick(this)">10</button>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Grootste bronnen van stress? <span style="color:var(--muted);font-weight:400">(meerdere mogelijk)</span></label>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;">
+              <button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Relationeel" onclick="lsChipClick(this)">Relationeel</button>
+              <button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Professioneel" onclick="lsChipClick(this)">Professioneel</button>
+              <button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Persoonlijke thema's" onclick="lsChipClick(this)">Persoonlijke thema's</button>
+              <button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Financieel" onclick="lsChipClick(this)">Financieel</button>
+              <button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Niet van toepassing" onclick="lsStressAndersToggle(this,'ls_stress_bronnen')">Niet van toepassing</button>
+              <button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Andere" onclick="lsStressAndersToggle(this,'ls_stress_bronnen')">Andere: namelijk…</button>
+            </div>
+            <div id="lsStressAndersWrap" style="display:none;margin-top:8px;">
+              <input type="text" id="lsStressAnders" placeholder="Omschrijf de andere bron van stress…" style="width:100%;"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- VOEDING section -->
         <div class="enq-section">
           <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">🍽️ VOEDING</div>
           <div style="margin-bottom:10px;">
@@ -694,6 +661,7 @@ textarea { resize: vertical; min-height: 58px; }
           </div>
         </div>
 
+        <!-- ALCOHOL/ROKEN/SOCIALE section -->
         <div class="enq-section">
           <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">🍺 ALCOHOL, ROKEN &amp; SOCIALE AGENDA</div>
           <div style="margin-bottom:10px;">
@@ -739,6 +707,7 @@ textarea { resize: vertical; min-height: 58px; }
           </div>
         </div>
 
+        <!-- SMARTPHONE section -->
         <div class="enq-section">
           <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">📱 SMARTPHONEGEDRAG</div>
           <div style="margin-bottom:10px;">
@@ -760,14 +729,33 @@ textarea { resize: vertical; min-height: 58px; }
 
         <div class="form-group">
           <label class="form-label">Extra opmerkingen</label>
-          <textarea id="lsNotities" placeholder="Vrije notities over lifestyle…" rows="2"></textarea>
+          <textarea id="lsNotities" placeholder="Vrije notities…" rows="2"></textarea>
         </div>
         <div id="lifestyleExtraSecties"></div>
         <button class="btn btn-primary" style="width:100%;" onclick="saveLifestyle()">Opslaan</button>
       </div>
       <div class="panel">
         <div class="panel-title">Overzicht</div>
-        <div id="lifestyleLijst"><div class="empty">Nog geen ingevulde lijsten.</div></div>
+        <div id="lifestyleLijst"><div class="empty">Nog geen enquêtes.</div></div>
+      </div>
+    </div>
+
+    <!-- SLAAP GRAFIEKEN -->
+    <div id="slaapChartsContainer" style="margin-top:16px;display:none;">
+      <div class="panel-title" style="margin-bottom:12px;">Slaap Grafieken</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cSchermtijd"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cSlaapConsistentie"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cOpstaanGevoel"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cNachtWakker"></canvas></div>
+        <div class="panel" style="padding:12px;">
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div>
+          <div id="slaapFactorenTekst" style="font-size:12px;line-height:1.8;color:var(--text);"></div>
+        </div>
+        <div class="panel" style="padding:12px;"><canvas id="cStressNiveau"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cMentaalUitgeput"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cOntspanning"></canvas></div>
       </div>
     </div>
     <!-- LEEFSTIJL GRAFIEKEN (alcohol, roken, sociaal, smartphone) -->
@@ -893,7 +881,7 @@ textarea { resize: vertical; min-height: 58px; }
 <!-- VIEW: CONNECTIES -->
 <div class="view" id="view-connecties">
   <div style="margin-bottom:20px;">
-    <h2 style="font-size:20px;font-weight:600;">Connecties</h2>
+    <h2 style="font-size:20px;font-weight:600;">Activiteiten</h2>
     <p style="font-size:13px;color:var(--muted);margin-top:4px;">Koppel externe apps en sporthorloges om je activiteiten automatisch te synchroniseren.</p>
   </div>
   <div class="connectie-grid">
@@ -1778,7 +1766,7 @@ function switchTab(name) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['training','lifestyle','gegevens'][i]===name));
   document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  if (name === 'lifestyle') { renderEnqueteLijst(); renderSlaapCharts(); renderExtraFormSecties('welzijn'); renderLifestyleLijst(); renderVoedingCharts(); renderLeefstijlCharts(); initLsDatum(); renderExtraFormSecties('lifestyle'); }
+  if (name === 'lifestyle') { renderLifestyleLijst(); renderSlaapCharts(); renderVoedingCharts(); renderLeefstijlCharts(); initLsDatum(); renderExtraFormSecties('lifestyle'); }
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -2195,6 +2183,12 @@ function enqStressAndersToggle(btn, group) {
   if (wrap) wrap.style.display = (enqState[group]||[]).includes('Andere') ? '' : 'none';
 }
 
+function lsStressAndersToggle(btn, group) {
+  lsChipClick(btn);
+  const wrap = document.getElementById('lsStressAndersWrap');
+  if (wrap) wrap.style.display = (lsState[group]||[]).includes('Andere') ? '' : 'none';
+}
+
 function saveEnquete() {
   const datum = document.getElementById('enqDatum')?.value;
   if (!datum) return showToast('Vul een datum in.', 'error');
@@ -2256,9 +2250,9 @@ function deleteEnquete(id) {
 // ── SLAAP & STRESS GRAFIEKEN ─────────────────────────────────────────
 let slaapCharts = {};
 function renderSlaapCharts() {
-  const list = getEnquetes().filter(e =>
+  const list = getLifestyles().filter(e =>
     e.slaap_kwaliteit || e.schermtijd || e.slaap_consistentie || e.opstaan_gevoel || e.nacht_wakker || e.slaap_factoren ||
-    e.stress_niveau || e.mentaal_uitgeput || e.ontspanning
+    e.stress_niveau || e.mentaal_uitgeput || e.ontspanning_score
   ).slice().reverse();
   const container = document.getElementById('slaapChartsContainer');
   if (!container) return;
@@ -2274,7 +2268,7 @@ function renderSlaapCharts() {
     { id:'cNachtWakker', label:"Wakker 's nachts (keer)", data:list.map(e=>e.nacht_wakker?parseInt(e.nacht_wakker):null), color:'#e63946', yMin:0, yMax:6, yLabels:['0','1×','2×','3×','4×','5×','>5×'] },
     { id:'cStressNiveau', label:'Stressniveau (1–10)', data:list.map(e=>e.stress_niveau?parseInt(e.stress_niveau):null), color:'#e63946', yMin:1, yMax:10 },
     { id:'cMentaalUitgeput', label:'Mentale uitputting (1–10)', data:list.map(e=>e.mentaal_uitgeput?parseInt(e.mentaal_uitgeput):null), color:'#f4a261', yMin:1, yMax:10 },
-    { id:'cOntspanning', label:'Ontspanning (1–10)', data:list.map(e=>e.ontspanning?parseInt(e.ontspanning):null), color:'#6EF08C', yMin:1, yMax:10 }
+    { id:'cOntspanning', label:'Ontspanning (1–10)', data:list.map(e=>e.ontspanning_score?parseInt(e.ontspanning_score):null), color:'#6EF08C', yMin:1, yMax:10 }
   ];
   chartDefs.forEach(def => {
     const canvas = document.getElementById(def.id); if (!canvas) return;
@@ -2404,12 +2398,23 @@ function lsChipClick(btn) {
 function saveLifestyle() {
   const datum = document.getElementById('lsDatum').value;
   if (!datum) return showToast('Kies een datum.', 'error');
-  const defaultKeys = ['ls_voeding_kwaliteit','ls_cravings','ls_cafeine','ls_water_gevoel','ls_groenten_gevoel','ls_vlees_vis','ls_alcohol_gevoel','ls_roken','ls_sociale_agenda','ls_smartphone'];
+  const defaultKeys = ['ls_slaap_kwaliteit','ls_schermtijd','ls_slaap_consistentie','ls_opstaan_gevoel','ls_nacht_wakker','ls_stress_niveau','ls_mentaal_uitgeput','ls_ontspanning','ls_stress_bronnen','ls_voeding_kwaliteit','ls_cravings','ls_cafeine','ls_water_gevoel','ls_groenten_gevoel','ls_vlees_vis','ls_alcohol_gevoel','ls_roken','ls_sociale_agenda','ls_smartphone'];
   const extraFields = {};
   Object.keys(lsState).forEach(k => { if (!defaultKeys.includes(k)) extraFields[k] = lsState[k]; });
   const entry = {
     id: Date.now(),
     datum,
+    slaap_kwaliteit: lsState.ls_slaap_kwaliteit || null,
+    schermtijd: lsState.ls_schermtijd || null,
+    slaap_consistentie: lsState.ls_slaap_consistentie || null,
+    opstaan_gevoel: lsState.ls_opstaan_gevoel || null,
+    nacht_wakker: lsState.ls_nacht_wakker || null,
+    slaap_factoren: document.getElementById('lsSlaapFactoren')?.value?.trim() || null,
+    stress_niveau: lsState.ls_stress_niveau != null ? parseInt(lsState.ls_stress_niveau) : null,
+    mentaal_uitgeput: lsState.ls_mentaal_uitgeput != null ? parseInt(lsState.ls_mentaal_uitgeput) : null,
+    ontspanning_score: lsState.ls_ontspanning != null ? parseInt(lsState.ls_ontspanning) : null,
+    stress_bronnen: lsState.ls_stress_bronnen || [],
+    stress_anders: (lsState.ls_stress_bronnen||[]).includes('Andere') ? (document.getElementById('lsStressAnders')?.value?.trim()||null) : null,
     voeding_kwaliteit: lsState.ls_voeding_kwaliteit != null ? parseInt(lsState.ls_voeding_kwaliteit) : null,
     cravings: lsState.ls_cravings != null ? parseInt(lsState.ls_cravings) : null,
     cafeine: lsState.ls_cafeine != null ? parseInt(lsState.ls_cafeine) : null,
@@ -2430,9 +2435,14 @@ function saveLifestyle() {
   document.querySelectorAll('#tab-lifestyle .enq-chip').forEach(b => b.classList.remove('active'));
   document.getElementById('lsNotities').value = '';
   document.getElementById('lsDatum').value = today();
+  const sf = document.getElementById('lsSlaapFactoren'); if(sf) sf.value = '';
+  const saw = document.getElementById('lsStressAndersWrap'); if(saw) saw.style.display='none';
+  const sa = document.getElementById('lsStressAnders'); if(sa) sa.value='';
   renderLifestyleLijst();
+  renderSlaapCharts();
   renderVoedingCharts();
   renderLeefstijlCharts();
+  renderExtraFormSecties('lifestyle');
   showToast('Lifestyle opgeslagen', 'success');
 }
 
