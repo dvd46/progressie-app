@@ -320,6 +320,7 @@ textarea { resize: vertical; min-height: 58px; }
     <nav class="sidebar-nav" id="clientNav" style="display:none;">
       <button class="nav-btn active" id="cNavProfiel" onclick="showClientView('client-profiel')">Mijn Profiel</button>
       <button class="nav-btn" id="cNavLeaderboard" onclick="showClientView('client-leaderboard')">Leaderboard</button>
+      <button class="nav-btn" id="cNavLifestyle" onclick="showClientView('client-lifestyle')">Lifestyle</button>
       <button class="nav-btn" id="cNavConnecties" onclick="showClientView('connecties')">Activiteiten</button>
     </nav>
     <nav class="sidebar-nav" id="memberNav" style="display:none;">
@@ -1139,6 +1140,24 @@ textarea { resize: vertical; min-height: 58px; }
   </div>
 </div>
 
+<!-- VIEW: CLIENT LIFESTYLE -->
+<div class="view" id="view-client-lifestyle">
+  <h2 style="font-size:20px;font-weight:600;margin-bottom:8px;">Lifestyle Enquête</h2>
+  <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
+    <div class="panel" id="clientLifestyleForm">
+      <div class="form-group"><label class="form-label">Datum</label><input type="date" id="lsDatum2" onchange="document.getElementById('lsDatum').value=this.value"/></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Scroll omlaag om alle vragen te beantwoorden.</div>
+      <div id="clientLifestyleFormInner"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="saveClientLifestyle()">Opslaan</button>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Mijn enquêtes</div>
+      <div id="clientLifestyleLijst"><div class="empty">Nog geen enquêtes.</div></div>
+    </div>
+  </div>
+</div>
+
 <!-- VIEW: CLIENT LEADERBOARD -->
 <div class="view" id="view-client-leaderboard">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
@@ -1712,6 +1731,7 @@ async function openProfiel(id) {
   initEnqForm();
   renderEnqueteLijst();
   document.getElementById('metingDatum').value = today();
+  loadLifestyles(AKid);
 }
 
 function getK() { return klanten.find(c => c.id === AKid); }
@@ -1766,7 +1786,7 @@ function switchTab(name) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['training','lifestyle','gegevens'][i]===name));
   document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  if (name === 'lifestyle') { renderLifestyleLijst(); renderSlaapCharts(); renderVoedingCharts(); renderLeefstijlCharts(); initLsDatum(); renderExtraFormSecties('lifestyle'); }
+  if (name === 'lifestyle') { initLsDatum(); renderExtraFormSecties('lifestyle'); }
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -2366,13 +2386,48 @@ function renderVoedingCharts() {
   });
 }
 
+function syncLsDatum2() {
+  const d2 = document.getElementById('lsDatum2');
+  const d1 = document.getElementById('lsDatum');
+  if (d2 && d1) d1.value = d2.value || today();
+}
+async function saveClientLifestyle() {
+  const d2 = document.getElementById('lsDatum2');
+  if (d2) document.getElementById('lsDatum').value = d2.value || today();
+  await saveLifestyle();
+  renderClientLifestyleLijst();
+}
+function renderClientLifestyleLijst() {
+  const el = document.getElementById('clientLifestyleLijst'); if (!el) return;
+  const list = getLifestyles();
+  if (!list.length) { el.innerHTML = '<div class="empty">Nog geen enquêtes.</div>'; return; }
+  el.innerHTML = list.slice(0, 10).map(e => `
+    <div class="opm-card">
+      <div class="opm-meta">
+        <span class="opm-datum">${e.datum}</span>
+      </div>
+      ${e.slaap_kwaliteit != null ? `<div class="opm-tekst"><span style="font-size:10px;font-weight:700;color:#6EF08C;margin-right:4px;">SLAAP</span>kwaliteit: ${e.slaap_kwaliteit}/10</div>` : ''}
+      ${e.stress_niveau != null ? `<div class="opm-tekst"><span style="font-size:10px;font-weight:700;color:#e63946;margin-right:4px;">STRESS</span>${e.stress_niveau}/10</div>` : ''}
+      ${e.voeding_kwaliteit != null ? `<div class="opm-tekst"><span style="font-size:10px;font-weight:700;color:var(--accent);margin-right:4px;">VOEDING</span>${e.voeding_kwaliteit}/10</div>` : ''}
+    </div>`).join('');
+}
+
 // ══════════════════════════════════════════════════════════════════════
 //  LIFESTYLE TAB
 // ══════════════════════════════════════════════════════════════════════
 let lsState = {};
 
-function getLifestyles() { return JSON.parse(localStorage.getItem(`ls_${AKid}`) || '[]'); }
-function saveLifestyles(list) { localStorage.setItem(`ls_${AKid}`, JSON.stringify(list)); }
+let lifestyles = [];
+function getLifestyles() { return lifestyles; }
+async function loadLifestyles(klant_id) {
+  const { data } = await sb.from('lifestyle_enquetes').select('*').eq('klant_id', klant_id).order('datum', { ascending: false });
+  lifestyles = (data || []).map(r => ({ id: r.id, datum: r.datum, ...r.data }));
+  renderLifestyleLijst();
+  renderSlaapCharts();
+  renderVoedingCharts();
+  renderLeefstijlCharts();
+  renderClientLifestyleLijst();
+}
 
 function initLsDatum() {
   const el = document.getElementById('lsDatum');
@@ -2395,7 +2450,7 @@ function lsChipClick(btn) {
   );
 }
 
-function saveLifestyle() {
+async function saveLifestyle() {
   const datum = document.getElementById('lsDatum').value;
   if (!datum) return showToast('Kies een datum.', 'error');
   const defaultKeys = ['ls_slaap_kwaliteit','ls_schermtijd','ls_slaap_consistentie','ls_opstaan_gevoel','ls_nacht_wakker','ls_stress_niveau','ls_mentaal_uitgeput','ls_ontspanning','ls_stress_bronnen','ls_voeding_kwaliteit','ls_cravings','ls_cafeine','ls_water_gevoel','ls_groenten_gevoel','ls_vlees_vis','ls_alcohol_gevoel','ls_roken','ls_sociale_agenda','ls_smartphone'];
@@ -2428,9 +2483,15 @@ function saveLifestyle() {
     notities: document.getElementById('lsNotities').value.trim() || null,
     ...extraFields
   };
-  const list = getLifestyles();
-  list.unshift(entry);
-  saveLifestyles(list);
+  const saveData = { ...entry };
+  delete saveData.id;
+  delete saveData.datum;
+  const { error } = await sb.from('lifestyle_enquetes').upsert(
+    { klant_id: AKid, datum, data: saveData },
+    { onConflict: 'klant_id,datum' }
+  );
+  if (error) { showToast('Fout bij opslaan: ' + error.message, 'error'); return; }
+  await loadLifestyles(AKid);
   lsState = {};
   document.querySelectorAll('#tab-lifestyle .enq-chip').forEach(b => b.classList.remove('active'));
   document.getElementById('lsNotities').value = '';
@@ -2438,10 +2499,6 @@ function saveLifestyle() {
   const sf = document.getElementById('lsSlaapFactoren'); if(sf) sf.value = '';
   const saw = document.getElementById('lsStressAndersWrap'); if(saw) saw.style.display='none';
   const sa = document.getElementById('lsStressAnders'); if(sa) sa.value='';
-  renderLifestyleLijst();
-  renderSlaapCharts();
-  renderVoedingCharts();
-  renderLeefstijlCharts();
   renderExtraFormSecties('lifestyle');
   showToast('Lifestyle opgeslagen', 'success');
 }
@@ -2480,9 +2537,10 @@ function renderLifestyleLijst() {
   }).join('');
 }
 
-function deleteLifestyle(id) {
-  saveLifestyles(getLifestyles().filter(e => e.id !== id));
-  renderLifestyleLijst();
+async function deleteLifestyle(id) {
+  const { error } = await sb.from('lifestyle_enquetes').delete().eq('id', id);
+  if (error) { showToast('Fout: ' + error.message, 'error'); return; }
+  await loadLifestyles(AKid);
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -3463,6 +3521,7 @@ async function changeMemberPassword() {
 // ══════════════════════════════════════════════════════════════════════
 async function initClientApp(user, klant) {
   currentKlant = klant;
+  AKid = klant.id;
   isClientMode = true;
   const { data: oefs } = await sb.from('oefeningen').select('*').order('naam');
   clientOefeningen = oefs || [];
@@ -3476,16 +3535,31 @@ async function initClientApp(user, klant) {
   document.getElementById('navUser').textContent = klant.voornaam + (klant.achternaam ? ' ' + klant.achternaam : '');
   showClientView('client-profiel');
   renderClientProfiel();
+  loadLifestyles(klant.id);
 }
 
 function showClientView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('#clientNav .nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
-  const nb = { 'client-profiel': 'cNavProfiel', 'client-leaderboard': 'cNavLeaderboard', 'connecties': 'cNavConnecties' }[name];
+  const nb = { 'client-profiel': 'cNavProfiel', 'client-leaderboard': 'cNavLeaderboard', 'client-lifestyle': 'cNavLifestyle', 'connecties': 'cNavConnecties' }[name];
   if (nb) document.getElementById(nb).classList.add('active');
   if (name === 'client-leaderboard') initClientLeaderboard();
   if (name === 'connecties') renderCoachConnecties();
+  if (name === 'client-lifestyle') {
+    const inner = document.getElementById('clientLifestyleFormInner');
+    const source = document.getElementById('tab-lifestyle');
+    if (inner && source) {
+      inner.innerHTML = '';
+      source.querySelectorAll('.enq-section').forEach(sec => {
+        inner.appendChild(sec.cloneNode(true));
+      });
+    }
+    initLsDatum();
+    const d2 = document.getElementById('lsDatum2');
+    if (d2) d2.value = today();
+    renderClientLifestyleLijst();
+  }
   if (window.innerWidth < 768) document.getElementById('mainNav').classList.remove('open');
 }
 

@@ -54,6 +54,16 @@ create table if not exists metingen (
   unique(klant_id, oefening_id, datum)
 );
 
+-- Lifestyle enquêtes
+create table if not exists lifestyle_enquetes (
+  id uuid default gen_random_uuid() primary key,
+  klant_id uuid references klanten(id) on delete cascade,
+  datum date not null,
+  data jsonb not null default '{}',
+  created_at timestamptz default now(),
+  unique(klant_id, datum)
+);
+
 -- Opmerkingen (welzijn)
 create table if not exists opmerkingen (
   id uuid default gen_random_uuid() primary key,
@@ -74,6 +84,7 @@ alter table coaches enable row level security;
 alter table klanten enable row level security;
 alter table metingen enable row level security;
 alter table opmerkingen enable row level security;
+alter table lifestyle_enquetes enable row level security;
 alter table oefeningen enable row level security;
 
 -- Coaches: eigen rij lezen/schrijven
@@ -151,6 +162,18 @@ create policy "opmerkingen_own" on opmerkingen
       where klanten.id = opmerkingen.klant_id
       and klanten.coach_id = auth.uid()
     )
+  );
+
+-- Lifestyle enquêtes: coaches kunnen alles lezen/schrijven voor hun klanten
+create policy "lifestyle_coaches_all" on lifestyle_enquetes
+  for all using (
+    exists (select 1 from coaches where coaches.id = auth.uid())
+  );
+
+-- Lifestyle enquêtes: klant kan eigen rijen lezen, invoegen, bijwerken en verwijderen
+create policy "lifestyle_self_all" on lifestyle_enquetes
+  for all using (
+    exists (select 1 from klanten where klanten.id = lifestyle_enquetes.klant_id and klanten.email = auth.email())
   );
 
 -- ── STANDAARD OEFENINGEN ────────────────────────────────────────────
