@@ -1466,6 +1466,13 @@ async function saveKlant() {
 async function openProfiel(id) {
   AKid = id; AOefId = null; AOefNaam = null;
   selSlaap = 0; selStress = 0;
+  lsState = {};
+  document.querySelectorAll('.enq-chip').forEach(b => b.classList.remove('selected'));
+  const lsD = document.getElementById('lsDatum'); if (lsD) lsD.value = today();
+  const lsN = document.getElementById('lsNotities'); if (lsN) lsN.value = '';
+  const lsSF = document.getElementById('lsSlaapFactoren'); if (lsSF) lsSF.value = '';
+  const lsSAW = document.getElementById('lsStressAndersWrap'); if (lsSAW) lsSAW.style.display = 'none';
+  const lsSA = document.getElementById('lsStressAnders'); if (lsSA) lsSA.value = '';
   if (mainChart) { mainChart.destroy(); mainChart = null; }
   showView('profiel');
   switchTab('training');
