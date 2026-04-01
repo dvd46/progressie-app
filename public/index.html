@@ -901,6 +901,40 @@ textarea { resize: vertical; min-height: 58px; }
       <div id="clientLifestyleLijst"><div class="empty">Nog geen enquêtes.</div></div>
     </div>
   </div>
+  <div id="slaapChartsContainer_c" style="margin-top:16px;display:none;">
+    <div class="panel-title" style="margin-bottom:12px;">Slaap Grafieken</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cSchermtijd_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cSlaapConsistentie_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cOpstaanGevoel_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cNachtWakker_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div><div id="slaapFactorenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+      <div class="panel" style="padding:12px;"><canvas id="cStressNiveau_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cMentaalUitgeput_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cOntspanning_c"></canvas></div>
+    </div>
+  </div>
+  <div id="leefstijlChartsContainer_c" style="margin-top:16px;display:none;">
+    <div class="panel-title" style="margin-bottom:12px;">Leefstijl Grafieken</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="panel" style="padding:12px;"><canvas id="cAlcoholGevoel_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cSocialeAgenda_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cSmartphone_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Rook- / vapegedrag</div><div id="rokenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+    </div>
+  </div>
+  <div id="voedingChartsContainer_c" style="margin-top:16px;display:none;">
+    <div class="panel-title" style="margin-bottom:12px;">Voeding Grafieken</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="panel" style="padding:12px;"><canvas id="cVoedingKwaliteit_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cCravings_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cCafeine_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cWaterGevoel_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cGroentenGevoel_c"></canvas></div>
+      <div class="panel" style="padding:12px;"><canvas id="cVleesVis_c"></canvas></div>
+    </div>
+  </div>
 </div>
 
 <!-- VIEW: CLIENT LEADERBOARD -->
@@ -2021,26 +2055,26 @@ function deleteEnquete(id) {
 
 // ── SLAAP & STRESS GRAFIEKEN ─────────────────────────────────────────
 let slaapCharts = {};
-function renderSlaapCharts() {
+function renderSlaapCharts(sfx = '') {
   const list = getLifestyles().filter(e =>
     e.slaap_kwaliteit || e.schermtijd || e.slaap_consistentie || e.opstaan_gevoel || e.nacht_wakker || e.slaap_factoren ||
     e.stress_niveau || e.mentaal_uitgeput || e.ontspanning_score
   ).slice().reverse();
-  const container = document.getElementById('slaapChartsContainer');
+  const container = document.getElementById('slaapChartsContainer' + sfx);
   if (!container) return;
   if (!list.length) { container.style.display = 'none'; return; }
   container.style.display = '';
   const labels = list.map(e => e.datum);
   const schermMap = {Nooit:0, Zelden:1, Soms:2, Vaak:3, Altijd:4};
   const chartDefs = [
-    { id:'cSlaapKwaliteit', label:'Slaapkwaliteit (1–10)', data:list.map(e=>e.slaap_kwaliteit?parseInt(e.slaap_kwaliteit):null), color:'#6EF08C', yMin:1, yMax:10 },
-    { id:'cSchermtijd', label:'Schermtijd voor slapen', data:list.map(e=>e.schermtijd!=null?schermMap[e.schermtijd]??null:null), color:'#f4a261', yMin:0, yMax:4, yLabels:['Nooit','Zelden','Soms','Vaak','Altijd'] },
-    { id:'cSlaapConsistentie', label:'Consistentie slaapschema (1–10)', data:list.map(e=>e.slaap_consistentie?parseInt(e.slaap_consistentie):null), color:'#4cc9f0', yMin:1, yMax:10 },
-    { id:'cOpstaanGevoel', label:'Gevoel bij opstaan (1–10)', data:list.map(e=>e.opstaan_gevoel?parseInt(e.opstaan_gevoel):null), color:'#a8dadc', yMin:1, yMax:10 },
-    { id:'cNachtWakker', label:"Wakker 's nachts (keer)", data:list.map(e=>e.nacht_wakker?parseInt(e.nacht_wakker):null), color:'#e63946', yMin:0, yMax:6, yLabels:['0','1×','2×','3×','4×','5×','>5×'] },
-    { id:'cStressNiveau', label:'Stressniveau (1–10)', data:list.map(e=>e.stress_niveau?parseInt(e.stress_niveau):null), color:'#e63946', yMin:1, yMax:10 },
-    { id:'cMentaalUitgeput', label:'Mentale uitputting (1–10)', data:list.map(e=>e.mentaal_uitgeput?parseInt(e.mentaal_uitgeput):null), color:'#f4a261', yMin:1, yMax:10 },
-    { id:'cOntspanning', label:'Ontspanning (1–10)', data:list.map(e=>e.ontspanning_score?parseInt(e.ontspanning_score):null), color:'#6EF08C', yMin:1, yMax:10 }
+    { id:'cSlaapKwaliteit'+sfx, label:'Slaapkwaliteit (1–10)', data:list.map(e=>e.slaap_kwaliteit?parseInt(e.slaap_kwaliteit):null), color:'#6EF08C', yMin:1, yMax:10 },
+    { id:'cSchermtijd'+sfx, label:'Schermtijd voor slapen', data:list.map(e=>e.schermtijd!=null?schermMap[e.schermtijd]??null:null), color:'#f4a261', yMin:0, yMax:4, yLabels:['Nooit','Zelden','Soms','Vaak','Altijd'] },
+    { id:'cSlaapConsistentie'+sfx, label:'Consistentie slaapschema (1–10)', data:list.map(e=>e.slaap_consistentie?parseInt(e.slaap_consistentie):null), color:'#4cc9f0', yMin:1, yMax:10 },
+    { id:'cOpstaanGevoel'+sfx, label:'Gevoel bij opstaan (1–10)', data:list.map(e=>e.opstaan_gevoel?parseInt(e.opstaan_gevoel):null), color:'#a8dadc', yMin:1, yMax:10 },
+    { id:'cNachtWakker'+sfx, label:"Wakker 's nachts (keer)", data:list.map(e=>e.nacht_wakker?parseInt(e.nacht_wakker):null), color:'#e63946', yMin:0, yMax:6, yLabels:['0','1×','2×','3×','4×','5×','>5×'] },
+    { id:'cStressNiveau'+sfx, label:'Stressniveau (1–10)', data:list.map(e=>e.stress_niveau?parseInt(e.stress_niveau):null), color:'#e63946', yMin:1, yMax:10 },
+    { id:'cMentaalUitgeput'+sfx, label:'Mentale uitputting (1–10)', data:list.map(e=>e.mentaal_uitgeput?parseInt(e.mentaal_uitgeput):null), color:'#f4a261', yMin:1, yMax:10 },
+    { id:'cOntspanning'+sfx, label:'Ontspanning (1–10)', data:list.map(e=>e.ontspanning_score?parseInt(e.ontspanning_score):null), color:'#6EF08C', yMin:1, yMax:10 }
   ];
   chartDefs.forEach(def => {
     const canvas = document.getElementById(def.id); if (!canvas) return;
@@ -2058,25 +2092,25 @@ function renderSlaapCharts() {
   const factoren = list.filter(e => e.slaap_factoren).slice(-5).reverse().map(e =>
     `<div style="margin-bottom:8px;"><span style="color:var(--muted);font-size:10px;">${e.datum}</span><br><span style="font-size:12px;">${e.slaap_factoren}</span></div>`
   );
-  const felm = document.getElementById('slaapFactorenTekst');
+  const felm = document.getElementById('slaapFactorenTekst' + sfx);
   if (felm) felm.innerHTML = factoren.length ? factoren.join('') : '<span style="color:var(--muted);font-size:12px;">Nog geen factoren ingevuld.</span>';
 }
 
 // ── LEEFSTIJL GRAFIEKEN (alcohol, roken, sociaal, smartphone) ────────
 let leefstijlCharts = {};
-function renderLeefstijlCharts() {
+function renderLeefstijlCharts(sfx = '') {
   const list = getLifestyles().filter(e =>
     e.alcohol_gevoel != null || e.sociale_agenda != null || e.smartphone != null || e.roken
   ).slice().reverse();
-  const container = document.getElementById('leefstijlChartsContainer');
+  const container = document.getElementById('leefstijlChartsContainer' + sfx);
   if (!container) return;
   if (!list.length) { container.style.display = 'none'; return; }
   container.style.display = '';
   const labels = list.map(e => e.datum);
   const chartDefs = [
-    { id:'cAlcoholGevoel', label:'Gevoel alcoholconsumptie (1–10)', data:list.map(e=>e.alcohol_gevoel??null), color:'#f4a261', yMin:1, yMax:10 },
-    { id:'cSocialeAgenda', label:'Sociale agenda (1–10)', data:list.map(e=>e.sociale_agenda??null), color:'#6EF08C', yMin:1, yMax:10 },
-    { id:'cSmartphone', label:'Smartphonegedrag (1–10)', data:list.map(e=>e.smartphone??null), color:'#4cc9f0', yMin:1, yMax:10 }
+    { id:'cAlcoholGevoel'+sfx, label:'Gevoel alcoholconsumptie (1–10)', data:list.map(e=>e.alcohol_gevoel??null), color:'#f4a261', yMin:1, yMax:10 },
+    { id:'cSocialeAgenda'+sfx, label:'Sociale agenda (1–10)', data:list.map(e=>e.sociale_agenda??null), color:'#6EF08C', yMin:1, yMax:10 },
+    { id:'cSmartphone'+sfx, label:'Smartphonegedrag (1–10)', data:list.map(e=>e.smartphone??null), color:'#4cc9f0', yMin:1, yMax:10 }
   ];
   chartDefs.forEach(def => {
     const canvas = document.getElementById(def.id); if (!canvas) return;
@@ -2091,22 +2125,21 @@ function renderLeefstijlCharts() {
       options:{ responsive:true, plugins:{ legend:{display:false}, title:{display:true,text:def.label,color:'#ccc',font:{size:11}} }, scales:{ x:{ticks:{color:'#888',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}}, y:yOpts } }
     });
   });
-  // Roken: toon als tekst per datum
   const rokenItems = list.filter(e => e.roken).slice(-5).reverse().map(e =>
     `<div style="margin-bottom:6px;"><span style="color:var(--muted);font-size:10px;">${e.datum}</span><br><span style="font-size:12px;">${e.roken}</span></div>`
   );
-  const rel = document.getElementById('rokenTekst');
+  const rel = document.getElementById('rokenTekst' + sfx);
   if (rel) rel.innerHTML = rokenItems.length ? rokenItems.join('') : '<span style="color:var(--muted);font-size:12px;">Nog geen gegevens.</span>';
 }
 
 // ── VOEDING GRAFIEKEN ────────────────────────────────────────────────
 let voedingCharts = {};
-function renderVoedingCharts() {
+function renderVoedingCharts(sfx = '') {
   const list = getLifestyles().filter(e =>
     e.voeding_kwaliteit != null || e.cravings != null || e.cafeine != null ||
     e.water_gevoel != null || e.groenten_gevoel != null || e.vlees_vis != null
   ).slice().reverse();
-  const container = document.getElementById('voedingChartsContainer');
+  const container = document.getElementById('voedingChartsContainer' + sfx);
   if (!container) return;
   if (!list.length) { container.style.display = 'none'; return; }
   container.style.display = '';
@@ -2116,12 +2149,12 @@ function renderVoedingCharts() {
   const groLbl = ['Te weinig','Voldoende','Goed','Uitstekend'];
   const vleesLbl = ['Geen','1–2×/week','3–4×/week','Dagelijks'];
   const chartDefs = [
-    { id:'cVoedingKwaliteit', label:'Voedingskwaliteit (1–10)', data:list.map(e=>e.voeding_kwaliteit??null), color:'#6EF08C', yMin:1, yMax:10 },
-    { id:'cCravings', label:'Cravings', data:list.map(e=>e.cravings??null), color:'#f4a261', yMin:0, yMax:4, yLabels:cravingsLbl },
-    { id:'cCafeine', label:'Cafeïne per dag', data:list.map(e=>e.cafeine??null), color:'#8B5E3C', yMin:0, yMax:4, yLabels:cafeineLbl },
-    { id:'cWaterGevoel', label:'Waterconsumptie gevoel (1–10)', data:list.map(e=>e.water_gevoel??null), color:'#4cc9f0', yMin:1, yMax:10 },
-    { id:'cGroentenGevoel', label:'Groenten & fruit', data:list.map(e=>e.groenten_gevoel??null), color:'#a8dadc', yMin:0, yMax:3, yLabels:groLbl },
-    { id:'cVleesVis', label:'Vlees & vis consumptie', data:list.map(e=>e.vlees_vis??null), color:'#e63946', yMin:0, yMax:3, yLabels:vleesLbl }
+    { id:'cVoedingKwaliteit'+sfx, label:'Voedingskwaliteit (1–10)', data:list.map(e=>e.voeding_kwaliteit??null), color:'#6EF08C', yMin:1, yMax:10 },
+    { id:'cCravings'+sfx, label:'Cravings', data:list.map(e=>e.cravings??null), color:'#f4a261', yMin:0, yMax:4, yLabels:cravingsLbl },
+    { id:'cCafeine'+sfx, label:'Cafeïne per dag', data:list.map(e=>e.cafeine??null), color:'#8B5E3C', yMin:0, yMax:4, yLabels:cafeineLbl },
+    { id:'cWaterGevoel'+sfx, label:'Waterconsumptie gevoel (1–10)', data:list.map(e=>e.water_gevoel??null), color:'#4cc9f0', yMin:1, yMax:10 },
+    { id:'cGroentenGevoel'+sfx, label:'Groenten & fruit', data:list.map(e=>e.groenten_gevoel??null), color:'#a8dadc', yMin:0, yMax:3, yLabels:groLbl },
+    { id:'cVleesVis'+sfx, label:'Vlees & vis consumptie', data:list.map(e=>e.vlees_vis??null), color:'#e63946', yMin:0, yMax:3, yLabels:vleesLbl }
   ];
   chartDefs.forEach(def => {
     const canvas = document.getElementById(def.id); if (!canvas) return;
@@ -2179,9 +2212,9 @@ async function loadLifestyles(klant_id) {
   const { data } = await sb.from('lifestyle_enquetes').select('*').eq('klant_id', klant_id).order('datum', { ascending: false });
   lifestyles = (data || []).map(r => ({ id: r.id, datum: r.datum, ...r.data }));
   renderLifestyleLijst();
-  renderSlaapCharts();
-  renderVoedingCharts();
-  renderLeefstijlCharts();
+  renderSlaapCharts(); renderSlaapCharts('_c');
+  renderVoedingCharts(); renderVoedingCharts('_c');
+  renderLeefstijlCharts(); renderLeefstijlCharts('_c');
   renderClientLifestyleLijst();
 }
 
