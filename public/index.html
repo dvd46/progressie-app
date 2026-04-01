@@ -894,21 +894,21 @@ textarea { resize: vertical; min-height: 58px; }
 
   <div id="clientLsTabEnquete">
     <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
-    <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
-      <div class="panel" id="clientLifestyleForm">
-        <div class="form-group"><label class="form-label">Datum</label><input type="date" id="lsDatum2" onchange="document.getElementById('lsDatum').value=this.value"/></div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Scroll omlaag om alle vragen te beantwoorden.</div>
-        <div id="clientLifestyleFormInner"></div>
-        <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="saveClientLifestyle()">Opslaan</button>
-      </div>
-      <div class="panel">
-        <div class="panel-title">Mijn enquêtes</div>
-        <div id="clientLifestyleLijst"><div class="empty">Nog geen enquêtes.</div></div>
-      </div>
+    <div class="panel" id="clientLifestyleForm" style="max-width:720px;">
+      <div class="form-group"><label class="form-label">Datum</label><input type="date" id="lsDatum2" onchange="document.getElementById('lsDatum').value=this.value"/></div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Scroll omlaag om alle vragen te beantwoorden.</div>
+      <div id="clientLifestyleFormInner"></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="saveClientLifestyle()">Opslaan</button>
     </div>
   </div>
 
   <div id="clientLsTabResultaten" style="display:none;">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+      <span style="font-size:13px;font-weight:600;color:var(--muted);align-self:center;margin-right:4px;">Toon:</span>
+      <button class="enq-chip selected" id="filterSlaap_c" onclick="toggleClientLsFilter('slaap')">🌙 Slaap &amp; Stress</button>
+      <button class="enq-chip selected" id="filterVoeding_c" onclick="toggleClientLsFilter('voeding')">🍽️ Voeding</button>
+      <button class="enq-chip selected" id="filterLeefstijl_c" onclick="toggleClientLsFilter('leefstijl')">🌿 Leefstijl</button>
+    </div>
     <div id="slaapChartsContainer_c" style="margin-bottom:16px;display:none;">
       <div class="panel-title" style="margin-bottom:12px;">Slaap &amp; Stress</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
@@ -3409,19 +3409,30 @@ async function initClientApp(user, klant) {
   loadLifestyles(klant.id);
 }
 
+let clientLsFilter = { slaap: true, voeding: true, leefstijl: true };
+
+function toggleClientLsFilter(cat) {
+  clientLsFilter[cat] = !clientLsFilter[cat];
+  document.getElementById('filter' + cat.charAt(0).toUpperCase() + cat.slice(1) + '_c').classList.toggle('selected', clientLsFilter[cat]);
+  applyClientLsFilter();
+}
+
+function applyClientLsFilter() {
+  // Re-render only visible sections so charts size correctly
+  if (clientLsFilter.slaap) { renderSlaapCharts('_c'); } else { const c = document.getElementById('slaapChartsContainer_c'); if (c) c.style.display = 'none'; }
+  if (clientLsFilter.voeding) { renderVoedingCharts('_c'); } else { const c = document.getElementById('voedingChartsContainer_c'); if (c) c.style.display = 'none'; }
+  if (clientLsFilter.leefstijl) { renderLeefstijlCharts('_c'); } else { const c = document.getElementById('leefstijlChartsContainer_c'); if (c) c.style.display = 'none'; }
+  const hasData = getLifestyles().length > 0;
+  document.getElementById('clientLsGeenData').style.display = hasData ? 'none' : '';
+}
+
 function switchClientLsTab(tab) {
   const isResultaten = tab === 'resultaten';
   document.getElementById('clientLsTabEnquete').style.display = isResultaten ? 'none' : '';
   document.getElementById('clientLsTabResultaten').style.display = isResultaten ? '' : 'none';
   document.getElementById('cLsTabEnquete').classList.toggle('active', !isResultaten);
   document.getElementById('cLsTabResultaten').classList.toggle('active', isResultaten);
-  if (isResultaten) {
-    renderSlaapCharts('_c');
-    renderVoedingCharts('_c');
-    renderLeefstijlCharts('_c');
-    const hasData = getLifestyles().length > 0;
-    document.getElementById('clientLsGeenData').style.display = hasData ? 'none' : '';
-  }
+  if (isResultaten) applyClientLsFilter();
 }
 
 function showClientView(name) {
