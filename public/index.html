@@ -453,7 +453,7 @@ textarea { resize: vertical; min-height: 58px; }
 
         <div class="enq-section">
           <div style="font-size:13px;font-weight:700;color:#6EF08C;margin-bottom:16px;">&#127769; SLAAP</div>
-          <div style="display:flex;justify-content:center;margin-bottom:20px;">
+          <div class="sleep-score-ring-wrap" style="display:none;justify-content:center;margin-bottom:20px;">
             <svg class="sleep-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
               <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
               <circle class="sleep-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12"
@@ -1547,6 +1547,7 @@ async function openProfiel(id) {
   AKid = id; AOefId = null; AOefNaam = null;
   selSlaap = 0; selStress = 0;
   lsState = {};
+  hideSlaapRings();
   document.querySelectorAll('.enq-chip').forEach(b => b.classList.remove('selected'));
   const lsD = document.getElementById('lsDatum'); if (lsD) lsD.value = today();
   const lsN = document.getElementById('lsNotities'); if (lsN) lsN.value = '';
@@ -2290,15 +2291,7 @@ function initLsDatum() {
   if (el && !el.value) el.value = today();
 }
 
-function updateSlaapRings() {
-  const entry = {
-    slaap_kwaliteit: lsState.ls_slaap_kwaliteit,
-    schermtijd: lsState.ls_schermtijd,
-    slaap_consistentie: lsState.ls_slaap_consistentie,
-    opstaan_gevoel: lsState.ls_opstaan_gevoel,
-    nacht_wakker: lsState.ls_nacht_wakker,
-  };
-  const score = calcSlaapScore(entry);
+function showSlaapRings(score) {
   const circumference = 364.42;
   const color = score == null ? '#444' : score <= 40 ? '#e63946' : score <= 70 ? '#f4a261' : '#6EF08C';
   const offset = score == null ? circumference : +(circumference * (1 - score / 100)).toFixed(2);
@@ -2307,8 +2300,19 @@ function updateSlaapRings() {
     const txt = svg.querySelector('.sleep-ring-score');
     if (prog) { prog.setAttribute('stroke-dashoffset', offset); prog.setAttribute('stroke', color); }
     if (txt) txt.textContent = score != null ? score : '–';
+    svg.closest('.sleep-score-ring-wrap').style.display = 'flex';
   });
 }
+function hideSlaapRings() {
+  document.querySelectorAll('.sleep-score-ring-wrap').forEach(w => w.style.display = 'none');
+  document.querySelectorAll('.sleep-ring-progress').forEach(p => {
+    p.setAttribute('stroke-dashoffset', '364.42');
+    p.setAttribute('stroke', '#444');
+  });
+  document.querySelectorAll('.sleep-ring-score').forEach(t => t.textContent = '–');
+}
+// keep name for backward-compat calls
+function updateSlaapRings() { hideSlaapRings(); }
 
 function lsChipClick(btn) {
   const { group, val } = btn.dataset;
@@ -2324,7 +2328,6 @@ function lsChipClick(btn) {
       ? (Array.isArray(lsState[group]) && lsState[group].includes(b.dataset.val))
       : lsState[group] === b.dataset.val)
   );
-  updateSlaapRings();
 }
 
 async function saveLifestyle() {
@@ -2368,6 +2371,7 @@ async function saveLifestyle() {
     { onConflict: 'klant_id,datum' }
   );
   if (error) { showToast('Fout bij opslaan: ' + error.message, 'error'); return; }
+  showSlaapRings(calcSlaapScore(entry));
   await loadLifestyles(AKid);
   lsState = {};
   document.querySelectorAll('#tab-lifestyle .enq-chip, #clientLifestyleFormInner .enq-chip').forEach(b => b.classList.remove('selected'));
@@ -2377,7 +2381,6 @@ async function saveLifestyle() {
   const saw = document.getElementById('lsStressAndersWrap'); if(saw) saw.style.display='none';
   const sa = document.getElementById('lsStressAnders'); if(sa) sa.value='';
   renderExtraFormSecties('lifestyle');
-  updateSlaapRings();
   showToast('Lifestyle opgeslagen', 'success');
 }
 
@@ -2485,7 +2488,7 @@ function loadLifestyleIntoForm(id) {
   }
   const formEl = document.getElementById('clientLifestyleForm') || document.querySelector('#tab-lifestyle .panel');
   if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  updateSlaapRings();
+  showSlaapRings(calcSlaapScore(entry));
 }
 
 // ══════════════════════════════════════════════════════════════════════
