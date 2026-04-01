@@ -2148,8 +2148,12 @@ function renderClientLifestyleLijst() {
   if (!list.length) { el.innerHTML = '<div class="empty">Nog geen enquêtes.</div>'; return; }
   el.innerHTML = list.slice(0, 10).map(e => `
     <div class="opm-card">
-      <div class="opm-meta">
+      <div class="opm-meta" style="display:flex;justify-content:space-between;align-items:center;">
         <span class="opm-datum">${e.datum}</span>
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-sm" style="padding:2px 8px;background:var(--panel);border:1px solid var(--border);color:var(--text);" onclick="loadLifestyleIntoForm('${e.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" style="padding:2px 8px;" onclick="deleteLifestyle('${e.id}')">×</button>
+        </div>
       </div>
       ${e.slaap_kwaliteit != null ? `<div class="opm-tekst"><span style="font-size:10px;font-weight:700;color:#6EF08C;margin-right:4px;">SLAAP</span>kwaliteit: ${e.slaap_kwaliteit}/10</div>` : ''}
       ${e.stress_niveau != null ? `<div class="opm-tekst"><span style="font-size:10px;font-weight:700;color:#e63946;margin-right:4px;">STRESS</span>${e.stress_niveau}/10</div>` : ''}
@@ -2272,7 +2276,10 @@ function renderLifestyleLijst() {
     return `<div class="opm-item" style="margin-bottom:10px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <span class="opm-datum">${fmtD(e.datum)}</span>
-        <button class="btn btn-danger btn-sm" style="padding:2px 8px;" onclick="deleteLifestyle(${e.id})">×</button>
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-sm" style="padding:2px 8px;background:var(--panel);border:1px solid var(--border);color:var(--text);" onclick="loadLifestyleIntoForm('${e.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" style="padding:2px 8px;" onclick="deleteLifestyle('${e.id}')">×</button>
+        </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
         ${tags.map(t => `<span class="tag tag-gray" style="font-size:11px;">${t}</span>`).join('')}
@@ -2286,6 +2293,55 @@ async function deleteLifestyle(id) {
   const { error } = await sb.from('lifestyle_enquetes').delete().eq('id', id);
   if (error) { showToast('Fout: ' + error.message, 'error'); return; }
   await loadLifestyles(AKid);
+}
+
+function loadLifestyleIntoForm(id) {
+  const entry = lifestyles.find(e => String(e.id) === String(id));
+  if (!entry) return;
+  const datum1 = document.getElementById('lsDatum');
+  if (datum1) datum1.value = entry.datum;
+  const datum2 = document.getElementById('lsDatum2');
+  if (datum2) datum2.value = entry.datum;
+  lsState = {
+    ls_slaap_kwaliteit: entry.slaap_kwaliteit != null ? String(entry.slaap_kwaliteit) : null,
+    ls_schermtijd: entry.schermtijd || null,
+    ls_slaap_consistentie: entry.slaap_consistentie != null ? String(entry.slaap_consistentie) : null,
+    ls_opstaan_gevoel: entry.opstaan_gevoel != null ? String(entry.opstaan_gevoel) : null,
+    ls_nacht_wakker: entry.nacht_wakker != null ? String(entry.nacht_wakker) : null,
+    ls_stress_niveau: entry.stress_niveau != null ? String(entry.stress_niveau) : null,
+    ls_mentaal_uitgeput: entry.mentaal_uitgeput != null ? String(entry.mentaal_uitgeput) : null,
+    ls_ontspanning: entry.ontspanning_score != null ? String(entry.ontspanning_score) : null,
+    ls_stress_bronnen: Array.isArray(entry.stress_bronnen) ? entry.stress_bronnen : [],
+    ls_voeding_kwaliteit: entry.voeding_kwaliteit != null ? String(entry.voeding_kwaliteit) : null,
+    ls_cravings: entry.cravings != null ? String(entry.cravings) : null,
+    ls_cafeine: entry.cafeine != null ? String(entry.cafeine) : null,
+    ls_water_gevoel: entry.water_gevoel != null ? String(entry.water_gevoel) : null,
+    ls_groenten_gevoel: entry.groenten_gevoel != null ? String(entry.groenten_gevoel) : null,
+    ls_vlees_vis: entry.vlees_vis != null ? String(entry.vlees_vis) : null,
+    ls_alcohol_gevoel: entry.alcohol_gevoel != null ? String(entry.alcohol_gevoel) : null,
+    ls_roken: entry.roken || null,
+    ls_sociale_agenda: entry.sociale_agenda != null ? String(entry.sociale_agenda) : null,
+    ls_smartphone: entry.smartphone != null ? String(entry.smartphone) : null,
+  };
+  document.querySelectorAll('.enq-chip').forEach(b => {
+    const { group, val } = b.dataset;
+    b.classList.toggle('selected', b.classList.contains('multi')
+      ? (Array.isArray(lsState[group]) && lsState[group].includes(val))
+      : lsState[group] === val);
+  });
+  const sf = document.getElementById('lsSlaapFactoren'); if (sf) sf.value = entry.slaap_factoren || '';
+  const not = document.getElementById('lsNotities'); if (not) not.value = entry.notities || '';
+  const saw = document.getElementById('lsStressAndersWrap');
+  const sa = document.getElementById('lsStressAnders');
+  if (Array.isArray(entry.stress_bronnen) && entry.stress_bronnen.includes('Andere')) {
+    if (saw) saw.style.display = 'block';
+    if (sa) sa.value = entry.stress_anders || '';
+  } else {
+    if (saw) saw.style.display = 'none';
+    if (sa) sa.value = '';
+  }
+  const formEl = document.getElementById('clientLifestyleForm') || document.querySelector('#tab-lifestyle .panel');
+  if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ══════════════════════════════════════════════════════════════════════
