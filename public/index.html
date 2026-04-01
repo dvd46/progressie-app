@@ -498,6 +498,7 @@ textarea { resize: vertical; min-height: 58px; }
     <div id="slaapChartsContainer" style="margin-top:16px;display:none;">
       <div class="panel-title" style="margin-bottom:12px;">Slaap Grafieken</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cSlaapScore"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSchermtijd"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSlaapConsistentie"></canvas></div>
@@ -906,6 +907,7 @@ textarea { resize: vertical; min-height: 58px; }
     <div class="panel" style="padding:16px;margin-bottom:20px;">
       <div style="font-size:12px;font-weight:700;color:#6EF08C;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">🌙 Slaap &amp; Stress</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+        <button class="enq-chip selected" id="fc_slaapscore" onclick="toggleClientChart('slaapscore')">😴 Slaapscore</button>
         <button class="enq-chip selected" id="fc_slaapkwal" onclick="toggleClientChart('slaapkwal')">Slaapkwaliteit</button>
         <button class="enq-chip selected" id="fc_schermtijd" onclick="toggleClientChart('schermtijd')">Schermtijd</button>
         <button class="enq-chip selected" id="fc_slaapconsist" onclick="toggleClientChart('slaapconsist')">Slaap consistentie</button>
@@ -935,6 +937,7 @@ textarea { resize: vertical; min-height: 58px; }
     </div>
     <div id="slaapChartsContainer_c" style="margin-bottom:16px;display:none;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="slaapscore"><canvas id="cSlaapScore_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="slaapkwal"><canvas id="cSlaapKwaliteit_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="schermtijd"><canvas id="cSchermtijd_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="slaapconsist"><canvas id="cSlaapConsistentie_c"></canvas></div>
@@ -2098,6 +2101,7 @@ function renderSlaapCharts(sfx = '') {
   const labels = list.map(e => e.datum);
   const schermMap = {Nooit:0, Zelden:1, Soms:2, Vaak:3, Altijd:4};
   const chartDefs = [
+    { id:'cSlaapScore'+sfx, label:'Slaapscore (0–100)', data:list.map(e=>calcSlaapScore(e)), color:'#6EF08C', yMin:0, yMax:100 },
     { id:'cSlaapKwaliteit'+sfx, label:'Slaapkwaliteit (1–10)', data:list.map(e=>e.slaap_kwaliteit?parseInt(e.slaap_kwaliteit):null), color:'#6EF08C', yMin:1, yMax:10 },
     { id:'cSchermtijd'+sfx, label:'Schermtijd voor slapen', data:list.map(e=>e.schermtijd!=null?schermMap[e.schermtijd]??null:null), color:'#f4a261', yMin:0, yMax:4, yLabels:['Nooit','Zelden','Soms','Vaak','Altijd'] },
     { id:'cSlaapConsistentie'+sfx, label:'Consistentie slaapschema (1–10)', data:list.map(e=>e.slaap_consistentie?parseInt(e.slaap_consistentie):null), color:'#4cc9f0', yMin:1, yMax:10 },
@@ -2343,6 +2347,18 @@ async function saveLifestyle() {
   showToast('Lifestyle opgeslagen', 'success');
 }
 
+function calcSlaapScore(entry) {
+  const schermMap = { 'Nooit': 10, 'Zelden': 7.5, 'Soms': 5, 'Vaak': 2.5, 'Altijd': 1 };
+  const nachtMap = { '0': 10, '1': 8.5, '2': 7, '3': 5.5, '4': 4, '5': 2.5, '6': 1 };
+  const q1 = entry.slaap_kwaliteit != null ? parseInt(entry.slaap_kwaliteit) : null;
+  const q2 = entry.schermtijd != null ? (schermMap[entry.schermtijd] ?? null) : null;
+  const q3 = entry.slaap_consistentie != null ? parseInt(entry.slaap_consistentie) : null;
+  const q4 = entry.opstaan_gevoel != null ? parseInt(entry.opstaan_gevoel) : null;
+  const q5 = entry.nacht_wakker != null ? (nachtMap[String(entry.nacht_wakker)] ?? null) : null;
+  if ([q1, q2, q3, q4, q5].some(v => v === null)) return null;
+  return Math.round(((q1 * 2 + q2 * 1 + q3 * 1 + q4 * 2 + q5 * 1) / 7) * 10);
+}
+
 function renderLifestyleLijst() {
   const list = getLifestyles();
   const el = document.getElementById('lifestyleLijst');
@@ -2352,7 +2368,9 @@ function renderLifestyleLijst() {
     const cafeineLbl = ['Geen','1 kopje','2–3 kopjes','4–5 kopjes','5+ kopjes'];
     const groLbl = ['Te weinig','Voldoende','Goed','Uitstekend'];
     const vleesLbl = ['Geen (plantaardig)','1–2× per week','3–4× per week','Dagelijks'];
+    const slaapScore = calcSlaapScore(e);
     const tags = [
+      slaapScore != null ? `😴 slaapscore: ${slaapScore}/100` : null,
       e.voeding_kwaliteit != null ? `🍽️ kwaliteit: ${e.voeding_kwaliteit}/10` : null,
       e.cravings != null ? `🍬 cravings: ${cravingsLbl[e.cravings]||e.cravings}` : null,
       e.cafeine != null ? `☕ ${cafeineLbl[e.cafeine]||e.cafeine}` : null,
