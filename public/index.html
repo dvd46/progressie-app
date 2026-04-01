@@ -903,44 +903,65 @@ textarea { resize: vertical; min-height: 58px; }
   </div>
 
   <div id="clientLsTabResultaten" style="display:none;">
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
-      <span style="font-size:13px;font-weight:600;color:var(--muted);align-self:center;margin-right:4px;">Toon:</span>
-      <button class="enq-chip selected" id="filterSlaap_c" onclick="toggleClientLsFilter('slaap')">🌙 Slaap &amp; Stress</button>
-      <button class="enq-chip selected" id="filterVoeding_c" onclick="toggleClientLsFilter('voeding')">🍽️ Voeding</button>
-      <button class="enq-chip selected" id="filterLeefstijl_c" onclick="toggleClientLsFilter('leefstijl')">🌿 Leefstijl</button>
+    <div class="panel" style="padding:16px;margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:700;color:#6EF08C;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">🌙 Slaap &amp; Stress</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+        <button class="enq-chip selected" id="fc_slaapkwal" onclick="toggleClientChart('slaapkwal')">Slaapkwaliteit</button>
+        <button class="enq-chip selected" id="fc_schermtijd" onclick="toggleClientChart('schermtijd')">Schermtijd</button>
+        <button class="enq-chip selected" id="fc_slaapconsist" onclick="toggleClientChart('slaapconsist')">Slaap consistentie</button>
+        <button class="enq-chip selected" id="fc_opstaangevoel" onclick="toggleClientChart('opstaangevoel')">Opstaan gevoel</button>
+        <button class="enq-chip selected" id="fc_nachtwakker" onclick="toggleClientChart('nachtwakker')">Wakker 's nachts</button>
+        <button class="enq-chip selected" id="fc_slaapfact" onclick="toggleClientChart('slaapfact')">Slaap factoren</button>
+        <button class="enq-chip selected" id="fc_stressniv" onclick="toggleClientChart('stressniv')">Stressniveau</button>
+        <button class="enq-chip selected" id="fc_mentaaluit" onclick="toggleClientChart('mentaaluit')">Mentale uitputting</button>
+        <button class="enq-chip selected" id="fc_ontspanning" onclick="toggleClientChart('ontspanning')">Ontspanning</button>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">🍽️ Voeding</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+        <button class="enq-chip selected" id="fc_voedingkwal" onclick="toggleClientChart('voedingkwal')">Voedingskwaliteit</button>
+        <button class="enq-chip selected" id="fc_cravings" onclick="toggleClientChart('cravings')">Cravings</button>
+        <button class="enq-chip selected" id="fc_cafeine" onclick="toggleClientChart('cafeine')">Cafeïne</button>
+        <button class="enq-chip selected" id="fc_watergevoel" onclick="toggleClientChart('watergevoel')">Water</button>
+        <button class="enq-chip selected" id="fc_groetengevoel" onclick="toggleClientChart('groetengevoel')">Groenten &amp; fruit</button>
+        <button class="enq-chip selected" id="fc_vleevis" onclick="toggleClientChart('vleevis')">Vlees &amp; vis</button>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">🌿 Leefstijl</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <button class="enq-chip selected" id="fc_alcoholgevoel" onclick="toggleClientChart('alcoholgevoel')">Alcohol</button>
+        <button class="enq-chip selected" id="fc_socialeagenda" onclick="toggleClientChart('socialeagenda')">Sociale agenda</button>
+        <button class="enq-chip selected" id="fc_smartphone" onclick="toggleClientChart('smartphone')">Smartphone</button>
+        <button class="enq-chip selected" id="fc_roken" onclick="toggleClientChart('roken')">Roken</button>
+      </div>
     </div>
     <div id="slaapChartsContainer_c" style="margin-bottom:16px;display:none;">
-      <div class="panel-title" style="margin-bottom:12px;">Slaap &amp; Stress</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSchermtijd_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSlaapConsistentie_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cOpstaanGevoel_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cNachtWakker_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div><div id="slaapFactorenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
-        <div class="panel" style="padding:12px;"><canvas id="cStressNiveau_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cMentaalUitgeput_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cOntspanning_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="slaapkwal"><canvas id="cSlaapKwaliteit_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="schermtijd"><canvas id="cSchermtijd_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="slaapconsist"><canvas id="cSlaapConsistentie_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="opstaangevoel"><canvas id="cOpstaanGevoel_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="nachtwakker"><canvas id="cNachtWakker_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="slaapfact"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div><div id="slaapFactorenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+        <div class="panel" style="padding:12px;" data-chart="stressniv"><canvas id="cStressNiveau_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="mentaaluit"><canvas id="cMentaalUitgeput_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="ontspanning"><canvas id="cOntspanning_c"></canvas></div>
       </div>
     </div>
     <div id="leefstijlChartsContainer_c" style="margin-bottom:16px;display:none;">
-      <div class="panel-title" style="margin-bottom:12px;">Leefstijl</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="panel" style="padding:12px;"><canvas id="cAlcoholGevoel_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSocialeAgenda_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSmartphone_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Rook- / vapegedrag</div><div id="rokenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+        <div class="panel" style="padding:12px;" data-chart="alcoholgevoel"><canvas id="cAlcoholGevoel_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="socialeagenda"><canvas id="cSocialeAgenda_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="smartphone"><canvas id="cSmartphone_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="roken"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Rook- / vapegedrag</div><div id="rokenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
       </div>
     </div>
     <div id="voedingChartsContainer_c" style="display:none;">
-      <div class="panel-title" style="margin-bottom:12px;">Voeding</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="panel" style="padding:12px;"><canvas id="cVoedingKwaliteit_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cCravings_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cCafeine_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cWaterGevoel_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cGroentenGevoel_c"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cVleesVis_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="voedingkwal"><canvas id="cVoedingKwaliteit_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="cravings"><canvas id="cCravings_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="cafeine"><canvas id="cCafeine_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="watergevoel"><canvas id="cWaterGevoel_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="groetengevoel"><canvas id="cGroentenGevoel_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="vleevis"><canvas id="cVleesVis_c"></canvas></div>
       </div>
     </div>
     <div id="clientLsGeenData" class="empty" style="display:none;">Nog geen gegevens om te tonen. Vul eerst een enquête in.</div>
@@ -3409,21 +3430,25 @@ async function initClientApp(user, klant) {
   loadLifestyles(klant.id);
 }
 
-let clientLsFilter = { slaap: true, voeding: true, leefstijl: true };
+let clientChartFilter = {};
 
-function toggleClientLsFilter(cat) {
-  clientLsFilter[cat] = !clientLsFilter[cat];
-  document.getElementById('filter' + cat.charAt(0).toUpperCase() + cat.slice(1) + '_c').classList.toggle('selected', clientLsFilter[cat]);
-  applyClientLsFilter();
+function toggleClientChart(id) {
+  clientChartFilter[id] = clientChartFilter[id] === false ? true : false;
+  document.getElementById('fc_' + id)?.classList.toggle('selected', clientChartFilter[id] !== false);
+  document.querySelectorAll(`#clientLsTabResultaten [data-chart="${id}"]`).forEach(p => {
+    p.style.display = clientChartFilter[id] === false ? 'none' : '';
+  });
 }
 
-function applyClientLsFilter() {
-  // Re-render only visible sections so charts size correctly
-  if (clientLsFilter.slaap) { renderSlaapCharts('_c'); } else { const c = document.getElementById('slaapChartsContainer_c'); if (c) c.style.display = 'none'; }
-  if (clientLsFilter.voeding) { renderVoedingCharts('_c'); } else { const c = document.getElementById('voedingChartsContainer_c'); if (c) c.style.display = 'none'; }
-  if (clientLsFilter.leefstijl) { renderLeefstijlCharts('_c'); } else { const c = document.getElementById('leefstijlChartsContainer_c'); if (c) c.style.display = 'none'; }
-  const hasData = getLifestyles().length > 0;
-  document.getElementById('clientLsGeenData').style.display = hasData ? 'none' : '';
+function applyClientChartFilter() {
+  renderSlaapCharts('_c');
+  renderVoedingCharts('_c');
+  renderLeefstijlCharts('_c');
+  // Re-apply user filter on top of render results
+  document.querySelectorAll('#clientLsTabResultaten [data-chart]').forEach(p => {
+    if (clientChartFilter[p.dataset.chart] === false) p.style.display = 'none';
+  });
+  document.getElementById('clientLsGeenData').style.display = getLifestyles().length > 0 ? 'none' : '';
 }
 
 function switchClientLsTab(tab) {
@@ -3432,7 +3457,7 @@ function switchClientLsTab(tab) {
   document.getElementById('clientLsTabResultaten').style.display = isResultaten ? '' : 'none';
   document.getElementById('cLsTabEnquete').classList.toggle('active', !isResultaten);
   document.getElementById('cLsTabResultaten').classList.toggle('active', isResultaten);
-  if (isResultaten) applyClientLsFilter();
+  if (isResultaten) applyClientChartFilter();
 }
 
 function showClientView(name) {
