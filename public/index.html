@@ -887,53 +887,63 @@ textarea { resize: vertical; min-height: 58px; }
 
 <!-- VIEW: CLIENT LIFESTYLE -->
 <div class="view" id="view-client-lifestyle">
-  <h2 style="font-size:20px;font-weight:600;margin-bottom:8px;">Lifestyle Enquête</h2>
-  <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
-  <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
-    <div class="panel" id="clientLifestyleForm">
-      <div class="form-group"><label class="form-label">Datum</label><input type="date" id="lsDatum2" onchange="document.getElementById('lsDatum').value=this.value"/></div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Scroll omlaag om alle vragen te beantwoorden.</div>
-      <div id="clientLifestyleFormInner"></div>
-      <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="saveClientLifestyle()">Opslaan</button>
-    </div>
-    <div class="panel">
-      <div class="panel-title">Mijn enquêtes</div>
-      <div id="clientLifestyleLijst"><div class="empty">Nog geen enquêtes.</div></div>
+  <div class="tab-bar" style="margin-bottom:20px;">
+    <button class="tab active" id="cLsTabEnquete" onclick="switchClientLsTab('enquete')">Lifestyle Enquête</button>
+    <button class="tab" id="cLsTabResultaten" onclick="switchClientLsTab('resultaten')">Mijn resultaten</button>
+  </div>
+
+  <div id="clientLsTabEnquete">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
+      <div class="panel" id="clientLifestyleForm">
+        <div class="form-group"><label class="form-label">Datum</label><input type="date" id="lsDatum2" onchange="document.getElementById('lsDatum').value=this.value"/></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Scroll omlaag om alle vragen te beantwoorden.</div>
+        <div id="clientLifestyleFormInner"></div>
+        <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="saveClientLifestyle()">Opslaan</button>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Mijn enquêtes</div>
+        <div id="clientLifestyleLijst"><div class="empty">Nog geen enquêtes.</div></div>
+      </div>
     </div>
   </div>
-  <div id="slaapChartsContainer_c" style="margin-top:16px;display:none;">
-    <div class="panel-title" style="margin-bottom:12px;">Slaap Grafieken</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-      <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cSchermtijd_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cSlaapConsistentie_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cOpstaanGevoel_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cNachtWakker_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div><div id="slaapFactorenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
-      <div class="panel" style="padding:12px;"><canvas id="cStressNiveau_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cMentaalUitgeput_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cOntspanning_c"></canvas></div>
+
+  <div id="clientLsTabResultaten" style="display:none;">
+    <div id="slaapChartsContainer_c" style="margin-bottom:16px;display:none;">
+      <div class="panel-title" style="margin-bottom:12px;">Slaap &amp; Stress</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cSchermtijd_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cSlaapConsistentie_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cOpstaanGevoel_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cNachtWakker_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div><div id="slaapFactorenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+        <div class="panel" style="padding:12px;"><canvas id="cStressNiveau_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cMentaalUitgeput_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cOntspanning_c"></canvas></div>
+      </div>
     </div>
-  </div>
-  <div id="leefstijlChartsContainer_c" style="margin-top:16px;display:none;">
-    <div class="panel-title" style="margin-bottom:12px;">Leefstijl Grafieken</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-      <div class="panel" style="padding:12px;"><canvas id="cAlcoholGevoel_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cSocialeAgenda_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cSmartphone_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Rook- / vapegedrag</div><div id="rokenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+    <div id="leefstijlChartsContainer_c" style="margin-bottom:16px;display:none;">
+      <div class="panel-title" style="margin-bottom:12px;">Leefstijl</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;"><canvas id="cAlcoholGevoel_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cSocialeAgenda_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cSmartphone_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Rook- / vapegedrag</div><div id="rokenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+      </div>
     </div>
-  </div>
-  <div id="voedingChartsContainer_c" style="margin-top:16px;display:none;">
-    <div class="panel-title" style="margin-bottom:12px;">Voeding Grafieken</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-      <div class="panel" style="padding:12px;"><canvas id="cVoedingKwaliteit_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cCravings_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cCafeine_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cWaterGevoel_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cGroentenGevoel_c"></canvas></div>
-      <div class="panel" style="padding:12px;"><canvas id="cVleesVis_c"></canvas></div>
+    <div id="voedingChartsContainer_c" style="display:none;">
+      <div class="panel-title" style="margin-bottom:12px;">Voeding</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;"><canvas id="cVoedingKwaliteit_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cCravings_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cCafeine_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cWaterGevoel_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cGroentenGevoel_c"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cVleesVis_c"></canvas></div>
+      </div>
     </div>
+    <div id="clientLsGeenData" class="empty" style="display:none;">Nog geen gegevens om te tonen. Vul eerst een enquête in.</div>
   </div>
 </div>
 
@@ -3399,6 +3409,21 @@ async function initClientApp(user, klant) {
   loadLifestyles(klant.id);
 }
 
+function switchClientLsTab(tab) {
+  const isResultaten = tab === 'resultaten';
+  document.getElementById('clientLsTabEnquete').style.display = isResultaten ? 'none' : '';
+  document.getElementById('clientLsTabResultaten').style.display = isResultaten ? '' : 'none';
+  document.getElementById('cLsTabEnquete').classList.toggle('active', !isResultaten);
+  document.getElementById('cLsTabResultaten').classList.toggle('active', isResultaten);
+  if (isResultaten) {
+    renderSlaapCharts('_c');
+    renderVoedingCharts('_c');
+    renderLeefstijlCharts('_c');
+    const hasData = getLifestyles().length > 0;
+    document.getElementById('clientLsGeenData').style.display = hasData ? 'none' : '';
+  }
+}
+
 function showClientView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('#clientNav .nav-btn').forEach(b => b.classList.remove('active'));
@@ -3408,6 +3433,7 @@ function showClientView(name) {
   if (name === 'client-leaderboard') initClientLeaderboard();
   if (name === 'connecties') renderCoachConnecties();
   if (name === 'client-lifestyle') {
+    switchClientLsTab('enquete');
     const inner = document.getElementById('clientLifestyleFormInner');
     const source = document.getElementById('tab-lifestyle');
     if (inner && source) {
