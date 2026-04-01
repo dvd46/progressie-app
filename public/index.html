@@ -2189,7 +2189,7 @@ function lsChipClick(btn) {
     lsState[group] = lsState[group] === val ? null : val;
   }
   document.querySelectorAll(`.enq-chip[data-group="${group}"]`).forEach(b =>
-    b.classList.toggle('active', btn.classList.contains('multi')
+    b.classList.toggle('selected', btn.classList.contains('multi')
       ? (Array.isArray(lsState[group]) && lsState[group].includes(b.dataset.val))
       : lsState[group] === b.dataset.val)
   );
@@ -2238,7 +2238,7 @@ async function saveLifestyle() {
   if (error) { showToast('Fout bij opslaan: ' + error.message, 'error'); return; }
   await loadLifestyles(AKid);
   lsState = {};
-  document.querySelectorAll('#tab-lifestyle .enq-chip').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#tab-lifestyle .enq-chip, #clientLifestyleFormInner .enq-chip').forEach(b => b.classList.remove('selected'));
   document.getElementById('lsNotities').value = '';
   document.getElementById('lsDatum').value = today();
   const sf = document.getElementById('lsSlaapFactoren'); if(sf) sf.value = '';
