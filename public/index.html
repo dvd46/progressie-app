@@ -852,6 +852,22 @@ textarea { resize: vertical; min-height: 58px; }
   </div>
 </div>
 
+<!-- MODAL PDF DELEN -->
+<div class="modal-bg hidden" id="modalPdfDeel">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">📄 PDF klaar om te delen</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">Kopieer de link hieronder en deel deze met de klant of sla op als bladwijzer.</p>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input id="pdfShareUrl" type="text" readonly style="flex:1;font-size:12px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:'DM Mono',monospace;" />
+      <button class="btn btn-primary btn-sm" onclick="copyPdfLink()">Kopieer</button>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end;">
+      <a id="pdfDownloadFallback" href="#" style="display:none;" class="btn btn-ghost btn-sm">↓ Lokaal downloaden</a>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modalPdfDeel')">Sluiten</button>
+    </div>
+  </div>
+</div>
+
 <!-- VIEW: CLIENT PROFIEL -->
 <div class="view" id="view-client-profiel">
   <div class="profile-hdr">
@@ -1195,6 +1211,10 @@ function showToast(msg, type = '') {
 
 function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+function copyPdfLink() {
+  const inp = document.getElementById('pdfShareUrl');
+  navigator.clipboard.writeText(inp.value).then(() => showToast('Link gekopieerd!', 'success')).catch(() => { inp.select(); document.execCommand('copy'); showToast('Link gekopieerd!', 'success'); });
+}
 
 document.querySelectorAll('.modal-bg').forEach(bg =>
   bg.addEventListener('click', e => { if (e.target === bg) bg.classList.add('hidden'); })
@@ -3983,8 +4003,21 @@ async function downloadPDF() {
 
     const pc=doc.internal.getNumberOfPages();
     for(let i=1;i<=pc;i++){doc.setPage(i);doc.setFillColor(...LB);doc.rect(0,ph-10,pw,10,'F');doc.setFontSize(8);doc.setTextColor(...MU);doc.text('Progressie Rapport - '+naam,ml,ph-4);doc.text('Pagina '+i+' / '+pc,pw-mr,ph-4,{align:'right'});}
-    doc.save('rapport_'+naam.toLowerCase().replace(/\s+/g,'_')+'.pdf');
-    showToast('PDF gedownload', 'success');
+
+    const safeName = naam.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');
+    const filename = `rapport_${safeName}_${new Date().toISOString().slice(0,10)}.pdf`;
+    const blob = doc.output('blob');
+    const { error: upErr } = await sb.storage.from('rapporten').upload(`${k.id}/${filename}`, blob, { contentType:'application/pdf', upsert:true });
+    if (upErr) {
+      doc.save(filename);
+      showToast('Lokaal opgeslagen (upload mislukt)', 'error');
+    } else {
+      const { data: urlData } = sb.storage.from('rapporten').getPublicUrl(`${k.id}/${filename}`);
+      const url = urlData.publicUrl;
+      document.getElementById('pdfShareUrl').value = url;
+      await navigator.clipboard.writeText(url).catch(() => {});
+      openModal('modalPdfDeel');
+    }
   } catch(e) {
     showToast('PDF fout: '+e.message, 'error');
   } finally {
