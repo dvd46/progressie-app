@@ -452,18 +452,7 @@ textarea { resize: vertical; min-height: 58px; }
         <div class="form-group"><label class="form-label">Datum</label><input type="date" id="lsDatum"/></div>
 
         <div class="enq-section">
-          <div style="font-size:13px;font-weight:700;color:#6EF08C;margin-bottom:16px;">&#127769; SLAAP</div>
-          <div class="sleep-score-ring-wrap" style="display:none;justify-content:center;margin-bottom:20px;">
-            <svg class="sleep-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
-              <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
-              <circle class="sleep-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12"
-                stroke-dasharray="364.42" stroke-dashoffset="364.42"
-                stroke-linecap="round"
-                transform="rotate(-90 70 70)"/>
-              <text class="sleep-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
-              <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">SLEEP SCORE</text>
-            </svg>
-          </div>
+          <div style="font-size:13px;font-weight:700;color:#6EF08C;margin-bottom:12px;">&#127769; SLAAP</div>
           <div style="margin-bottom:10px;"><label class="form-label">Hoe zou je je algemene slaapkwaliteit beoordelen? <span style="color:var(--muted);font-weight:400">(1&ndash;10)</span></label><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;"><button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="1" onclick="lsChipClick(this)">1</button><button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="2" onclick="lsChipClick(this)">2</button><button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="3" onclick="lsChipClick(this)">3</button><button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="4" onclick="lsChipClick(this)">4</button><button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="5" onclick="lsChipClick(this)">5</button><button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="6" onclick="lsChipClick(this)">6</button><button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="7" onclick="lsChipClick(this)">7</button><button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="8" onclick="lsChipClick(this)">8</button><button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="9" onclick="lsChipClick(this)">9</button><button class="enq-chip" data-group="ls_slaap_kwaliteit" data-val="10" onclick="lsChipClick(this)">10</button></div></div>
           <div style="margin-bottom:10px;"><label class="form-label">Schermtijd 1 uur voor het slapengaan?</label><div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;"><button class="enq-chip" data-group="ls_schermtijd" data-val="Nooit" onclick="lsChipClick(this)">Nooit</button><button class="enq-chip" data-group="ls_schermtijd" data-val="Zelden" onclick="lsChipClick(this)">Zelden</button><button class="enq-chip" data-group="ls_schermtijd" data-val="Soms" onclick="lsChipClick(this)">Soms</button><button class="enq-chip" data-group="ls_schermtijd" data-val="Vaak" onclick="lsChipClick(this)">Vaak</button><button class="enq-chip" data-group="ls_schermtijd" data-val="Altijd" onclick="lsChipClick(this)">Altijd</button></div></div>
           <div style="margin-bottom:10px;"><label class="form-label">Hoe consistent was je slaapschema? <span style="color:var(--muted);font-weight:400">(1=onregelmatig &ndash; 10=perfect)</span></label><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;"><button class="enq-chip" data-group="ls_slaap_consistentie" data-val="1" onclick="lsChipClick(this)">1</button><button class="enq-chip" data-group="ls_slaap_consistentie" data-val="2" onclick="lsChipClick(this)">2</button><button class="enq-chip" data-group="ls_slaap_consistentie" data-val="3" onclick="lsChipClick(this)">3</button><button class="enq-chip" data-group="ls_slaap_consistentie" data-val="4" onclick="lsChipClick(this)">4</button><button class="enq-chip" data-group="ls_slaap_consistentie" data-val="5" onclick="lsChipClick(this)">5</button><button class="enq-chip" data-group="ls_slaap_consistentie" data-val="6" onclick="lsChipClick(this)">6</button><button class="enq-chip" data-group="ls_slaap_consistentie" data-val="7" onclick="lsChipClick(this)">7</button><button class="enq-chip" data-group="ls_slaap_consistentie" data-val="8" onclick="lsChipClick(this)">8</button><button class="enq-chip" data-group="ls_slaap_consistentie" data-val="9" onclick="lsChipClick(this)">9</button><button class="enq-chip" data-group="ls_slaap_consistentie" data-val="10" onclick="lsChipClick(this)">10</button></div></div>
@@ -509,6 +498,14 @@ textarea { resize: vertical; min-height: 58px; }
 
     <div id="slaapChartsContainer" style="margin-top:16px;display:none;">
       <div class="panel-title" style="margin-bottom:12px;">Slaap Grafieken</div>
+      <div style="display:flex;justify-content:center;margin-bottom:20px;">
+        <svg class="sleep-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
+          <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+          <circle class="sleep-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+          <text class="sleep-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
+          <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">SLEEP SCORE</text>
+        </svg>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cSlaapScore"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit"></canvas></div>
@@ -948,6 +945,14 @@ textarea { resize: vertical; min-height: 58px; }
       </div>
     </div>
     <div id="slaapChartsContainer_c" style="margin-bottom:16px;display:none;">
+      <div style="display:flex;justify-content:center;margin-bottom:20px;">
+        <svg class="sleep-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
+          <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+          <circle class="sleep-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+          <text class="sleep-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
+          <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">SLEEP SCORE</text>
+        </svg>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="slaapscore"><canvas id="cSlaapScore_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="slaapkwal"><canvas id="cSlaapKwaliteit_c"></canvas></div>
@@ -2111,6 +2116,18 @@ function renderSlaapCharts(sfx = '') {
   if (!container) return;
   if (!list.length) { container.style.display = 'none'; return; }
   container.style.display = '';
+  // Update sleep score ring inside this container
+  const latestScore = list.map(e => calcSlaapScore(e)).find(s => s != null) ?? null;
+  const ringEl = container.querySelector('.sleep-score-ring');
+  if (ringEl) {
+    const circumference = 364.42;
+    const color = latestScore == null ? '#444' : latestScore <= 40 ? '#e63946' : latestScore <= 70 ? '#f4a261' : '#6EF08C';
+    const offset = latestScore == null ? circumference : +(circumference * (1 - latestScore / 100)).toFixed(2);
+    const prog = ringEl.querySelector('.sleep-ring-progress');
+    const txt = ringEl.querySelector('.sleep-ring-score');
+    if (prog) { prog.setAttribute('stroke-dashoffset', offset); prog.setAttribute('stroke', color); }
+    if (txt) txt.textContent = latestScore != null ? String(latestScore) : '–';
+  }
   const labels = list.map(e => e.datum);
   const schermMap = {Nooit:0, Zelden:1, Soms:2, Vaak:3, Altijd:4};
   const chartDefs = [
@@ -2371,7 +2388,6 @@ async function saveLifestyle() {
     { onConflict: 'klant_id,datum' }
   );
   if (error) { showToast('Fout bij opslaan: ' + error.message, 'error'); return; }
-  showSlaapRings(calcSlaapScore(entry));
   await loadLifestyles(AKid);
   lsState = {};
   document.querySelectorAll('#tab-lifestyle .enq-chip, #clientLifestyleFormInner .enq-chip').forEach(b => b.classList.remove('selected'));
@@ -2488,7 +2504,6 @@ function loadLifestyleIntoForm(id) {
   }
   const formEl = document.getElementById('clientLifestyleForm') || document.querySelector('#tab-lifestyle .panel');
   if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  showSlaapRings(calcSlaapScore(entry));
 }
 
 // ══════════════════════════════════════════════════════════════════════
