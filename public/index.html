@@ -146,6 +146,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .enq-chip.selected { background: var(--accent); border-color: var(--accent); color: #111; font-weight: 600; }
 .enq-section { background: var(--bg); border-radius: 10px; padding: 14px; margin-bottom: 12px; border: 1.5px solid var(--border); }
 .sleep-ring-progress { transition: stroke-dashoffset 0.6s cubic-bezier(.4,0,.2,1), stroke 0.4s ease; }
+.fs-hdr { display:flex; justify-content:space-between; align-items:center; padding:14px 16px; cursor:pointer; font-weight:600; font-size:1rem; user-select:none; }
+.fs-hdr:hover { background: rgba(255,255,255,0.04); }
+.fs-body { padding:12px 16px; display:flex; flex-wrap:wrap; gap:8px; }
+.fs-arrow { font-size:0.8rem; opacity:0.7; transition:transform 0.2s; }
 
 /* ── GEGEVENS ── */
 .pf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 14px; }
@@ -913,9 +917,11 @@ textarea { resize: vertical; min-height: 58px; }
   </div>
 
   <div id="clientLsTabResultaten" style="display:none;">
-    <div class="panel" style="padding:16px;margin-bottom:20px;">
-      <div style="font-size:12px;font-weight:700;color:#6EF08C;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">🌙 Slaap &amp; Stress</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+    <div class="panel" style="padding:0;margin-bottom:20px;overflow:hidden;">
+      <div class="fs-hdr" onclick="toggleFilterSection('fs_slaap')" style="color:#6EF08C;">
+        <span>🌙 Slaap</span><span id="fs_slaap_arrow" class="fs-arrow">▼</span>
+      </div>
+      <div id="fs_slaap" class="fs-body" style="display:none;">
         <button class="enq-chip selected" id="fc_slaapscore" onclick="toggleClientChart('slaapscore')">😴 Slaapscore</button>
         <button class="enq-chip selected" id="fc_slaapkwal" onclick="toggleClientChart('slaapkwal')">Slaapkwaliteit</button>
         <button class="enq-chip selected" id="fc_schermtijd" onclick="toggleClientChart('schermtijd')">Schermtijd</button>
@@ -923,12 +929,19 @@ textarea { resize: vertical; min-height: 58px; }
         <button class="enq-chip selected" id="fc_opstaangevoel" onclick="toggleClientChart('opstaangevoel')">Opstaan gevoel</button>
         <button class="enq-chip selected" id="fc_nachtwakker" onclick="toggleClientChart('nachtwakker')">Wakker 's nachts</button>
         <button class="enq-chip selected" id="fc_slaapfact" onclick="toggleClientChart('slaapfact')">Slaap factoren</button>
+      </div>
+      <div class="fs-hdr" onclick="toggleFilterSection('fs_stress')" style="color:#e63946;border-top:1px solid var(--border);">
+        <span>⚡ Stress</span><span id="fs_stress_arrow" class="fs-arrow">▼</span>
+      </div>
+      <div id="fs_stress" class="fs-body" style="display:none;">
         <button class="enq-chip selected" id="fc_stressniv" onclick="toggleClientChart('stressniv')">Stressniveau</button>
         <button class="enq-chip selected" id="fc_mentaaluit" onclick="toggleClientChart('mentaaluit')">Mentale uitputting</button>
         <button class="enq-chip selected" id="fc_ontspanning" onclick="toggleClientChart('ontspanning')">Ontspanning</button>
       </div>
-      <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">🍽️ Voeding</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+      <div class="fs-hdr" onclick="toggleFilterSection('fs_voeding')" style="color:var(--accent);border-top:1px solid var(--border);">
+        <span>🍽️ Voeding</span><span id="fs_voeding_arrow" class="fs-arrow">▼</span>
+      </div>
+      <div id="fs_voeding" class="fs-body" style="display:none;">
         <button class="enq-chip selected" id="fc_voedingkwal" onclick="toggleClientChart('voedingkwal')">Voedingskwaliteit</button>
         <button class="enq-chip selected" id="fc_cravings" onclick="toggleClientChart('cravings')">Cravings</button>
         <button class="enq-chip selected" id="fc_cafeine" onclick="toggleClientChart('cafeine')">Cafeïne</button>
@@ -936,8 +949,10 @@ textarea { resize: vertical; min-height: 58px; }
         <button class="enq-chip selected" id="fc_groetengevoel" onclick="toggleClientChart('groetengevoel')">Groenten &amp; fruit</button>
         <button class="enq-chip selected" id="fc_vleevis" onclick="toggleClientChart('vleevis')">Vlees &amp; vis</button>
       </div>
-      <div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">🌿 Leefstijl</div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      <div class="fs-hdr" onclick="toggleFilterSection('fs_leefstijl')" style="color:var(--accent);border-top:1px solid var(--border);">
+        <span>🌿 Leefstijl</span><span id="fs_leefstijl_arrow" class="fs-arrow">▼</span>
+      </div>
+      <div id="fs_leefstijl" class="fs-body" style="display:none;">
         <button class="enq-chip selected" id="fc_alcoholgevoel" onclick="toggleClientChart('alcoholgevoel')">Alcohol</button>
         <button class="enq-chip selected" id="fc_socialeagenda" onclick="toggleClientChart('socialeagenda')">Sociale agenda</button>
         <button class="enq-chip selected" id="fc_smartphone" onclick="toggleClientChart('smartphone')">Smartphone</button>
@@ -3502,6 +3517,15 @@ async function initClientApp(user, klant) {
 }
 
 let clientChartFilter = {};
+
+function toggleFilterSection(id) {
+  const body = document.getElementById(id);
+  const arrow = document.getElementById(id + '_arrow');
+  if (!body) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'flex';
+  if (arrow) arrow.textContent = isOpen ? '▼' : '▲';
+}
 
 function toggleClientChart(id) {
   clientChartFilter[id] = clientChartFilter[id] === false ? true : false;
