@@ -152,6 +152,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 #slaapChartsContainer .panel, #slaapChartsContainer_c .panel,
 #leefstijlChartsContainer .panel, #leefstijlChartsContainer_c .panel,
 #voedingChartsContainer .panel, #voedingChartsContainer_c .panel { padding:18px !important; }
+.ls-slider-wrap { display:flex; align-items:center; gap:10px; margin-top:8px; }
+.ls-slider-wrap input[type=range] { flex:1; cursor:pointer; }
+.ls-slider-edge { font-size:11px; color:var(--muted); font-weight:600; min-width:14px; text-align:center; }
+.ls-slider-val { min-width:40px; text-align:center; font-size:16px; font-weight:700; color:var(--text); background:var(--bg); border:1.5px solid var(--border); border-radius:8px; padding:2px 8px; }
+.ls-slider-val.empty { color:var(--muted); font-weight:400; font-size:13px; }
 .fs-hdr { display:flex; justify-content:space-between; align-items:center; padding:14px 16px; cursor:pointer; font-weight:600; font-size:1rem; user-select:none; }
 .fs-hdr:hover { background: rgba(255,255,255,0.04); }
 .fs-body { padding:12px 16px; display:flex; flex-wrap:wrap; gap:8px; }
@@ -473,9 +478,11 @@ textarea { resize: vertical; min-height: 58px; }
 
         <div class="enq-section">
           <div style="font-size:13px;font-weight:700;color:#e63946;margin-bottom:12px;">&#9889; STRESS &amp; ENERGIE</div>
-          <div style="margin-bottom:10px;"><label class="form-label">Hoe zou je jouw algemene stressniveau beoordelen? <span style="color:var(--muted);font-weight:400">(1&ndash;10)</span></label><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;"><button class="enq-chip" data-group="ls_stress_niveau" data-val="1" onclick="lsChipClick(this)">1</button><button class="enq-chip" data-group="ls_stress_niveau" data-val="2" onclick="lsChipClick(this)">2</button><button class="enq-chip" data-group="ls_stress_niveau" data-val="3" onclick="lsChipClick(this)">3</button><button class="enq-chip" data-group="ls_stress_niveau" data-val="4" onclick="lsChipClick(this)">4</button><button class="enq-chip" data-group="ls_stress_niveau" data-val="5" onclick="lsChipClick(this)">5</button><button class="enq-chip" data-group="ls_stress_niveau" data-val="6" onclick="lsChipClick(this)">6</button><button class="enq-chip" data-group="ls_stress_niveau" data-val="7" onclick="lsChipClick(this)">7</button><button class="enq-chip" data-group="ls_stress_niveau" data-val="8" onclick="lsChipClick(this)">8</button><button class="enq-chip" data-group="ls_stress_niveau" data-val="9" onclick="lsChipClick(this)">9</button><button class="enq-chip" data-group="ls_stress_niveau" data-val="10" onclick="lsChipClick(this)">10</button></div></div>
-          <div style="margin-bottom:10px;"><label class="form-label">Hoe vaak voelde je je mentaal uitgeput de laatste maand? <span style="color:var(--muted);font-weight:400">(1&ndash;10)</span></label><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;"><button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="1" onclick="lsChipClick(this)">1</button><button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="2" onclick="lsChipClick(this)">2</button><button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="3" onclick="lsChipClick(this)">3</button><button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="4" onclick="lsChipClick(this)">4</button><button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="5" onclick="lsChipClick(this)">5</button><button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="6" onclick="lsChipClick(this)">6</button><button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="7" onclick="lsChipClick(this)">7</button><button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="8" onclick="lsChipClick(this)">8</button><button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="9" onclick="lsChipClick(this)">9</button><button class="enq-chip" data-group="ls_mentaal_uitgeput" data-val="10" onclick="lsChipClick(this)">10</button></div></div>
-          <div style="margin-bottom:10px;"><label class="form-label">Hoe vaak nam je bewust tijd voor ontspanning? <span style="color:var(--muted);font-weight:400">(1&ndash;10)</span></label><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;"><button class="enq-chip" data-group="ls_ontspanning" data-val="1" onclick="lsChipClick(this)">1</button><button class="enq-chip" data-group="ls_ontspanning" data-val="2" onclick="lsChipClick(this)">2</button><button class="enq-chip" data-group="ls_ontspanning" data-val="3" onclick="lsChipClick(this)">3</button><button class="enq-chip" data-group="ls_ontspanning" data-val="4" onclick="lsChipClick(this)">4</button><button class="enq-chip" data-group="ls_ontspanning" data-val="5" onclick="lsChipClick(this)">5</button><button class="enq-chip" data-group="ls_ontspanning" data-val="6" onclick="lsChipClick(this)">6</button><button class="enq-chip" data-group="ls_ontspanning" data-val="7" onclick="lsChipClick(this)">7</button><button class="enq-chip" data-group="ls_ontspanning" data-val="8" onclick="lsChipClick(this)">8</button><button class="enq-chip" data-group="ls_ontspanning" data-val="9" onclick="lsChipClick(this)">9</button><button class="enq-chip" data-group="ls_ontspanning" data-val="10" onclick="lsChipClick(this)">10</button></div></div>
+          <div style="margin-bottom:14px;"><label class="form-label">Hoe zou je jouw algemene stressbeleving beoordelen? <span style="color:var(--muted);font-weight:400">(1&ndash;10)</span></label><div class="ls-slider-wrap"><span class="ls-slider-edge">1</span><input type="range" min="1" max="10" step="1" value="5" class="ls-slider" data-group="ls_stress_niveau" oninput="lsSliderInput(this)" style="accent-color:#e63946;"><span class="ls-slider-edge">10</span><span id="ls_stress_niveau_disp" class="ls-slider-val empty">–</span></div></div>
+          <div style="margin-bottom:14px;"><label class="form-label">Hoe vaak voelde je je mentaal uitgeput? <span style="color:var(--muted);font-weight:400">(0&ndash;10)</span></label><div class="ls-slider-wrap"><span class="ls-slider-edge">0</span><input type="range" min="0" max="10" step="1" value="5" class="ls-slider" data-group="ls_mentaal_uitgeput" oninput="lsSliderInput(this)" style="accent-color:#e63946;"><span class="ls-slider-edge">10</span><span id="ls_mentaal_uitgeput_disp" class="ls-slider-val empty">–</span></div></div>
+          <div style="margin-bottom:14px;"><label class="form-label">Hoe vaak nam je bewust tijd voor ontspanning? <span style="color:var(--muted);font-weight:400">(1&ndash;10)</span></label><div class="ls-slider-wrap"><span class="ls-slider-edge">1</span><input type="range" min="1" max="10" step="1" value="5" class="ls-slider" data-group="ls_ontspanning" oninput="lsSliderInput(this)" style="accent-color:#e63946;"><span class="ls-slider-edge">10</span><span id="ls_ontspanning_disp" class="ls-slider-val empty">–</span></div></div>
+          <div style="margin-bottom:14px;"><label class="form-label">Hoe vaak ervaar je lichamelijke klachten door stress? <span style="color:var(--muted);font-weight:400">(0&ndash;10)</span></label><div class="ls-slider-wrap"><span class="ls-slider-edge">0</span><input type="range" min="0" max="10" step="1" value="5" class="ls-slider" data-group="ls_lichamelijke_klachten" oninput="lsSliderInput(this)" style="accent-color:#e63946;"><span class="ls-slider-edge">10</span><span id="ls_lichamelijke_klachten_disp" class="ls-slider-val empty">–</span></div></div>
+          <div style="margin-bottom:14px;"><label class="form-label">In welke mate heb je het gevoel controle te hebben over jouw stressfactoren? <span style="color:var(--muted);font-weight:400">(1&ndash;10)</span></label><div class="ls-slider-wrap"><span class="ls-slider-edge">1</span><input type="range" min="1" max="10" step="1" value="5" class="ls-slider" data-group="ls_stress_controle" oninput="lsSliderInput(this)" style="accent-color:#e63946;"><span class="ls-slider-edge">10</span><span id="ls_stress_controle_disp" class="ls-slider-val empty">–</span></div></div>
           <div><label class="form-label">Grootste bronnen van stress? <span style="color:var(--muted);font-weight:400">(meerdere mogelijk)</span></label><div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;"><button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Relationeel" onclick="lsChipClick(this)">Relationeel</button><button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Professioneel" onclick="lsChipClick(this)">Professioneel</button><button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Persoonlijke thema's" onclick="lsChipClick(this)">Persoonlijke thema&apos;s</button><button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Financieel" onclick="lsChipClick(this)">Financieel</button><button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Niet van toepassing" onclick="lsStressAndersToggle(this,'ls_stress_bronnen')">Niet van toepassing</button><button class="enq-chip multi" data-group="ls_stress_bronnen" data-val="Andere" onclick="lsStressAndersToggle(this,'ls_stress_bronnen')">Andere: namelijk&hellip;</button></div><div id="lsStressAndersWrap" style="display:none;margin-top:8px;"><input type="text" id="lsStressAnders" placeholder="Omschrijf de andere bron van stress&hellip;" style="width:100%;"/></div></div>
         </div>
 
@@ -527,6 +534,8 @@ textarea { resize: vertical; min-height: 58px; }
         <div class="panel" style="padding:12px;"><canvas id="cStressNiveau"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cMentaalUitgeput"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cOntspanning"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cLichamelijkeKlachten"></canvas></div>
+        <div class="panel" style="padding:12px;"><canvas id="cStressControle"></canvas></div>
       </div>
     </div>
     <div id="leefstijlChartsContainer" style="margin-top:16px;display:none;">
@@ -943,6 +952,8 @@ textarea { resize: vertical; min-height: 58px; }
         <button class="enq-chip selected" id="fc_stressniv" onclick="toggleClientChart('stressniv')">Stressniveau</button>
         <button class="enq-chip selected" id="fc_mentaaluit" onclick="toggleClientChart('mentaaluit')">Mentale uitputting</button>
         <button class="enq-chip selected" id="fc_ontspanning" onclick="toggleClientChart('ontspanning')">Ontspanning</button>
+        <button class="enq-chip selected" id="fc_lichkl" onclick="toggleClientChart('lichkl')">Lichamelijke klachten</button>
+        <button class="enq-chip selected" id="fc_stresscontr" onclick="toggleClientChart('stresscontr')">Stress controle</button>
       </div>
       <div class="fs-hdr" onclick="toggleFilterSection('fs_voeding')" style="color:var(--accent);border-top:1px solid var(--border);">
         <span>🍽️ Voeding</span><span id="fs_voeding_arrow" class="fs-arrow">▼</span>
@@ -985,6 +996,8 @@ textarea { resize: vertical; min-height: 58px; }
         <div class="panel" style="padding:12px;" data-chart="stressniv"><canvas id="cStressNiveau_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="mentaaluit"><canvas id="cMentaalUitgeput_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="ontspanning"><canvas id="cOntspanning_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="lichkl"><canvas id="cLichamelijkeKlachten_c"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="stresscontr"><canvas id="cStressControle_c"></canvas></div>
       </div>
     </div>
     <div id="leefstijlChartsContainer_c" style="margin-bottom:16px;display:none;">
@@ -1574,6 +1587,7 @@ async function openProfiel(id) {
   selSlaap = 0; selStress = 0;
   lsState = {};
   hideSlaapRings();
+  resetLsSliders();
   document.querySelectorAll('.enq-chip').forEach(b => b.classList.remove('selected'));
   const lsD = document.getElementById('lsDatum'); if (lsD) lsD.value = today();
   const lsN = document.getElementById('lsNotities'); if (lsN) lsN.value = '';
@@ -2158,9 +2172,11 @@ function renderSlaapCharts(sfx = '') {
     { id:'cSlaapConsistentie'+sfx, label:'Consistentie slaapschema (1–10)', data:list.map(e=>e.slaap_consistentie?parseInt(e.slaap_consistentie):null), color:'#4cc9f0', yMin:1, yMax:10 },
     { id:'cOpstaanGevoel'+sfx, label:'Gevoel bij opstaan (1–10)', data:list.map(e=>e.opstaan_gevoel?parseInt(e.opstaan_gevoel):null), color:'#a8dadc', yMin:1, yMax:10 },
     { id:'cNachtWakker'+sfx, label:"Wakker 's nachts (keer)", data:list.map(e=>e.nacht_wakker!=null?parseInt(e.nacht_wakker):null), color:'#e63946', yMin:0, yMax:6, yLabels:['0×','1×','2×','3×','4×','5×','>5×'] },
-    { id:'cStressNiveau'+sfx, label:'Stressniveau (1–10)', data:list.map(e=>e.stress_niveau?parseInt(e.stress_niveau):null), color:'#e63946', yMin:1, yMax:10 },
-    { id:'cMentaalUitgeput'+sfx, label:'Mentale uitputting (1–10)', data:list.map(e=>e.mentaal_uitgeput?parseInt(e.mentaal_uitgeput):null), color:'#f4a261', yMin:1, yMax:10 },
-    { id:'cOntspanning'+sfx, label:'Ontspanning (1–10)', data:list.map(e=>e.ontspanning_score?parseInt(e.ontspanning_score):null), color:'#6EF08C', yMin:1, yMax:10 }
+    { id:'cStressNiveau'+sfx, label:'Stressniveau (1–10)', data:list.map(e=>e.stress_niveau!=null?parseInt(e.stress_niveau):null), color:'#e63946', yMin:1, yMax:10 },
+    { id:'cMentaalUitgeput'+sfx, label:'Mentale uitputting (0–10)', data:list.map(e=>e.mentaal_uitgeput!=null?parseInt(e.mentaal_uitgeput):null), color:'#f4a261', yMin:0, yMax:10 },
+    { id:'cOntspanning'+sfx, label:'Ontspanning (1–10)', data:list.map(e=>e.ontspanning_score!=null?parseInt(e.ontspanning_score):null), color:'#6EF08C', yMin:1, yMax:10 },
+    { id:'cLichamelijkeKlachten'+sfx, label:'Lichamelijke klachten door stress (0–10)', data:list.map(e=>e.lichamelijke_klachten!=null?parseInt(e.lichamelijke_klachten):null), color:'#c77dff', yMin:0, yMax:10 },
+    { id:'cStressControle'+sfx, label:'Controle over stressfactoren (1–10)', data:list.map(e=>e.stress_controle!=null?parseInt(e.stress_controle):null), color:'#4cc9f0', yMin:1, yMax:10 }
   ];
   chartDefs.forEach(def => {
     const canvas = document.getElementById(def.id); if (!canvas) return;
@@ -2286,6 +2302,8 @@ function renderClientLifestyleLijst() {
       e.water_gevoel != null ? `💧 water: ${e.water_gevoel}/10` : null,
       e.groenten_gevoel != null ? `🥦 groenten: ${groLbl[e.groenten_gevoel]||e.groenten_gevoel}` : null,
       e.vlees_vis != null ? `🥩 vlees/vis: ${vleesLbl[e.vlees_vis]||e.vlees_vis}` : null,
+      e.lichamelijke_klachten != null ? `🤕 lich. klachten: ${e.lichamelijke_klachten}/10` : null,
+      e.stress_controle != null ? `🎯 stress controle: ${e.stress_controle}/10` : null,
       e.alcohol_gevoel != null ? `🍺 alcohol: ${e.alcohol_gevoel}/10` : null,
       e.roken ? `🚬 ${e.roken}` : null,
       e.sociale_agenda != null ? `👥 sociaal: ${e.sociale_agenda}/10` : null,
@@ -2352,6 +2370,30 @@ function hideSlaapRings() {
 // keep name for backward-compat calls
 function updateSlaapRings() { hideSlaapRings(); }
 
+function lsSliderInput(el) {
+  lsState[el.dataset.group] = el.value;
+  const disp = document.getElementById(el.dataset.group + '_disp');
+  if (disp) { disp.textContent = el.value; disp.classList.remove('empty'); }
+}
+function resetLsSliders() {
+  document.querySelectorAll('.ls-slider').forEach(s => {
+    s.value = Math.floor((parseInt(s.min) + parseInt(s.max)) / 2);
+    const disp = document.getElementById(s.dataset.group + '_disp');
+    if (disp) { disp.textContent = '–'; disp.classList.add('empty'); }
+  });
+}
+function restoreLsSlider(group, val) {
+  const slider = document.querySelector(`.ls-slider[data-group="${group}"]`);
+  const disp = document.getElementById(group + '_disp');
+  if (val != null) {
+    if (slider) slider.value = val;
+    if (disp) { disp.textContent = val; disp.classList.remove('empty'); }
+  } else {
+    if (slider) slider.value = Math.floor((parseInt(slider.min) + parseInt(slider.max)) / 2);
+    if (disp) { disp.textContent = '–'; disp.classList.add('empty'); }
+  }
+}
+
 function lsChipClick(btn) {
   const { group, val } = btn.dataset;
   if (btn.classList.contains('multi')) {
@@ -2371,7 +2413,7 @@ function lsChipClick(btn) {
 async function saveLifestyle() {
   const datum = document.getElementById('lsDatum').value;
   if (!datum) return showToast('Kies een datum.', 'error');
-  const defaultKeys = ['ls_slaap_kwaliteit','ls_schermtijd','ls_slaap_consistentie','ls_opstaan_gevoel','ls_nacht_wakker','ls_stress_niveau','ls_mentaal_uitgeput','ls_ontspanning','ls_stress_bronnen','ls_voeding_kwaliteit','ls_cravings','ls_cafeine','ls_water_gevoel','ls_groenten_gevoel','ls_vlees_vis','ls_alcohol_gevoel','ls_roken','ls_sociale_agenda','ls_smartphone'];
+  const defaultKeys = ['ls_slaap_kwaliteit','ls_schermtijd','ls_slaap_consistentie','ls_opstaan_gevoel','ls_nacht_wakker','ls_stress_niveau','ls_mentaal_uitgeput','ls_ontspanning','ls_stress_bronnen','ls_lichamelijke_klachten','ls_stress_controle','ls_voeding_kwaliteit','ls_cravings','ls_cafeine','ls_water_gevoel','ls_groenten_gevoel','ls_vlees_vis','ls_alcohol_gevoel','ls_roken','ls_sociale_agenda','ls_smartphone'];
   const extraFields = {};
   Object.keys(lsState).forEach(k => { if (!defaultKeys.includes(k)) extraFields[k] = lsState[k]; });
   const entry = {
@@ -2388,6 +2430,8 @@ async function saveLifestyle() {
     ontspanning_score: lsState.ls_ontspanning != null ? parseInt(lsState.ls_ontspanning) : null,
     stress_bronnen: lsState.ls_stress_bronnen || [],
     stress_anders: (lsState.ls_stress_bronnen||[]).includes('Andere') ? (document.getElementById('lsStressAnders')?.value?.trim()||null) : null,
+    lichamelijke_klachten: lsState.ls_lichamelijke_klachten != null ? parseInt(lsState.ls_lichamelijke_klachten) : null,
+    stress_controle: lsState.ls_stress_controle != null ? parseInt(lsState.ls_stress_controle) : null,
     voeding_kwaliteit: lsState.ls_voeding_kwaliteit != null ? parseInt(lsState.ls_voeding_kwaliteit) : null,
     cravings: lsState.ls_cravings != null ? parseInt(lsState.ls_cravings) : null,
     cafeine: lsState.ls_cafeine != null ? parseInt(lsState.ls_cafeine) : null,
@@ -2411,6 +2455,7 @@ async function saveLifestyle() {
   if (error) { showToast('Fout bij opslaan: ' + error.message, 'error'); return; }
   await loadLifestyles(AKid);
   lsState = {};
+  resetLsSliders();
   document.querySelectorAll('#tab-lifestyle .enq-chip, #clientLifestyleFormInner .enq-chip').forEach(b => b.classList.remove('selected'));
   document.getElementById('lsNotities').value = '';
   document.getElementById('lsDatum').value = today();
@@ -2451,6 +2496,8 @@ function renderLifestyleLijst() {
       e.water_gevoel != null ? `💧 water: ${e.water_gevoel}/10` : null,
       e.groenten_gevoel != null ? `🥦 groenten: ${groLbl[e.groenten_gevoel]||e.groenten_gevoel}` : null,
       e.vlees_vis != null ? `🥩 vlees/vis: ${vleesLbl[e.vlees_vis]||e.vlees_vis}` : null,
+      e.lichamelijke_klachten != null ? `🤕 lich. klachten: ${e.lichamelijke_klachten}/10` : null,
+      e.stress_controle != null ? `🎯 stress controle: ${e.stress_controle}/10` : null,
       e.alcohol_gevoel != null ? `🍺 alcohol: ${e.alcohol_gevoel}/10` : null,
       e.roken ? `🚬 ${e.roken}` : null,
       e.sociale_agenda != null ? `👥 sociaal: ${e.sociale_agenda}/10` : null,
@@ -2494,6 +2541,8 @@ function loadLifestyleIntoForm(id) {
     ls_stress_niveau: entry.stress_niveau != null ? String(entry.stress_niveau) : null,
     ls_mentaal_uitgeput: entry.mentaal_uitgeput != null ? String(entry.mentaal_uitgeput) : null,
     ls_ontspanning: entry.ontspanning_score != null ? String(entry.ontspanning_score) : null,
+    ls_lichamelijke_klachten: entry.lichamelijke_klachten != null ? String(entry.lichamelijke_klachten) : null,
+    ls_stress_controle: entry.stress_controle != null ? String(entry.stress_controle) : null,
     ls_stress_bronnen: Array.isArray(entry.stress_bronnen) ? entry.stress_bronnen : [],
     ls_voeding_kwaliteit: entry.voeding_kwaliteit != null ? String(entry.voeding_kwaliteit) : null,
     ls_cravings: entry.cravings != null ? String(entry.cravings) : null,
@@ -2512,6 +2561,7 @@ function loadLifestyleIntoForm(id) {
       ? (Array.isArray(lsState[group]) && lsState[group].includes(val))
       : lsState[group] === val);
   });
+  ['ls_stress_niveau','ls_mentaal_uitgeput','ls_ontspanning','ls_lichamelijke_klachten','ls_stress_controle'].forEach(g => restoreLsSlider(g, lsState[g]));
   const sf = document.getElementById('lsSlaapFactoren'); if (sf) sf.value = entry.slaap_factoren || '';
   const not = document.getElementById('lsNotities'); if (not) not.value = entry.notities || '';
   const saw = document.getElementById('lsStressAndersWrap');
