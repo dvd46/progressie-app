@@ -497,10 +497,10 @@ textarea { resize: vertical; min-height: 58px; }
 
         <div class="enq-section">
           <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">&#127807; LIFESTYLE</div>
-          <div style="margin-bottom:10px;"><label class="form-label">Hoe voel je je bij jouw eigen alcoholconsumptie? <span style="color:var(--muted);font-weight:400">(1=zeer slecht &ndash; 10=zeer goed)</span></label><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;"><button class="enq-chip" data-group="ls_alcohol_gevoel" data-val="1" onclick="lsChipClick(this)">1</button><button class="enq-chip" data-group="ls_alcohol_gevoel" data-val="2" onclick="lsChipClick(this)">2</button><button class="enq-chip" data-group="ls_alcohol_gevoel" data-val="3" onclick="lsChipClick(this)">3</button><button class="enq-chip" data-group="ls_alcohol_gevoel" data-val="4" onclick="lsChipClick(this)">4</button><button class="enq-chip" data-group="ls_alcohol_gevoel" data-val="5" onclick="lsChipClick(this)">5</button><button class="enq-chip" data-group="ls_alcohol_gevoel" data-val="6" onclick="lsChipClick(this)">6</button><button class="enq-chip" data-group="ls_alcohol_gevoel" data-val="7" onclick="lsChipClick(this)">7</button><button class="enq-chip" data-group="ls_alcohol_gevoel" data-val="8" onclick="lsChipClick(this)">8</button><button class="enq-chip" data-group="ls_alcohol_gevoel" data-val="9" onclick="lsChipClick(this)">9</button><button class="enq-chip" data-group="ls_alcohol_gevoel" data-val="10" onclick="lsChipClick(this)">10</button></div></div>
-          <div style="margin-bottom:10px;"><label class="form-label">Rook- of vapegedrag</label><div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;"><button class="enq-chip" data-group="ls_roken" data-val="Niet" onclick="lsChipClick(this)">Niet</button><button class="enq-chip" data-group="ls_roken" data-val="Vapen" onclick="lsChipClick(this)">Vapen</button><button class="enq-chip" data-group="ls_roken" data-val="Roken" onclick="lsChipClick(this)">Roken</button><button class="enq-chip" data-group="ls_roken" data-val="Vapen &amp; roken" onclick="lsChipClick(this)">Vapen &amp; roken</button><button class="enq-chip" data-group="ls_roken" data-val="Gestopt" onclick="lsChipClick(this)">Gestopt</button><button class="enq-chip" data-group="ls_roken" data-val="Af en toe" onclick="lsChipClick(this)">Af en toe</button></div></div>
-          <div style="margin-bottom:10px;"><label class="form-label">Hoe voel je je bij jouw sociale agenda? <span style="color:var(--muted);font-weight:400">(1=zeer slecht &ndash; 10=zeer goed)</span></label><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;"><button class="enq-chip" data-group="ls_sociale_agenda" data-val="1" onclick="lsChipClick(this)">1</button><button class="enq-chip" data-group="ls_sociale_agenda" data-val="2" onclick="lsChipClick(this)">2</button><button class="enq-chip" data-group="ls_sociale_agenda" data-val="3" onclick="lsChipClick(this)">3</button><button class="enq-chip" data-group="ls_sociale_agenda" data-val="4" onclick="lsChipClick(this)">4</button><button class="enq-chip" data-group="ls_sociale_agenda" data-val="5" onclick="lsChipClick(this)">5</button><button class="enq-chip" data-group="ls_sociale_agenda" data-val="6" onclick="lsChipClick(this)">6</button><button class="enq-chip" data-group="ls_sociale_agenda" data-val="7" onclick="lsChipClick(this)">7</button><button class="enq-chip" data-group="ls_sociale_agenda" data-val="8" onclick="lsChipClick(this)">8</button><button class="enq-chip" data-group="ls_sociale_agenda" data-val="9" onclick="lsChipClick(this)">9</button><button class="enq-chip" data-group="ls_sociale_agenda" data-val="10" onclick="lsChipClick(this)">10</button></div></div>
-          <div style="margin-bottom:10px;"><label class="form-label">Beschrijf jouw relatie met jouw smartphonegedrag <span style="color:var(--muted);font-weight:400">(1=zeer slecht &ndash; 10=zeer goed)</span></label><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;"><button class="enq-chip" data-group="ls_smartphone" data-val="1" onclick="lsChipClick(this)">1</button><button class="enq-chip" data-group="ls_smartphone" data-val="2" onclick="lsChipClick(this)">2</button><button class="enq-chip" data-group="ls_smartphone" data-val="3" onclick="lsChipClick(this)">3</button><button class="enq-chip" data-group="ls_smartphone" data-val="4" onclick="lsChipClick(this)">4</button><button class="enq-chip" data-group="ls_smartphone" data-val="5" onclick="lsChipClick(this)">5</button><button class="enq-chip" data-group="ls_smartphone" data-val="6" onclick="lsChipClick(this)">6</button><button class="enq-chip" data-group="ls_smartphone" data-val="7" onclick="lsChipClick(this)">7</button><button class="enq-chip" data-group="ls_smartphone" data-val="8" onclick="lsChipClick(this)">8</button><button class="enq-chip" data-group="ls_smartphone" data-val="9" onclick="lsChipClick(this)">9</button><button class="enq-chip" data-group="ls_smartphone" data-val="10" onclick="lsChipClick(this)">10</button></div></div>
+          <div style="margin-bottom:14px;"><label class="form-label">Hoe voel je je bij jouw eigen alcoholconsumptie? <span style="color:var(--muted);font-weight:400">(1&ndash;10 &mdash; 1=zeer slecht, 10=zeer goed)</span></label><div class="ls-slider-wrap"><span class="ls-slider-edge">1</span><input type="range" min="1" max="10" step="1" value="5" class="ls-slider" data-group="ls_alcohol_gevoel" oninput="lsSliderInput(this)" style="accent-color:#f4a261;"><span class="ls-slider-edge">10</span><span class="ls-slider-val empty" style="border-color:#f4a261;color:#f4a261;">5</span></div></div>
+          <div style="margin-bottom:14px;"><label class="form-label">Hoeveel rook of vape je? <span style="color:var(--muted);font-weight:400">(0&ndash;10 &mdash; 0 = niet)</span></label><div class="ls-slider-wrap"><span class="ls-slider-edge">0</span><input type="range" min="0" max="10" step="1" value="5" class="ls-slider" data-group="ls_roken" oninput="lsSliderInput(this)" style="accent-color:#f4a261;"><span class="ls-slider-edge">10</span><span class="ls-slider-val empty" style="border-color:#f4a261;color:#f4a261;">5</span></div></div>
+          <div style="margin-bottom:14px;"><label class="form-label">Hoe voel je je bij jouw sociale agenda? <span style="color:var(--muted);font-weight:400">(1&ndash;10 &mdash; 1=zeer slecht, 10=zeer goed)</span></label><div class="ls-slider-wrap"><span class="ls-slider-edge">1</span><input type="range" min="1" max="10" step="1" value="5" class="ls-slider" data-group="ls_sociale_agenda" oninput="lsSliderInput(this)" style="accent-color:#f4a261;"><span class="ls-slider-edge">10</span><span class="ls-slider-val empty" style="border-color:#f4a261;color:#f4a261;">5</span></div></div>
+          <div style="margin-bottom:14px;"><label class="form-label">Beschrijf jouw relatie met jouw smartphonegebruik <span style="color:var(--muted);font-weight:400">(1&ndash;10 &mdash; 1=zeer slecht, 10=zeer goed)</span></label><div class="ls-slider-wrap"><span class="ls-slider-edge">1</span><input type="range" min="1" max="10" step="1" value="5" class="ls-slider" data-group="ls_smartphone" oninput="lsSliderInput(this)" style="accent-color:#f4a261;"><span class="ls-slider-edge">10</span><span class="ls-slider-val empty" style="border-color:#f4a261;color:#f4a261;">5</span></div></div>
         </div>
 
         <div class="form-group"><label class="form-label">Extra opmerkingen</label><textarea id="lsNotities" placeholder="Vrije notities&hellip;" rows="2"></textarea></div>
@@ -543,7 +543,7 @@ textarea { resize: vertical; min-height: 58px; }
         <div class="panel" style="padding:12px;"><canvas id="cAlcoholGevoel"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSocialeAgenda"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSmartphone"></canvas></div>
-        <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Rook- / vaapgedrag</div><div id="rokenTekst" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+        <div class="panel" style="padding:12px;"><canvas id="cRoken"></canvas></div>
       </div>
     </div>
     <div id="voedingChartsContainer" style="margin-top:16px;display:none;">
@@ -970,7 +970,7 @@ textarea { resize: vertical; min-height: 58px; }
         <button class="enq-chip selected" id="fc_alcoholgevoel" onclick="toggleClientChart('alcoholgevoel')">Alcohol</button>
         <button class="enq-chip selected" id="fc_socialeagenda" onclick="toggleClientChart('socialeagenda')">Sociale agenda</button>
         <button class="enq-chip selected" id="fc_smartphone" onclick="toggleClientChart('smartphone')">Smartphone</button>
-        <button class="enq-chip selected" id="fc_roken" onclick="toggleClientChart('roken')">Roken</button>
+        <button class="enq-chip selected" id="fc_roken" onclick="toggleClientChart('roken')">Rook / vape</button>
       </div>
     </div>
     <div id="slaapChartsContainer_c" style="margin-bottom:16px;display:none;">
@@ -1002,7 +1002,7 @@ textarea { resize: vertical; min-height: 58px; }
         <div class="panel" style="padding:12px;" data-chart="alcoholgevoel"><canvas id="cAlcoholGevoel_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="socialeagenda"><canvas id="cSocialeAgenda_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="smartphone"><canvas id="cSmartphone_c"></canvas></div>
-        <div class="panel" style="padding:12px;" data-chart="roken"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Rook- / vapegedrag</div><div id="rokenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+        <div class="panel" style="padding:12px;" data-chart="roken"><canvas id="cRoken_c"></canvas></div>
       </div>
     </div>
     <div id="voedingChartsContainer_c" style="display:none;">
@@ -2198,7 +2198,7 @@ function renderSlaapCharts(sfx = '') {
 let leefstijlCharts = {};
 function renderLeefstijlCharts(sfx = '') {
   const list = getLifestyles().filter(e =>
-    e.alcohol_gevoel != null || e.sociale_agenda != null || e.smartphone != null || e.roken
+    e.alcohol_gevoel != null || e.sociale_agenda != null || e.smartphone != null || e.roken != null
   ).slice().reverse();
   const container = document.getElementById('leefstijlChartsContainer' + sfx);
   if (!container) return;
@@ -2206,9 +2206,10 @@ function renderLeefstijlCharts(sfx = '') {
   container.style.display = '';
   const labels = list.map(e => e.datum);
   const chartDefs = [
-    { id:'cAlcoholGevoel'+sfx, label:'Gevoel alcoholconsumptie (1–10)', data:list.map(e=>e.alcohol_gevoel??null), color:'#f4a261', yMin:1, yMax:10 },
+    { id:'cAlcoholGevoel'+sfx, label:'Alcoholconsumptie (1–10, 1=slecht)', data:list.map(e=>e.alcohol_gevoel??null), color:'#f4a261', yMin:1, yMax:10 },
+    { id:'cRoken'+sfx, label:'Rook- / vapegedrag (0–10, 0=niet)', data:list.map(e=>e.roken!=null?parseInt(e.roken):null), color:'#e63946', yMin:0, yMax:10 },
     { id:'cSocialeAgenda'+sfx, label:'Sociale agenda (1–10)', data:list.map(e=>e.sociale_agenda??null), color:'#6EF08C', yMin:1, yMax:10 },
-    { id:'cSmartphone'+sfx, label:'Smartphonegedrag (1–10)', data:list.map(e=>e.smartphone??null), color:'#4cc9f0', yMin:1, yMax:10 }
+    { id:'cSmartphone'+sfx, label:'Smartphonegebruik (1–10)', data:list.map(e=>e.smartphone??null), color:'#4cc9f0', yMin:1, yMax:10 }
   ];
   chartDefs.forEach(def => {
     const canvas = document.getElementById(def.id); if (!canvas) return;
@@ -2223,11 +2224,6 @@ function renderLeefstijlCharts(sfx = '') {
       options:{ responsive:true, plugins:{ legend:{display:false}, title:{display:true,text:def.label,color:'#111',font:{size:14,weight:'bold'},padding:{bottom:14}}, tooltip:{backgroundColor:'rgba(13,13,13,0.85)',titleColor:'#fff',bodyColor:'#ddd',padding:10,cornerRadius:6} }, scales:{ x:{ticks:{color:'#444',font:{size:12,weight:'600'}},grid:{color:'rgba(0,0,0,0.07)'}}, y:yOpts } }
     });
   });
-  const rokenItems = list.filter(e => e.roken).slice(-5).reverse().map(e =>
-    `<div style="margin-bottom:6px;"><span style="color:var(--muted);font-size:10px;">${e.datum}</span><br><span style="font-size:12px;">${e.roken}</span></div>`
-  );
-  const rel = document.getElementById('rokenTekst' + sfx);
-  if (rel) rel.innerHTML = rokenItems.length ? rokenItems.join('') : '<span style="color:var(--muted);font-size:12px;">Nog geen gegevens.</span>';
 }
 
 // ── VOEDING GRAFIEKEN ────────────────────────────────────────────────
@@ -2291,7 +2287,7 @@ function renderClientLifestyleLijst() {
       e.lichamelijke_klachten != null ? `🤕 lich. klachten: ${e.lichamelijke_klachten}/10` : null,
       e.stress_controle != null ? `🎯 stress controle: ${e.stress_controle}/10` : null,
       e.alcohol_gevoel != null ? `🍺 alcohol: ${e.alcohol_gevoel}/10` : null,
-      e.roken ? `🚬 ${e.roken}` : null,
+      e.roken != null ? `🚬 rook/vape: ${e.roken}/10` : null,
       e.sociale_agenda != null ? `👥 sociaal: ${e.sociale_agenda}/10` : null,
       e.smartphone != null ? `📱 smartphone: ${e.smartphone}/10` : null,
     ].filter(Boolean);
@@ -2426,7 +2422,7 @@ async function saveLifestyle() {
     water_gevoel: lsState.ls_water_gevoel != null ? parseInt(lsState.ls_water_gevoel) : null,
     groenten_gevoel: lsState.ls_groenten_gevoel != null ? parseInt(lsState.ls_groenten_gevoel) : null,
     alcohol_gevoel: lsState.ls_alcohol_gevoel != null ? parseInt(lsState.ls_alcohol_gevoel) : null,
-    roken: lsState.ls_roken || null,
+    roken: lsState.ls_roken != null ? parseInt(lsState.ls_roken) : null,
     sociale_agenda: lsState.ls_sociale_agenda != null ? parseInt(lsState.ls_sociale_agenda) : null,
     smartphone: lsState.ls_smartphone != null ? parseInt(lsState.ls_smartphone) : null,
     notities: document.getElementById('lsNotities').value.trim() || null,
@@ -2485,7 +2481,7 @@ function renderLifestyleLijst() {
       e.lichamelijke_klachten != null ? `🤕 lich. klachten: ${e.lichamelijke_klachten}/10` : null,
       e.stress_controle != null ? `🎯 stress controle: ${e.stress_controle}/10` : null,
       e.alcohol_gevoel != null ? `🍺 alcohol: ${e.alcohol_gevoel}/10` : null,
-      e.roken ? `🚬 ${e.roken}` : null,
+      e.roken != null ? `🚬 rook/vape: ${e.roken}/10` : null,
       e.sociale_agenda != null ? `👥 sociaal: ${e.sociale_agenda}/10` : null,
       e.smartphone != null ? `📱 smartphone: ${e.smartphone}/10` : null,
     ].filter(Boolean);
@@ -2536,7 +2532,7 @@ function loadLifestyleIntoForm(id) {
     ls_water_gevoel: entry.water_gevoel != null ? String(entry.water_gevoel) : null,
     ls_groenten_gevoel: entry.groenten_gevoel != null ? String(entry.groenten_gevoel) : null,
     ls_alcohol_gevoel: entry.alcohol_gevoel != null ? String(entry.alcohol_gevoel) : null,
-    ls_roken: entry.roken || null,
+    ls_roken: entry.roken != null ? String(entry.roken) : null,
     ls_sociale_agenda: entry.sociale_agenda != null ? String(entry.sociale_agenda) : null,
     ls_smartphone: entry.smartphone != null ? String(entry.smartphone) : null,
   };
@@ -2547,7 +2543,8 @@ function loadLifestyleIntoForm(id) {
       : lsState[group] === val);
   });
   ['ls_stress_niveau','ls_mentaal_uitgeput','ls_ontspanning','ls_lichamelijke_klachten','ls_stress_controle',
-   'ls_voeding_kwaliteit','ls_cravings','ls_cafeine','ls_water_gevoel','ls_groenten_gevoel'].forEach(g => restoreLsSlider(g, lsState[g]));
+   'ls_voeding_kwaliteit','ls_cravings','ls_cafeine','ls_water_gevoel','ls_groenten_gevoel',
+   'ls_alcohol_gevoel','ls_roken','ls_sociale_agenda','ls_smartphone'].forEach(g => restoreLsSlider(g, lsState[g]));
   const sf = document.getElementById('lsSlaapFactoren'); if (sf) sf.value = entry.slaap_factoren || '';
   const not = document.getElementById('lsNotities'); if (not) not.value = entry.notities || '';
   const saw = document.getElementById('lsStressAndersWrap');
