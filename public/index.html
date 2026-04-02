@@ -2372,30 +2372,28 @@ function updateSlaapRings() { hideSlaapRings(); }
 
 function lsSliderInput(el) {
   lsState[el.dataset.group] = el.value;
-  const disp = document.getElementById(el.dataset.group + '_disp');
+  const disp = el.closest('.ls-slider-wrap')?.querySelector('.ls-slider-val');
   if (disp) { disp.textContent = el.value; disp.classList.remove('empty'); }
-}
-function lsSliderActivate(el) {
-  if (lsState[el.dataset.group] == null) lsSliderInput(el);
 }
 function resetLsSliders() {
   document.querySelectorAll('.ls-slider').forEach(s => {
     const mid = Math.floor((parseInt(s.min) + parseInt(s.max)) / 2);
     s.value = mid;
-    const disp = document.getElementById(s.dataset.group + '_disp');
+    const disp = s.closest('.ls-slider-wrap')?.querySelector('.ls-slider-val');
     if (disp) { disp.textContent = mid; disp.classList.add('empty'); }
   });
 }
 function restoreLsSlider(group, val) {
-  const slider = document.querySelector(`.ls-slider[data-group="${group}"]`);
-  const disp = document.getElementById(group + '_disp');
-  if (val != null) {
-    if (slider) slider.value = val;
-    if (disp) { disp.textContent = val; disp.classList.remove('empty'); }
-  } else {
-    if (slider) slider.value = Math.floor((parseInt(slider.min) + parseInt(slider.max)) / 2);
-    if (disp) { disp.textContent = '–'; disp.classList.add('empty'); }
-  }
+  document.querySelectorAll(`.ls-slider[data-group="${group}"]`).forEach(slider => {
+    const disp = slider.closest('.ls-slider-wrap')?.querySelector('.ls-slider-val');
+    if (val != null) {
+      slider.value = val;
+      if (disp) { disp.textContent = val; disp.classList.remove('empty'); }
+    } else {
+      slider.value = Math.floor((parseInt(slider.min) + parseInt(slider.max)) / 2);
+      if (disp) { disp.textContent = slider.value; disp.classList.add('empty'); }
+    }
+  });
 }
 
 function lsChipClick(btn) {
