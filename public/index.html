@@ -514,16 +514,27 @@ textarea { resize: vertical; min-height: 58px; }
 
     <div id="slaapChartsContainer" style="margin-top:16px;display:none;">
       <div class="panel-title" style="margin-bottom:12px;">Slaap Grafieken</div>
-      <div style="display:flex;justify-content:center;margin-bottom:20px;">
-        <svg class="sleep-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
-          <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
-          <circle class="sleep-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
-          <text class="sleep-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
-          <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">SLEEP SCORE</text>
-        </svg>
+      <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
+        <div style="text-align:center;">
+          <svg class="sleep-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
+            <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+            <circle class="sleep-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <text class="sleep-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
+            <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">SLEEP SCORE</text>
+          </svg>
+        </div>
+        <div style="text-align:center;">
+          <svg class="stress-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
+            <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+            <circle class="stress-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <text class="stress-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
+            <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">STRESS SCORE</text>
+          </svg>
+        </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cSlaapScore"></canvas></div>
+        <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cStressScore"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSchermtijd"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSlaapConsistentie"></canvas></div>
@@ -974,16 +985,27 @@ textarea { resize: vertical; min-height: 58px; }
       </div>
     </div>
     <div id="slaapChartsContainer_c" style="margin-bottom:16px;display:none;">
-      <div style="display:flex;justify-content:center;margin-bottom:20px;">
-        <svg class="sleep-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
-          <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
-          <circle class="sleep-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
-          <text class="sleep-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
-          <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">SLEEP SCORE</text>
-        </svg>
+      <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
+        <div style="text-align:center;">
+          <svg class="sleep-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
+            <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+            <circle class="sleep-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <text class="sleep-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
+            <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">SLEEP SCORE</text>
+          </svg>
+        </div>
+        <div style="text-align:center;">
+          <svg class="stress-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
+            <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+            <circle class="stress-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <text class="stress-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
+            <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">STRESS SCORE</text>
+          </svg>
+        </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="slaapscore"><canvas id="cSlaapScore_c"></canvas></div>
+        <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="stressscore"><canvas id="cStressScore_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="slaapkwal"><canvas id="cSlaapKwaliteit_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="schermtijd"><canvas id="cSchermtijd_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="slaapconsist"><canvas id="cSlaapConsistentie_c"></canvas></div>
@@ -2159,10 +2181,23 @@ function renderSlaapCharts(sfx = '') {
     if (prog) { prog.setAttribute('stroke-dashoffset', offset); prog.setAttribute('stroke', color); }
     if (txt) txt.textContent = latestScore != null ? String(latestScore) : '–';
   }
+  // Update stress score ring inside this container
+  const latestStressScore = list.map(e => calcStressScore(e)).find(s => s != null) ?? null;
+  const stressRingEl = container.querySelector('.stress-score-ring');
+  if (stressRingEl) {
+    const circumference = 364.42;
+    const color = latestStressScore == null ? '#444' : latestStressScore <= 40 ? '#e63946' : latestStressScore <= 70 ? '#f4a261' : '#6EF08C';
+    const offset = latestStressScore == null ? circumference : +(circumference * (1 - latestStressScore / 100)).toFixed(2);
+    const prog = stressRingEl.querySelector('.stress-ring-progress');
+    const txt = stressRingEl.querySelector('.stress-ring-score');
+    if (prog) { prog.setAttribute('stroke-dashoffset', offset); prog.setAttribute('stroke', color); }
+    if (txt) txt.textContent = latestStressScore != null ? String(latestStressScore) : '–';
+  }
   const labels = list.map(e => e.datum);
   const schermMap = {Nooit:0, Zelden:1, Soms:2, Vaak:3, Altijd:4};
   const chartDefs = [
     { id:'cSlaapScore'+sfx, label:'Slaapscore (0–100)', data:list.map(e=>calcSlaapScore(e)), color:'#6EF08C', yMin:0, yMax:100 },
+    { id:'cStressScore'+sfx, label:'Stressscore (0–100)', data:list.map(e=>calcStressScore(e)), color:'#e63946', yMin:0, yMax:100 },
     { id:'cSlaapKwaliteit'+sfx, label:'Slaapkwaliteit (1–10)', data:list.map(e=>e.slaap_kwaliteit?parseInt(e.slaap_kwaliteit):null), color:'#6EF08C', yMin:1, yMax:10 },
     { id:'cSchermtijd'+sfx, label:'Schermtijd voor slapen', data:list.map(e=>e.schermtijd!=null?schermMap[e.schermtijd]??null:null), color:'#f4a261', yMin:0, yMax:4, yLabels:['Nooit','Zelden','Soms','Vaak','Altijd'] },
     { id:'cSlaapConsistentie'+sfx, label:'Consistentie slaapschema (1–10)', data:list.map(e=>e.slaap_consistentie?parseInt(e.slaap_consistentie):null), color:'#4cc9f0', yMin:1, yMax:10 },
@@ -2459,6 +2494,15 @@ function calcSlaapScore(entry) {
   const q5 = entry.nacht_wakker != null ? (nachtMap[String(entry.nacht_wakker)] ?? null) : null;
   if ([q1, q2, q3, q4, q5].some(v => v === null)) return null;
   return Math.round(((q1 * 2 + q2 * 1 + q3 * 1 + q4 * 2 + q5 * 1) / 7) * 10);
+}
+function calcStressScore(entry) {
+  const q1 = entry.stress_niveau != null ? parseInt(entry.stress_niveau) : null;
+  const q2 = entry.mentaal_uitgeput != null ? parseInt(entry.mentaal_uitgeput) : null;
+  const q3 = entry.ontspanning_score != null ? parseInt(entry.ontspanning_score) : null;
+  const q4 = entry.lichamelijke_klachten != null ? parseInt(entry.lichamelijke_klachten) : null;
+  const q5 = entry.stress_controle != null ? parseInt(entry.stress_controle) : null;
+  if ([q1, q2, q3, q4, q5].some(v => v === null)) return null;
+  return Math.round(((11 - q1) * 0.40 + (10 - q2) * 0.15 + q3 * 0.15 + (10 - q4) * 0.15 + q5 * 0.15) * 10);
 }
 
 function renderLifestyleLijst() {
