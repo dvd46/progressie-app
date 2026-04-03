@@ -2427,6 +2427,7 @@ async function saveClientLifestyle() {
   if (d2) document.getElementById('lsDatum').value = d2.value || today();
   await saveLifestyle();
   renderClientLifestyleLijst();
+  applyClientChartFilter();
 }
 function renderClientLifestyleLijst() {
   const el = document.getElementById('clientLifestyleLijst'); if (!el) return;
@@ -2452,8 +2453,8 @@ function renderClientLifestyleLijst() {
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <span class="opm-datum">${fmtD(e.datum)}</span>
         <div style="display:flex;gap:4px;">
-          <button class="btn btn-sm" style="padding:2px 8px;background:var(--panel);border:1px solid var(--border);color:var(--text);" onclick="loadLifestyleIntoForm('${e.id}')">✏️</button>
-          <button class="btn btn-danger btn-sm" style="padding:2px 8px;" onclick="deleteLifestyle('${e.id}')">×</button>
+          <button class="btn btn-sm" style="padding:2px 8px;background:var(--panel);border:1px solid var(--border);color:var(--text);" onclick="loadLifestyleIntoForm('${e.id}')">✏️ Bewerken</button>
+          <button class="btn btn-danger btn-sm" style="padding:2px 8px;" onclick="deleteLifestyle('${e.id}')">🗑️ Verwijderen</button>
         </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
@@ -2655,8 +2656,8 @@ function renderLifestyleLijst() {
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <span class="opm-datum">${fmtD(e.datum)}</span>
         <div style="display:flex;gap:4px;">
-          <button class="btn btn-sm" style="padding:2px 8px;background:var(--panel);border:1px solid var(--border);color:var(--text);" onclick="loadLifestyleIntoForm('${e.id}')">✏️</button>
-          <button class="btn btn-danger btn-sm" style="padding:2px 8px;" onclick="deleteLifestyle('${e.id}')">×</button>
+          <button class="btn btn-sm" style="padding:2px 8px;background:var(--panel);border:1px solid var(--border);color:var(--text);" onclick="loadLifestyleIntoForm('${e.id}')">✏️ Bewerken</button>
+          <button class="btn btn-danger btn-sm" style="padding:2px 8px;" onclick="deleteLifestyle('${e.id}')">🗑️ Verwijderen</button>
         </div>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">
@@ -2668,9 +2669,12 @@ function renderLifestyleLijst() {
 }
 
 async function deleteLifestyle(id) {
+  if (!confirm('Enquête verwijderen? Dit kan niet ongedaan worden gemaakt.')) return;
   const { error } = await sb.from('lifestyle_enquetes').delete().eq('id', id);
   if (error) { showToast('Fout: ' + error.message, 'error'); return; }
+  showToast('Enquête verwijderd.', 'success');
   await loadLifestyles(AKid);
+  applyClientChartFilter();
 }
 
 function loadLifestyleIntoForm(id) {
