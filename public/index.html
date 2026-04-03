@@ -532,15 +532,25 @@ textarea { resize: vertical; min-height: 58px; }
           </svg>
         </div>
       </div>
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 16px;">
+        <span style="font-size:13px;font-weight:700;color:#6EF08C;white-space:nowrap;">🌙 Thema Slaap</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cSlaapScore"></canvas></div>
-        <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cStressScore"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSchermtijd"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSlaapConsistentie"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cOpstaanGevoel"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cNachtWakker"></canvas></div>
         <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div><div id="slaapFactorenTekst" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin:24px 0 16px;">
+        <span style="font-size:13px;font-weight:700;color:#e63946;white-space:nowrap;">⚡ Thema Stress</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cStressScore"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cStressNiveau"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cMentaalUitgeput"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cOntspanning"></canvas></div>
@@ -549,7 +559,10 @@ textarea { resize: vertical; min-height: 58px; }
       </div>
     </div>
     <div id="leefstijlChartsContainer" style="margin-top:16px;display:none;">
-      <div class="panel-title" style="margin-bottom:12px;">Leefstijl Grafieken</div>
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 16px;">
+        <span style="font-size:13px;font-weight:700;color:#f4a261;white-space:nowrap;">🌿 Thema Leefstijl</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
       <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
         <div style="text-align:center;">
           <svg class="leefstijl-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
@@ -569,7 +582,10 @@ textarea { resize: vertical; min-height: 58px; }
       </div>
     </div>
     <div id="voedingChartsContainer" style="margin-top:16px;display:none;">
-      <div class="panel-title" style="margin-bottom:12px;">Voeding Grafieken</div>
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 16px;">
+        <span style="font-size:13px;font-weight:700;color:#6EF08C;white-space:nowrap;">🍽️ Thema Voeding</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
       <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
         <div style="text-align:center;">
           <svg class="voeding-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
@@ -1028,15 +1044,25 @@ textarea { resize: vertical; min-height: 58px; }
           </svg>
         </div>
       </div>
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 16px;">
+        <span style="font-size:13px;font-weight:700;color:#6EF08C;white-space:nowrap;">🌙 Thema Slaap</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="slaapscore"><canvas id="cSlaapScore_c"></canvas></div>
-        <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="stressscore"><canvas id="cStressScore_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="slaapkwal"><canvas id="cSlaapKwaliteit_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="schermtijd"><canvas id="cSchermtijd_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="slaapconsist"><canvas id="cSlaapConsistentie_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="opstaangevoel"><canvas id="cOpstaanGevoel_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="nachtwakker"><canvas id="cNachtWakker_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="slaapfact"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div><div id="slaapFactorenTekst_c" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin:24px 0 16px;">
+        <span style="font-size:13px;font-weight:700;color:#e63946;white-space:nowrap;">⚡ Thema Stress</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="stressscore"><canvas id="cStressScore_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="stressniv"><canvas id="cStressNiveau_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="mentaaluit"><canvas id="cMentaalUitgeput_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="ontspanning"><canvas id="cOntspanning_c"></canvas></div>
@@ -1045,6 +1071,10 @@ textarea { resize: vertical; min-height: 58px; }
       </div>
     </div>
     <div id="leefstijlChartsContainer_c" style="margin-bottom:16px;display:none;">
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 16px;">
+        <span style="font-size:13px;font-weight:700;color:#f4a261;white-space:nowrap;">🌿 Thema Leefstijl</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
       <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
         <div style="text-align:center;">
           <svg class="leefstijl-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
@@ -1064,6 +1094,10 @@ textarea { resize: vertical; min-height: 58px; }
       </div>
     </div>
     <div id="voedingChartsContainer_c" style="display:none;">
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 16px;">
+        <span style="font-size:13px;font-weight:700;color:#6EF08C;white-space:nowrap;">🍽️ Thema Voeding</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
       <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
         <div style="text-align:center;">
           <svg class="voeding-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
