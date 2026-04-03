@@ -550,7 +550,18 @@ textarea { resize: vertical; min-height: 58px; }
     </div>
     <div id="leefstijlChartsContainer" style="margin-top:16px;display:none;">
       <div class="panel-title" style="margin-bottom:12px;">Leefstijl Grafieken</div>
+      <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
+        <div style="text-align:center;">
+          <svg class="leefstijl-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
+            <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+            <circle class="leefstijl-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <text class="leefstijl-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
+            <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">LEEFSTIJL SCORE</text>
+          </svg>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cLeefstijlScore"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cAlcoholGevoel"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSocialeAgenda"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cSmartphone"></canvas></div>
@@ -991,6 +1002,7 @@ textarea { resize: vertical; min-height: 58px; }
         <span>🌿 Leefstijl</span><span id="fs_leefstijl_arrow" class="fs-arrow">▼</span>
       </div>
       <div id="fs_leefstijl" class="fs-body" style="display:none;">
+        <button class="enq-chip selected" id="fc_leefstijlscore" onclick="toggleClientChart('leefstijlscore')">🌿 Leefstijlscore</button>
         <button class="enq-chip selected" id="fc_alcoholgevoel" onclick="toggleClientChart('alcoholgevoel')">Alcohol</button>
         <button class="enq-chip selected" id="fc_socialeagenda" onclick="toggleClientChart('socialeagenda')">Sociale agenda</button>
         <button class="enq-chip selected" id="fc_smartphone" onclick="toggleClientChart('smartphone')">Smartphone</button>
@@ -1033,7 +1045,18 @@ textarea { resize: vertical; min-height: 58px; }
       </div>
     </div>
     <div id="leefstijlChartsContainer_c" style="margin-bottom:16px;display:none;">
+      <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
+        <div style="text-align:center;">
+          <svg class="leefstijl-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
+            <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+            <circle class="leefstijl-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <text class="leefstijl-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
+            <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">LEEFSTIJL SCORE</text>
+          </svg>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="leefstijlscore"><canvas id="cLeefstijlScore_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="alcoholgevoel"><canvas id="cAlcoholGevoel_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="socialeagenda"><canvas id="cSocialeAgenda_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="smartphone"><canvas id="cSmartphone_c"></canvas></div>
@@ -2256,6 +2279,15 @@ function renderSlaapCharts(sfx = '') {
 
 // ── LEEFSTIJL GRAFIEKEN (alcohol, roken, sociaal, smartphone) ────────
 let leefstijlCharts = {};
+function calcLeefstijlScore(entry) {
+  const q1 = entry.alcohol_gevoel != null ? parseInt(entry.alcohol_gevoel) : null;
+  const q2 = entry.roken != null ? parseInt(entry.roken) : null;
+  const q3 = entry.sociale_agenda != null ? parseInt(entry.sociale_agenda) : null;
+  const q4 = entry.smartphone != null ? parseInt(entry.smartphone) : null;
+  if ([q1, q2, q3, q4].some(v => v === null)) return null;
+  return Math.round((q1 * 0.25 + (10 - q2) * 0.25 + q3 * 0.25 + q4 * 0.25) * 10);
+}
+
 function renderLeefstijlCharts(sfx = '') {
   const list = getLifestyles().filter(e =>
     e.alcohol_gevoel != null || e.sociale_agenda != null || e.smartphone != null || e.roken != null
@@ -2264,8 +2296,21 @@ function renderLeefstijlCharts(sfx = '') {
   if (!container) return;
   if (!list.length) { container.style.display = 'none'; return; }
   container.style.display = '';
+  // Update leefstijl score ring
+  const latestLeefstijlScore = list.map(e => calcLeefstijlScore(e)).find(s => s != null) ?? null;
+  const ringEl = container.querySelector('.leefstijl-score-ring');
+  if (ringEl) {
+    const circumference = 364.42;
+    const color = latestLeefstijlScore == null ? '#444' : latestLeefstijlScore <= 40 ? '#e63946' : latestLeefstijlScore <= 70 ? '#f4a261' : '#6EF08C';
+    const offset = latestLeefstijlScore == null ? circumference : +(circumference * (1 - latestLeefstijlScore / 100)).toFixed(2);
+    const prog = ringEl.querySelector('.leefstijl-ring-progress');
+    const txt = ringEl.querySelector('.leefstijl-ring-score');
+    if (prog) { prog.setAttribute('stroke-dashoffset', offset); prog.setAttribute('stroke', color); }
+    if (txt) txt.textContent = latestLeefstijlScore != null ? String(latestLeefstijlScore) : '–';
+  }
   const labels = list.map(e => e.datum);
   const chartDefs = [
+    { id:'cLeefstijlScore'+sfx, label:'Leefstijlscore (0–100)', data:list.map(e=>calcLeefstijlScore(e)), color:'#f4a261', yMin:0, yMax:100 },
     { id:'cAlcoholGevoel'+sfx, label:'Alcoholconsumptie (1–10, 1=slecht)', data:list.map(e=>e.alcohol_gevoel??null), color:'#f4a261', yMin:1, yMax:10 },
     { id:'cRoken'+sfx, label:'Rook- / vapegedrag (0–10, 0=niet)', data:list.map(e=>e.roken!=null?parseInt(e.roken):null), color:'#e63946', yMin:0, yMax:10 },
     { id:'cSocialeAgenda'+sfx, label:'Sociale agenda (1–10)', data:list.map(e=>e.sociale_agenda??null), color:'#6EF08C', yMin:1, yMax:10 },
