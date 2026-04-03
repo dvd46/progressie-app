@@ -958,6 +958,7 @@ textarea { resize: vertical; min-height: 58px; }
         <span>⚡ Stress</span><span id="fs_stress_arrow" class="fs-arrow">▼</span>
       </div>
       <div id="fs_stress" class="fs-body" style="display:none;">
+        <button class="enq-chip selected" id="fc_stressscore" onclick="toggleClientChart('stressscore')">⚡ Stressscore</button>
         <button class="enq-chip selected" id="fc_stressniv" onclick="toggleClientChart('stressniv')">Stressniveau</button>
         <button class="enq-chip selected" id="fc_mentaaluit" onclick="toggleClientChart('mentaaluit')">Mentale uitputting</button>
         <button class="enq-chip selected" id="fc_ontspanning" onclick="toggleClientChart('ontspanning')">Ontspanning</button>
@@ -2163,7 +2164,8 @@ let slaapCharts = {};
 function renderSlaapCharts(sfx = '') {
   const list = getLifestyles().filter(e =>
     e.slaap_kwaliteit || e.schermtijd || e.slaap_consistentie || e.opstaan_gevoel || e.nacht_wakker || e.slaap_factoren ||
-    e.stress_niveau || e.mentaal_uitgeput || e.ontspanning_score
+    e.stress_niveau || e.mentaal_uitgeput || e.ontspanning_score ||
+    e.lichamelijke_klachten != null || e.stress_controle != null
   ).slice().reverse();
   const container = document.getElementById('slaapChartsContainer' + sfx);
   if (!container) return;
