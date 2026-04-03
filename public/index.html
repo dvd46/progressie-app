@@ -559,7 +559,18 @@ textarea { resize: vertical; min-height: 58px; }
     </div>
     <div id="voedingChartsContainer" style="margin-top:16px;display:none;">
       <div class="panel-title" style="margin-bottom:12px;">Voeding Grafieken</div>
+      <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
+        <div style="text-align:center;">
+          <svg class="voeding-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
+            <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+            <circle class="voeding-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <text class="voeding-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
+            <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">VOEDING SCORE</text>
+          </svg>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cVoedingScore"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cVoedingKwaliteit"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cCravings"></canvas></div>
         <div class="panel" style="padding:12px;"><canvas id="cCafeine"></canvas></div>
@@ -969,6 +980,7 @@ textarea { resize: vertical; min-height: 58px; }
         <span>🍽️ Voeding</span><span id="fs_voeding_arrow" class="fs-arrow">▼</span>
       </div>
       <div id="fs_voeding" class="fs-body" style="display:none;">
+        <button class="enq-chip selected" id="fc_voedingscore" onclick="toggleClientChart('voedingscore')">🍽️ Voedingsscore</button>
         <button class="enq-chip selected" id="fc_voedingkwal" onclick="toggleClientChart('voedingkwal')">Voedingskwaliteit</button>
         <button class="enq-chip selected" id="fc_cravings" onclick="toggleClientChart('cravings')">Cravings</button>
         <button class="enq-chip selected" id="fc_cafeine" onclick="toggleClientChart('cafeine')">Cafeïne</button>
@@ -1029,7 +1041,18 @@ textarea { resize: vertical; min-height: 58px; }
       </div>
     </div>
     <div id="voedingChartsContainer_c" style="display:none;">
+      <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
+        <div style="text-align:center;">
+          <svg class="voeding-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
+            <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
+            <circle class="voeding-ring-progress" cx="70" cy="70" r="58" fill="none" stroke="#444" stroke-width="12" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+            <text class="voeding-ring-score" x="70" y="64" text-anchor="middle" fill="#fff" font-size="32" font-weight="700" font-family="Oswald,sans-serif">–</text>
+            <text x="70" y="83" text-anchor="middle" fill="#888" font-size="10" font-family="DM Sans,sans-serif" letter-spacing="1">VOEDING SCORE</text>
+          </svg>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="voedingscore"><canvas id="cVoedingScore_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="voedingkwal"><canvas id="cVoedingKwaliteit_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="cravings"><canvas id="cCravings_c"></canvas></div>
         <div class="panel" style="padding:12px;" data-chart="cafeine"><canvas id="cCafeine_c"></canvas></div>
@@ -2265,6 +2288,16 @@ function renderLeefstijlCharts(sfx = '') {
 
 // ── VOEDING GRAFIEKEN ────────────────────────────────────────────────
 let voedingCharts = {};
+function calcVoedingScore(entry) {
+  const q1 = entry.voeding_kwaliteit != null ? parseInt(entry.voeding_kwaliteit) : null;
+  const q2 = entry.cravings != null ? parseInt(entry.cravings) : null;
+  const q3 = entry.cafeine != null ? parseInt(entry.cafeine) : null;
+  const q4 = entry.water_gevoel != null ? parseInt(entry.water_gevoel) : null;
+  const q5 = entry.groenten_gevoel != null ? parseInt(entry.groenten_gevoel) : null;
+  if ([q1, q2, q3, q4, q5].some(v => v === null)) return null;
+  return Math.round((q1 * 0.20 + (10 - q2) * 0.20 + (10 - q3) * 0.20 + q4 * 0.20 + q5 * 0.20) * 10);
+}
+
 function renderVoedingCharts(sfx = '') {
   const list = getLifestyles().filter(e =>
     e.voeding_kwaliteit != null || e.cravings != null || e.cafeine != null ||
@@ -2274,8 +2307,21 @@ function renderVoedingCharts(sfx = '') {
   if (!container) return;
   if (!list.length) { container.style.display = 'none'; return; }
   container.style.display = '';
+  // Update voeding score ring
+  const latestVoedingScore = list.map(e => calcVoedingScore(e)).find(s => s != null) ?? null;
+  const ringEl = container.querySelector('.voeding-score-ring');
+  if (ringEl) {
+    const circumference = 364.42;
+    const color = latestVoedingScore == null ? '#444' : latestVoedingScore <= 40 ? '#e63946' : latestVoedingScore <= 70 ? '#f4a261' : '#6EF08C';
+    const offset = latestVoedingScore == null ? circumference : +(circumference * (1 - latestVoedingScore / 100)).toFixed(2);
+    const prog = ringEl.querySelector('.voeding-ring-progress');
+    const txt = ringEl.querySelector('.voeding-ring-score');
+    if (prog) { prog.setAttribute('stroke-dashoffset', offset); prog.setAttribute('stroke', color); }
+    if (txt) txt.textContent = latestVoedingScore != null ? String(latestVoedingScore) : '–';
+  }
   const labels = list.map(e => e.datum);
   const chartDefs = [
+    { id:'cVoedingScore'+sfx, label:'Voedingsscore (0–100)', data:list.map(e=>calcVoedingScore(e)), color:'#6EF08C', yMin:0, yMax:100 },
     { id:'cVoedingKwaliteit'+sfx, label:'Gevarieerd voedingspatroon (1–10)', data:list.map(e=>e.voeding_kwaliteit??null), color:'#6EF08C', yMin:1, yMax:10 },
     { id:'cCravings'+sfx, label:'Cravings (0–10)', data:list.map(e=>e.cravings??null), color:'#f4a261', yMin:0, yMax:10 },
     { id:'cCafeine'+sfx, label:'Cafeïne per dag (0–10)', data:list.map(e=>e.cafeine??null), color:'#8B5E3C', yMin:0, yMax:10 },
