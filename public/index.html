@@ -2284,7 +2284,7 @@ function calcLeefstijlScore(entry) {
   const q2 = entry.roken != null ? parseInt(entry.roken) : null;
   const q3 = entry.sociale_agenda != null ? parseInt(entry.sociale_agenda) : null;
   const q4 = entry.smartphone != null ? parseInt(entry.smartphone) : null;
-  if ([q1, q2, q3, q4].some(v => v === null)) return null;
+  if ([q1, q2, q3, q4].some(v => v === null || isNaN(v))) return null;
   return Math.round((q1 * 0.25 + (10 - q2) * 0.25 + q3 * 0.25 + q4 * 0.25) * 10);
 }
 
