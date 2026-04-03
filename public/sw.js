@@ -1,4 +1,4 @@
-const CACHE = 'gymloft-v1';
+const CACHE = 'gymloft-v2';
 const ASSETS = [
   '/',
   '/index.html',
