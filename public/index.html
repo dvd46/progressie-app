@@ -147,7 +147,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .chart-zoom-panel { cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; }
 .chart-zoom-panel:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.18); transform: translateY(-2px); }
 #chartZoomModal { position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.78);display:none;align-items:center;justify-content:center; }
-#chartZoomBox { background:var(--panel);border-radius:16px;padding:28px 28px 24px;width:min(95vw,860px);max-height:90vh;position:relative;overflow:auto; }
+#chartZoomBox { background:var(--panel);border-radius:16px;padding:28px 28px 24px;width:min(98vw,1200px);max-height:95vh;position:relative;overflow:auto; }
+#chartZoomCanvas { min-height:520px; }
 #chartZoomClose { position:absolute;top:12px;right:16px;background:none;border:none;font-size:28px;line-height:1;cursor:pointer;color:var(--text);padding:4px 8px;border-radius:6px; }
 #chartZoomClose:hover { background:rgba(0,0,0,0.08); }
 .enq-section { background: var(--bg); border-radius: 10px; padding: 14px; margin-bottom: 12px; border: 1.5px solid var(--border); }
