@@ -517,6 +517,15 @@ textarea { resize: vertical; min-height: 58px; }
         <span style="font-size:20px;font-weight:700;color:#6EF08C;white-space:nowrap;">🌙 Thema Slaap</span>
         <div style="flex:1;height:2px;background:var(--border);"></div>
       </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+        <button class="enq-chip selected" id="gc_slaapscore" onclick="toggleCoachChart('slaapscore')">😴 Slaapscore</button>
+        <button class="enq-chip selected" id="gc_slaapkwal" onclick="toggleCoachChart('slaapkwal')">Slaapkwaliteit</button>
+        <button class="enq-chip selected" id="gc_schermtijd" onclick="toggleCoachChart('schermtijd')">Schermtijd</button>
+        <button class="enq-chip selected" id="gc_slaapconsist" onclick="toggleCoachChart('slaapconsist')">Slaap consistentie</button>
+        <button class="enq-chip selected" id="gc_opstaangevoel" onclick="toggleCoachChart('opstaangevoel')">Opstaan gevoel</button>
+        <button class="enq-chip selected" id="gc_nachtwakker" onclick="toggleCoachChart('nachtwakker')">Wakker 's nachts</button>
+        <button class="enq-chip selected" id="gc_slaapfact" onclick="toggleCoachChart('slaapfact')">Slaap factoren</button>
+      </div>
       <div style="display:flex;justify-content:center;margin-bottom:20px;">
         <svg class="sleep-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
           <circle cx="70" cy="70" r="58" fill="none" stroke="#1e1e1e" stroke-width="12"/>
@@ -526,17 +535,25 @@ textarea { resize: vertical; min-height: 58px; }
         </svg>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cSlaapScore"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSlaapKwaliteit"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSchermtijd"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSlaapConsistentie"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cOpstaanGevoel"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cNachtWakker"></canvas></div>
-        <div class="panel" style="padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div><div id="slaapFactorenTekst" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
+        <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="slaapscore"><canvas id="cSlaapScore"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="slaapkwal"><canvas id="cSlaapKwaliteit"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="schermtijd"><canvas id="cSchermtijd"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="slaapconsist"><canvas id="cSlaapConsistentie"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="opstaangevoel"><canvas id="cOpstaanGevoel"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="nachtwakker"><canvas id="cNachtWakker"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="slaapfact"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">Slaap factoren</div><div id="slaapFactorenTekst" style="font-size:12px;line-height:1.8;color:var(--text);"></div></div>
       </div>
       <div style="display:flex;align-items:center;gap:12px;margin:32px 0 20px;">
         <span style="font-size:20px;font-weight:700;color:#e63946;white-space:nowrap;">⚡ Thema Stress</span>
         <div style="flex:1;height:2px;background:var(--border);"></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+        <button class="enq-chip selected" id="gc_stressscore" onclick="toggleCoachChart('stressscore')">⚡ Stressscore</button>
+        <button class="enq-chip selected" id="gc_stressniv" onclick="toggleCoachChart('stressniv')">Stressniveau</button>
+        <button class="enq-chip selected" id="gc_mentaaluit" onclick="toggleCoachChart('mentaaluit')">Mentale uitputting</button>
+        <button class="enq-chip selected" id="gc_ontspanning" onclick="toggleCoachChart('ontspanning')">Ontspanning</button>
+        <button class="enq-chip selected" id="gc_lichkl" onclick="toggleCoachChart('lichkl')">Lichamelijke klachten</button>
+        <button class="enq-chip selected" id="gc_stresscontr" onclick="toggleCoachChart('stresscontr')">Stresscontrole</button>
       </div>
       <div style="display:flex;justify-content:center;margin-bottom:20px;">
         <svg class="stress-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
@@ -547,18 +564,25 @@ textarea { resize: vertical; min-height: 58px; }
         </svg>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cStressScore"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cStressNiveau"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cMentaalUitgeput"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cOntspanning"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cLichamelijkeKlachten"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cStressControle"></canvas></div>
+        <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="stressscore"><canvas id="cStressScore"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="stressniv"><canvas id="cStressNiveau"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="mentaaluit"><canvas id="cMentaalUitgeput"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="ontspanning"><canvas id="cOntspanning"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="lichkl"><canvas id="cLichamelijkeKlachten"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="stresscontr"><canvas id="cStressControle"></canvas></div>
       </div>
     </div>
     <div id="leefstijlChartsContainer" style="margin-top:16px;display:none;">
       <div style="display:flex;align-items:center;gap:12px;margin:8px 0 16px;">
         <span style="font-size:20px;font-weight:700;color:#f4a261;white-space:nowrap;">🌿 Thema Leefstijl</span>
         <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+        <button class="enq-chip selected" id="gc_leefstijlscore" onclick="toggleCoachChart('leefstijlscore')">🌿 Leefstijlscore</button>
+        <button class="enq-chip selected" id="gc_alcoholgevoel" onclick="toggleCoachChart('alcoholgevoel')">Alcohol</button>
+        <button class="enq-chip selected" id="gc_socialeagenda" onclick="toggleCoachChart('socialeagenda')">Sociale agenda</button>
+        <button class="enq-chip selected" id="gc_smartphone" onclick="toggleCoachChart('smartphone')">Smartphone</button>
+        <button class="enq-chip selected" id="gc_roken" onclick="toggleCoachChart('roken')">Roken</button>
       </div>
       <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
         <div style="text-align:center;">
@@ -571,17 +595,25 @@ textarea { resize: vertical; min-height: 58px; }
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cLeefstijlScore"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cAlcoholGevoel"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSocialeAgenda"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cSmartphone"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cRoken"></canvas></div>
+        <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="leefstijlscore"><canvas id="cLeefstijlScore"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="alcoholgevoel"><canvas id="cAlcoholGevoel"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="socialeagenda"><canvas id="cSocialeAgenda"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="smartphone"><canvas id="cSmartphone"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="roken"><canvas id="cRoken"></canvas></div>
       </div>
     </div>
     <div id="voedingChartsContainer" style="margin-top:16px;display:none;">
       <div style="display:flex;align-items:center;gap:12px;margin:8px 0 16px;">
         <span style="font-size:20px;font-weight:700;color:#6EF08C;white-space:nowrap;">🍽️ Thema Voeding</span>
         <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+        <button class="enq-chip selected" id="gc_voedingscore" onclick="toggleCoachChart('voedingscore')">🍽️ Voedingscore</button>
+        <button class="enq-chip selected" id="gc_voedingkwal" onclick="toggleCoachChart('voedingkwal')">Voedingskwaliteit</button>
+        <button class="enq-chip selected" id="gc_cravings" onclick="toggleCoachChart('cravings')">Cravings</button>
+        <button class="enq-chip selected" id="gc_cafeine" onclick="toggleCoachChart('cafeine')">Cafeïne</button>
+        <button class="enq-chip selected" id="gc_watergevoel" onclick="toggleCoachChart('watergevoel')">Water</button>
+        <button class="enq-chip selected" id="gc_groetengevoel" onclick="toggleCoachChart('groetengevoel')">Groenten</button>
       </div>
       <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
         <div style="text-align:center;">
@@ -594,12 +626,12 @@ textarea { resize: vertical; min-height: 58px; }
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="panel" style="padding:12px;grid-column:span 2;"><canvas id="cVoedingScore"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cVoedingKwaliteit"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cCravings"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cCafeine"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cWaterGevoel"></canvas></div>
-        <div class="panel" style="padding:12px;"><canvas id="cGroentenGevoel"></canvas></div>
+        <div class="panel" style="padding:12px;grid-column:span 2;" data-chart="voedingscore"><canvas id="cVoedingScore"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="voedingkwal"><canvas id="cVoedingKwaliteit"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="cravings"><canvas id="cCravings"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="cafeine"><canvas id="cCafeine"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="watergevoel"><canvas id="cWaterGevoel"></canvas></div>
+        <div class="panel" style="padding:12px;" data-chart="groetengevoel"><canvas id="cGroentenGevoel"></canvas></div>
       </div>
     </div>
   </div>
@@ -980,11 +1012,12 @@ textarea { resize: vertical; min-height: 58px; }
   </div>
 
   <div id="clientLsTabResultaten" style="display:none;">
-    <div class="panel" style="padding:0;margin-bottom:20px;overflow:hidden;">
-      <div class="fs-hdr" onclick="toggleFilterSection('fs_slaap')" style="color:#6EF08C;">
-        <span>🌙 Slaap</span><span id="fs_slaap_arrow" class="fs-arrow">▼</span>
+    <div id="slaapChartsContainer_c" style="margin-bottom:16px;display:none;">
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 20px;">
+        <span style="font-size:20px;font-weight:700;color:#6EF08C;white-space:nowrap;">🌙 Thema Slaap</span>
+        <div style="flex:1;height:2px;background:var(--border);"></div>
       </div>
-      <div id="fs_slaap" class="fs-body" style="display:none;">
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
         <button class="enq-chip selected" id="fc_slaapscore" onclick="toggleClientChart('slaapscore')">😴 Slaapscore</button>
         <button class="enq-chip selected" id="fc_slaapkwal" onclick="toggleClientChart('slaapkwal')">Slaapkwaliteit</button>
         <button class="enq-chip selected" id="fc_schermtijd" onclick="toggleClientChart('schermtijd')">Schermtijd</button>
@@ -992,44 +1025,6 @@ textarea { resize: vertical; min-height: 58px; }
         <button class="enq-chip selected" id="fc_opstaangevoel" onclick="toggleClientChart('opstaangevoel')">Opstaan gevoel</button>
         <button class="enq-chip selected" id="fc_nachtwakker" onclick="toggleClientChart('nachtwakker')">Wakker 's nachts</button>
         <button class="enq-chip selected" id="fc_slaapfact" onclick="toggleClientChart('slaapfact')">Slaap factoren</button>
-      </div>
-      <div class="fs-hdr" onclick="toggleFilterSection('fs_stress')" style="color:#e63946;border-top:1px solid var(--border);">
-        <span>⚡ Stress</span><span id="fs_stress_arrow" class="fs-arrow">▼</span>
-      </div>
-      <div id="fs_stress" class="fs-body" style="display:none;">
-        <button class="enq-chip selected" id="fc_stressscore" onclick="toggleClientChart('stressscore')">⚡ Stressscore</button>
-        <button class="enq-chip selected" id="fc_stressniv" onclick="toggleClientChart('stressniv')">Stressniveau</button>
-        <button class="enq-chip selected" id="fc_mentaaluit" onclick="toggleClientChart('mentaaluit')">Mentale uitputting</button>
-        <button class="enq-chip selected" id="fc_ontspanning" onclick="toggleClientChart('ontspanning')">Ontspanning</button>
-        <button class="enq-chip selected" id="fc_lichkl" onclick="toggleClientChart('lichkl')">Lichamelijke klachten</button>
-        <button class="enq-chip selected" id="fc_stresscontr" onclick="toggleClientChart('stresscontr')">Stress controle</button>
-      </div>
-      <div class="fs-hdr" onclick="toggleFilterSection('fs_voeding')" style="color:var(--accent);border-top:1px solid var(--border);">
-        <span>🍽️ Voeding</span><span id="fs_voeding_arrow" class="fs-arrow">▼</span>
-      </div>
-      <div id="fs_voeding" class="fs-body" style="display:none;">
-        <button class="enq-chip selected" id="fc_voedingscore" onclick="toggleClientChart('voedingscore')">🍽️ Voedingsscore</button>
-        <button class="enq-chip selected" id="fc_voedingkwal" onclick="toggleClientChart('voedingkwal')">Voedingskwaliteit</button>
-        <button class="enq-chip selected" id="fc_cravings" onclick="toggleClientChart('cravings')">Cravings</button>
-        <button class="enq-chip selected" id="fc_cafeine" onclick="toggleClientChart('cafeine')">Cafeïne</button>
-        <button class="enq-chip selected" id="fc_watergevoel" onclick="toggleClientChart('watergevoel')">Water</button>
-        <button class="enq-chip selected" id="fc_groetengevoel" onclick="toggleClientChart('groetengevoel')">Groenten &amp; fruit</button>
-      </div>
-      <div class="fs-hdr" onclick="toggleFilterSection('fs_leefstijl')" style="color:var(--accent);border-top:1px solid var(--border);">
-        <span>🌿 Leefstijl</span><span id="fs_leefstijl_arrow" class="fs-arrow">▼</span>
-      </div>
-      <div id="fs_leefstijl" class="fs-body" style="display:none;">
-        <button class="enq-chip selected" id="fc_leefstijlscore" onclick="toggleClientChart('leefstijlscore')">🌿 Leefstijlscore</button>
-        <button class="enq-chip selected" id="fc_alcoholgevoel" onclick="toggleClientChart('alcoholgevoel')">Alcohol</button>
-        <button class="enq-chip selected" id="fc_socialeagenda" onclick="toggleClientChart('socialeagenda')">Sociale agenda</button>
-        <button class="enq-chip selected" id="fc_smartphone" onclick="toggleClientChart('smartphone')">Smartphone</button>
-        <button class="enq-chip selected" id="fc_roken" onclick="toggleClientChart('roken')">Rook / vape</button>
-      </div>
-    </div>
-    <div id="slaapChartsContainer_c" style="margin-bottom:16px;display:none;">
-      <div style="display:flex;align-items:center;gap:12px;margin:8px 0 20px;">
-        <span style="font-size:20px;font-weight:700;color:#6EF08C;white-space:nowrap;">🌙 Thema Slaap</span>
-        <div style="flex:1;height:2px;background:var(--border);"></div>
       </div>
       <div style="display:flex;justify-content:center;margin-bottom:20px;">
         <svg class="sleep-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
@@ -1051,6 +1046,14 @@ textarea { resize: vertical; min-height: 58px; }
       <div style="display:flex;align-items:center;gap:12px;margin:32px 0 20px;">
         <span style="font-size:20px;font-weight:700;color:#e63946;white-space:nowrap;">⚡ Thema Stress</span>
         <div style="flex:1;height:2px;background:var(--border);"></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+        <button class="enq-chip selected" id="fc_stressscore" onclick="toggleClientChart('stressscore')">⚡ Stressscore</button>
+        <button class="enq-chip selected" id="fc_stressniv" onclick="toggleClientChart('stressniv')">Stressniveau</button>
+        <button class="enq-chip selected" id="fc_mentaaluit" onclick="toggleClientChart('mentaaluit')">Mentale uitputting</button>
+        <button class="enq-chip selected" id="fc_ontspanning" onclick="toggleClientChart('ontspanning')">Ontspanning</button>
+        <button class="enq-chip selected" id="fc_lichkl" onclick="toggleClientChart('lichkl')">Lichamelijke klachten</button>
+        <button class="enq-chip selected" id="fc_stresscontr" onclick="toggleClientChart('stresscontr')">Stresscontrole</button>
       </div>
       <div style="display:flex;justify-content:center;margin-bottom:20px;">
         <svg class="stress-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
@@ -1074,6 +1077,13 @@ textarea { resize: vertical; min-height: 58px; }
         <span style="font-size:20px;font-weight:700;color:#f4a261;white-space:nowrap;">🌿 Thema Leefstijl</span>
         <div style="flex:1;height:1px;background:var(--border);"></div>
       </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+        <button class="enq-chip selected" id="fc_leefstijlscore" onclick="toggleClientChart('leefstijlscore')">🌿 Leefstijlscore</button>
+        <button class="enq-chip selected" id="fc_alcoholgevoel" onclick="toggleClientChart('alcoholgevoel')">Alcohol</button>
+        <button class="enq-chip selected" id="fc_socialeagenda" onclick="toggleClientChart('socialeagenda')">Sociale agenda</button>
+        <button class="enq-chip selected" id="fc_smartphone" onclick="toggleClientChart('smartphone')">Smartphone</button>
+        <button class="enq-chip selected" id="fc_roken" onclick="toggleClientChart('roken')">Roken</button>
+      </div>
       <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
         <div style="text-align:center;">
           <svg class="leefstijl-score-ring" viewBox="0 0 140 140" width="160" height="160" style="overflow:visible;">
@@ -1096,6 +1106,14 @@ textarea { resize: vertical; min-height: 58px; }
       <div style="display:flex;align-items:center;gap:12px;margin:8px 0 16px;">
         <span style="font-size:20px;font-weight:700;color:#6EF08C;white-space:nowrap;">🍽️ Thema Voeding</span>
         <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+        <button class="enq-chip selected" id="fc_voedingscore" onclick="toggleClientChart('voedingscore')">🍽️ Voedingscore</button>
+        <button class="enq-chip selected" id="fc_voedingkwal" onclick="toggleClientChart('voedingkwal')">Voedingskwaliteit</button>
+        <button class="enq-chip selected" id="fc_cravings" onclick="toggleClientChart('cravings')">Cravings</button>
+        <button class="enq-chip selected" id="fc_cafeine" onclick="toggleClientChart('cafeine')">Cafeïne</button>
+        <button class="enq-chip selected" id="fc_watergevoel" onclick="toggleClientChart('watergevoel')">Water</button>
+        <button class="enq-chip selected" id="fc_groetengevoel" onclick="toggleClientChart('groetengevoel')">Groenten</button>
       </div>
       <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-bottom:20px;">
         <div style="text-align:center;">
@@ -3731,6 +3749,15 @@ async function initClientApp(user, klant) {
 }
 
 let clientChartFilter = {};
+let coachChartFilter = {};
+
+function toggleCoachChart(id) {
+  coachChartFilter[id] = coachChartFilter[id] === false ? true : false;
+  document.getElementById('gc_' + id)?.classList.toggle('selected', coachChartFilter[id] !== false);
+  document.querySelectorAll('#tab-lifestyle [data-chart="' + id + '"]').forEach(p => {
+    p.style.display = coachChartFilter[id] === false ? 'none' : '';
+  });
+}
 
 function toggleFilterSection(id) {
   const body = document.getElementById(id);
