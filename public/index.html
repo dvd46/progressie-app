@@ -3204,14 +3204,13 @@ function saveExtraSecties(type, secties) {
 }
 
 function switchInstTab(tab) {
-  ['oef','welzijn','lifestyle','account'].forEach(t => {
-    document.getElementById(`instTab-${t}`).style.display = t === tab ? '' : 'none';
+  ['oef','account'].forEach(t => {
+    const el = document.getElementById(`instTab-${t}`);
+    if (el) el.style.display = t === tab ? '' : 'none';
     const btn = document.getElementById(`instTabBtn${t.charAt(0).toUpperCase()+t.slice(1)}`);
     if (btn) btn.classList.toggle('active', t === tab);
   });
-  if (tab === 'welzijn')   renderInstConfig('welzijn');
-  if (tab === 'lifestyle') renderInstConfig('lifestyle');
-  if (tab === 'oef')       renderInstellingen();
+  if (tab === 'oef') renderInstellingen();
 }
 
 function renderInstConfig(type) {
