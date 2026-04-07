@@ -2273,7 +2273,7 @@ function renderSlaapCharts(sfx = '') {
   const ringEl = container.querySelector('.sleep-score-ring');
   if (ringEl) {
     const circumference = 364.42;
-    const color = latestScore == null ? '#444' : latestScore <= 40 ? '#e63946' : latestScore <= 70 ? '#f4a261' : '#6EF08C';
+    const color = latestScore == null ? '#444' : latestScore <= 40 ? '#e63946' : latestScore <= 70 ? '#facc15' : '#6EF08C';
     const offset = latestScore == null ? circumference : +(circumference * (1 - latestScore / 100)).toFixed(2);
     const prog = ringEl.querySelector('.sleep-ring-progress');
     const txt = ringEl.querySelector('.sleep-ring-score');
@@ -2285,7 +2285,7 @@ function renderSlaapCharts(sfx = '') {
   const stressRingEl = container.querySelector('.stress-score-ring');
   if (stressRingEl) {
     const circumference = 364.42;
-    const color = latestStressScore == null ? '#444' : latestStressScore <= 40 ? '#e63946' : latestStressScore <= 70 ? '#f4a261' : '#6EF08C';
+    const color = latestStressScore == null ? '#444' : latestStressScore <= 40 ? '#e63946' : latestStressScore <= 70 ? '#facc15' : '#6EF08C';
     const offset = latestStressScore == null ? circumference : +(circumference * (1 - latestStressScore / 100)).toFixed(2);
     const prog = stressRingEl.querySelector('.stress-ring-progress');
     const txt = stressRingEl.querySelector('.stress-ring-score');
@@ -2352,7 +2352,7 @@ function renderLeefstijlCharts(sfx = '') {
   const ringEl = container.querySelector('.leefstijl-score-ring');
   if (ringEl) {
     const circumference = 364.42;
-    const color = latestLeefstijlScore == null ? '#444' : latestLeefstijlScore <= 40 ? '#e63946' : latestLeefstijlScore <= 70 ? '#f4a261' : '#6EF08C';
+    const color = latestLeefstijlScore == null ? '#444' : latestLeefstijlScore <= 40 ? '#e63946' : latestLeefstijlScore <= 70 ? '#facc15' : '#6EF08C';
     const offset = latestLeefstijlScore == null ? circumference : +(circumference * (1 - latestLeefstijlScore / 100)).toFixed(2);
     const prog = ringEl.querySelector('.leefstijl-ring-progress');
     const txt = ringEl.querySelector('.leefstijl-ring-score');
@@ -2408,7 +2408,7 @@ function renderVoedingCharts(sfx = '') {
   const ringEl = container.querySelector('.voeding-score-ring');
   if (ringEl) {
     const circumference = 364.42;
-    const color = latestVoedingScore == null ? '#444' : latestVoedingScore <= 40 ? '#e63946' : latestVoedingScore <= 70 ? '#f4a261' : '#6EF08C';
+    const color = latestVoedingScore == null ? '#444' : latestVoedingScore <= 40 ? '#e63946' : latestVoedingScore <= 70 ? '#facc15' : '#6EF08C';
     const offset = latestVoedingScore == null ? circumference : +(circumference * (1 - latestVoedingScore / 100)).toFixed(2);
     const prog = ringEl.querySelector('.voeding-ring-progress');
     const txt = ringEl.querySelector('.voeding-ring-score');
@@ -2511,7 +2511,7 @@ function initLsDatum() {
 
 function showSlaapRings(score) {
   const circumference = 364.42;
-  const color = score == null ? '#444' : score <= 40 ? '#e63946' : score <= 70 ? '#f4a261' : '#6EF08C';
+  const color = score == null ? '#444' : score <= 40 ? '#e63946' : score <= 70 ? '#facc15' : '#6EF08C';
   const offset = score == null ? circumference : +(circumference * (1 - score / 100)).toFixed(2);
   document.querySelectorAll('.sleep-score-ring').forEach(svg => {
     const prog = svg.querySelector('.sleep-ring-progress');
