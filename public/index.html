@@ -671,8 +671,6 @@ textarea { resize: vertical; min-height: 58px; }
   <h2 style="font-size:20px;font-weight:600;margin-bottom:16px;">Instellingen</h2>
   <div class="tab-bar" style="margin-bottom:20px;">
     <button class="tab active" id="instTabBtnOef"       onclick="switchInstTab('oef')">Oefeningen</button>
-    <button class="tab"        id="instTabBtnWelzijn"   onclick="switchInstTab('welzijn')">Welzijn</button>
-    <button class="tab"        id="instTabBtnLifestyle" onclick="switchInstTab('lifestyle')">Lifestyle</button>
     <button class="tab"        id="instTabBtnAccount"   onclick="switchInstTab('account')">Account</button>
   </div>
 
@@ -688,36 +686,6 @@ textarea { resize: vertical; min-height: 58px; }
           <button class="btn btn-primary btn-sm" onclick="addGlobaleOef()">Toevoegen</button>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- TAB: WELZIJN CONFIG -->
-  <div id="instTab-welzijn" style="display:none;max-width:700px;">
-    <div class="panel" style="margin-bottom:16px;">
-      <div class="panel-title" style="margin-bottom:8px;">Standaard secties</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Deze secties zijn standaard aanwezig in alle welzijn-enquêtes.</p>
-      <div id="instWelzijnDefault"></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title" style="margin-bottom:8px;">Eigen secties</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Voeg je eigen vragen toe aan de welzijn-enquête.</p>
-      <div id="instWelzijnCustom"></div>
-      <button class="btn btn-ghost btn-sm" style="margin-top:12px;" onclick="addExtraSectie('welzijn')">+ Nieuwe sectie</button>
-    </div>
-  </div>
-
-  <!-- TAB: LIFESTYLE CONFIG -->
-  <div id="instTab-lifestyle" style="display:none;max-width:700px;">
-    <div class="panel" style="margin-bottom:16px;">
-      <div class="panel-title" style="margin-bottom:8px;">Standaard secties</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Deze secties zijn standaard aanwezig in alle lifestyle-vragenlijsten.</p>
-      <div id="instLifestyleDefault"></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title" style="margin-bottom:8px;">Eigen secties</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:14px;">Voeg je eigen vragen toe aan de lifestyle-vragenlijst.</p>
-      <div id="instLifestyleCustom"></div>
-      <button class="btn btn-ghost btn-sm" style="margin-top:12px;" onclick="addExtraSectie('lifestyle')">+ Nieuwe sectie</button>
     </div>
   </div>
 
