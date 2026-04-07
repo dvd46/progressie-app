@@ -144,6 +144,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .enq-chip { padding: 5px 13px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--panel); font-size: 12px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.15s; font-family: 'DM Sans',sans-serif; }
 .enq-chip:hover { border-color: var(--accent); color: var(--accent); }
 .enq-chip.selected { background: var(--accent); border-color: var(--accent); color: #111; font-weight: 600; }
+.chart-zoom-panel { cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; }
+.chart-zoom-panel:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.18); transform: translateY(-2px); }
+#chartZoomModal { position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.78);display:none;align-items:center;justify-content:center; }
+#chartZoomBox { background:var(--panel);border-radius:16px;padding:28px 28px 24px;width:min(95vw,860px);max-height:90vh;position:relative;overflow:auto; }
+#chartZoomClose { position:absolute;top:12px;right:16px;background:none;border:none;font-size:28px;line-height:1;cursor:pointer;color:var(--text);padding:4px 8px;border-radius:6px; }
+#chartZoomClose:hover { background:rgba(0,0,0,0.08); }
 .enq-section { background: var(--bg); border-radius: 10px; padding: 14px; margin-bottom: 12px; border: 1.5px solid var(--border); }
 .sleep-ring-progress { transition: stroke-dashoffset 0.6s cubic-bezier(.4,0,.2,1), stroke 0.4s ease; }
 #slaapChartsContainer canvas, #slaapChartsContainer_c canvas,
@@ -2315,11 +2321,15 @@ function renderSlaapCharts(sfx = '') {
     if (!validData.length) { canvas.parentElement.style.display='none'; return; }
     canvas.parentElement.style.display='';
     const yOpts = { min:def.yMin, max:def.yMax, grid:{color:'rgba(0,0,0,0.07)'}, ticks:{ color:'#444', font:{size:12,weight:'600'}, stepSize:1, callback: def.yLabels ? v => def.yLabels[v] ?? v : undefined } };
+    const ds = { label:def.label, data:def.data, borderColor:def.color, backgroundColor:def.color+'44', borderWidth:3, pointRadius:6, pointHoverRadius:9, pointBackgroundColor:def.color, pointBorderColor:'#fff', pointBorderWidth:2, tension:0.4, fill:true, spanGaps:true };
     slaapCharts[def.id] = new Chart(canvas, {
       type:'line',
-      data:{ labels, datasets:[{ label:def.label, data:def.data, borderColor:def.color, backgroundColor:def.color+'44', borderWidth:3, pointRadius:6, pointHoverRadius:9, pointBackgroundColor:def.color, pointBorderColor:'#fff', pointBorderWidth:2, tension:0.4, fill:true, spanGaps:true }] },
+      data:{ labels, datasets:[ds] },
       options:{ responsive:true, plugins:{ legend:{display:false}, title:{display:true,text:def.label,color:'#111',font:{size:14,weight:'bold'},padding:{bottom:14}}, tooltip:{backgroundColor:'rgba(13,13,13,0.85)',titleColor:'#fff',bodyColor:'#ddd',padding:10,cornerRadius:6} }, scales:{ x:{ticks:{color:'#444',font:{size:12,weight:'600'}},grid:{color:'rgba(0,0,0,0.07)'}}, y:yOpts } }
     });
+    lsChartRegistry[def.id] = { label:def.label, labels, dataset:ds, yOpts };
+    canvas.parentElement.classList.add('chart-zoom-panel');
+    canvas.parentElement.onclick = () => openChartZoom(def.id);
   });
   const factoren = list.filter(e => e.slaap_factoren).slice(-5).reverse().map(e =>
     `<div style="margin-bottom:8px;"><span style="color:var(--muted);font-size:10px;">${e.datum}</span><br><span style="font-size:12px;">${e.slaap_factoren}</span></div>`
@@ -2374,11 +2384,15 @@ function renderLeefstijlCharts(sfx = '') {
     if (!validData.length) { canvas.parentElement.style.display='none'; return; }
     canvas.parentElement.style.display='';
     const yOpts = { min:def.yMin, max:def.yMax, grid:{color:'rgba(0,0,0,0.07)'}, ticks:{ color:'#444', font:{size:12,weight:'600'}, stepSize:1 } };
+    const ds = { label:def.label, data:def.data, borderColor:def.color, backgroundColor:def.color+'44', borderWidth:3, pointRadius:6, pointHoverRadius:9, pointBackgroundColor:def.color, pointBorderColor:'#fff', pointBorderWidth:2, tension:0.4, fill:true, spanGaps:true };
     leefstijlCharts[def.id] = new Chart(canvas, {
       type:'line',
-      data:{ labels, datasets:[{ label:def.label, data:def.data, borderColor:def.color, backgroundColor:def.color+'44', borderWidth:3, pointRadius:6, pointHoverRadius:9, pointBackgroundColor:def.color, pointBorderColor:'#fff', pointBorderWidth:2, tension:0.4, fill:true, spanGaps:true }] },
+      data:{ labels, datasets:[ds] },
       options:{ responsive:true, plugins:{ legend:{display:false}, title:{display:true,text:def.label,color:'#111',font:{size:14,weight:'bold'},padding:{bottom:14}}, tooltip:{backgroundColor:'rgba(13,13,13,0.85)',titleColor:'#fff',bodyColor:'#ddd',padding:10,cornerRadius:6} }, scales:{ x:{ticks:{color:'#444',font:{size:12,weight:'600'}},grid:{color:'rgba(0,0,0,0.07)'}}, y:yOpts } }
     });
+    lsChartRegistry[def.id] = { label:def.label, labels, dataset:ds, yOpts };
+    canvas.parentElement.classList.add('chart-zoom-panel');
+    canvas.parentElement.onclick = () => openChartZoom(def.id);
   });
 }
 
@@ -2431,11 +2445,15 @@ function renderVoedingCharts(sfx = '') {
     if (!validData.length) { canvas.parentElement.style.display='none'; return; }
     canvas.parentElement.style.display='';
     const yOpts = { min:def.yMin, max:def.yMax, grid:{color:'rgba(0,0,0,0.07)'}, ticks:{ color:'#444', font:{size:12,weight:'600'}, stepSize:1, callback: def.yLabels ? v => def.yLabels[v] ?? v : undefined } };
+    const ds = { label:def.label, data:def.data, borderColor:def.color, backgroundColor:def.color+'44', borderWidth:3, pointRadius:6, pointHoverRadius:9, pointBackgroundColor:def.color, pointBorderColor:'#fff', pointBorderWidth:2, tension:0.4, fill:true, spanGaps:true };
     voedingCharts[def.id] = new Chart(canvas, {
       type:'line',
-      data:{ labels, datasets:[{ label:def.label, data:def.data, borderColor:def.color, backgroundColor:def.color+'44', borderWidth:3, pointRadius:6, pointHoverRadius:9, pointBackgroundColor:def.color, pointBorderColor:'#fff', pointBorderWidth:2, tension:0.4, fill:true, spanGaps:true }] },
+      data:{ labels, datasets:[ds] },
       options:{ responsive:true, plugins:{ legend:{display:false}, title:{display:true,text:def.label,color:'#111',font:{size:14,weight:'bold'},padding:{bottom:14}}, tooltip:{backgroundColor:'rgba(13,13,13,0.85)',titleColor:'#fff',bodyColor:'#ddd',padding:10,cornerRadius:6} }, scales:{ x:{ticks:{color:'#444',font:{size:12,weight:'600'}},grid:{color:'rgba(0,0,0,0.07)'}}, y:yOpts } }
     });
+    lsChartRegistry[def.id] = { label:def.label, labels, dataset:ds, yOpts };
+    canvas.parentElement.classList.add('chart-zoom-panel');
+    canvas.parentElement.onclick = () => openChartZoom(def.id);
   });
 }
 
@@ -3751,6 +3769,49 @@ async function initClientApp(user, klant) {
 let clientChartFilter = {};
 let coachChartFilter = {};
 
+// ── CHART ZOOM MODAL ──────────────────────────────────────────────
+const lsChartRegistry = {};
+let zoomChartInstance = null;
+
+function openChartZoom(canvasId) {
+  const reg = lsChartRegistry[canvasId];
+  if (!reg) return;
+  const modal = document.getElementById('chartZoomModal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  if (zoomChartInstance) { zoomChartInstance.destroy(); zoomChartInstance = null; }
+  const zoomCanvas = document.getElementById('chartZoomCanvas');
+  const yOptsZoom = { ...reg.yOpts, ticks: { ...reg.yOpts.ticks, font: { size: 13, weight: '600' } } };
+  zoomChartInstance = new Chart(zoomCanvas, {
+    type: 'line',
+    data: { labels: reg.labels, datasets: [{ ...reg.dataset }] },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        title: { display: true, text: reg.label, color: '#111', font: { size: 18, weight: 'bold' }, padding: { bottom: 18 } },
+        tooltip: { backgroundColor: 'rgba(13,13,13,0.85)', titleColor: '#fff', bodyColor: '#ddd', padding: 12, cornerRadius: 6 }
+      },
+      scales: {
+        x: { ticks: { color: '#444', font: { size: 13, weight: '600' } }, grid: { color: 'rgba(0,0,0,0.07)' } },
+        y: yOptsZoom
+      }
+    }
+  });
+}
+
+function closeChartZoom(e) {
+  if (e && e.target !== document.getElementById('chartZoomModal')) return;
+  _doCloseChartZoom();
+}
+function closeChartZoomBtn() { _doCloseChartZoom(); }
+function _doCloseChartZoom() {
+  document.getElementById('chartZoomModal').style.display = 'none';
+  document.body.style.overflow = '';
+  if (zoomChartInstance) { zoomChartInstance.destroy(); zoomChartInstance = null; }
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') _doCloseChartZoom(); });
+
 function toggleCoachChart(id) {
   coachChartFilter[id] = coachChartFilter[id] === false ? true : false;
   document.getElementById('gc_' + id)?.classList.toggle('selected', coachChartFilter[id] !== false);
@@ -4233,5 +4294,11 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
 </script>
+<div id="chartZoomModal" onclick="closeChartZoom(event)">
+  <div id="chartZoomBox">
+    <button id="chartZoomClose" onclick="closeChartZoomBtn()">&#x2715;</button>
+    <canvas id="chartZoomCanvas"></canvas>
+  </div>
+</div>
 </body>
 </html>
