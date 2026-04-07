@@ -1711,7 +1711,7 @@ async function openProfiel(id) {
   lsState = {};
   hideSlaapRings();
   resetLsSliders();
-  document.querySelectorAll('.enq-chip').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.enq-chip:not([id^="gc_"]):not([id^="fc_"])').forEach(b => b.classList.remove('selected'));
   const lsD = document.getElementById('lsDatum'); if (lsD) lsD.value = today();
   const lsN = document.getElementById('lsNotities'); if (lsN) lsN.value = '';
   const lsSF = document.getElementById('lsSlaapFactoren'); if (lsSF) lsSF.value = '';
@@ -2164,7 +2164,7 @@ function initEnqForm() {
   const f = document.getElementById('enqSlaapFactoren'); if(f) f.value = '';
   const sa = document.getElementById('enqStressAnders'); if(sa) sa.value = '';
   const saw = document.getElementById('enqStressAndersWrap'); if(saw) saw.style.display = 'none';
-  document.querySelectorAll('.enq-chip').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.enq-chip:not([id^="gc_"]):not([id^="fc_"])').forEach(b => b.classList.remove('selected'));
 }
 
 function enqChipClick(btn) {
@@ -2747,7 +2747,7 @@ function loadLifestyleIntoForm(id) {
     ls_sociale_agenda: entry.sociale_agenda != null ? String(entry.sociale_agenda) : null,
     ls_smartphone: entry.smartphone != null ? String(entry.smartphone) : null,
   };
-  document.querySelectorAll('.enq-chip').forEach(b => {
+  document.querySelectorAll('.enq-chip:not([id^="gc_"]):not([id^="fc_"])').forEach(b => {
     const { group, val } = b.dataset;
     b.classList.toggle('selected', b.classList.contains('multi')
       ? (Array.isArray(lsState[group]) && lsState[group].includes(val))
