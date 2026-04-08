@@ -878,7 +878,10 @@ textarea { resize: vertical; min-height: 58px; }
       <div class="p-sub" id="cProfileSub"></div>
       <div class="p-stats" id="cProfileStats"></div>
     </div>
-    <button class="btn btn-ghost btn-sm" onclick="openEditKlantSelf()">Bewerken</button>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost btn-sm" onclick="openEditKlantSelf()">Bewerken</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteOwnAccount()">Account verwijderen</button>
+    </div>
   </div>
   <div class="tab-bar">
     <button class="tab active" id="cTabTraining" onclick="switchClientTab('training')">Training</button>
@@ -4034,6 +4037,14 @@ async function saveKlantSelf() {
   document.getElementById('modalKlantTitle').textContent = 'Klant bewerken';
   renderClientProfiel();
   showToast('Profiel bijgewerkt ✓', 'success');
+}
+
+async function deleteOwnAccount() {
+  const naam = currentKlant?.voornaam || 'je account';
+  if (!confirm(`Weet je zeker dat je ${naam} wil verwijderen? Alle data gaat definitief verloren en dit kan niet ongedaan worden gemaakt.`)) return;
+  const { error: dbErr } = await sb.from('klanten').delete().eq('id', currentKlant.id);
+  if (dbErr) return showToast('Fout: ' + dbErr.message, 'error');
+  await sb.auth.signOut();
 }
 
 function renderClientGegevens() {
