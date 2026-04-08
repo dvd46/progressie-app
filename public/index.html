@@ -390,6 +390,7 @@ textarea { resize: vertical; min-height: 58px; }
       <button class="btn btn-ghost btn-sm" onclick="openEditProfiel()">Bewerken</button>
       <button class="btn btn-ghost btn-sm" id="actiefToggleBtn" onclick="toggleActiefStatus()"></button>
       <button class="btn btn-dark btn-sm" id="pdfBtn" onclick="downloadPDF()">&#8595; PDF rapport</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteKlant()">Verwijderen</button>
     </div>
   </div>
   <div class="tab-bar">
@@ -1636,6 +1637,7 @@ async function saveKlant() {
       if (error) throw error;
       klanten.push(data);
       closeModal('modalKlant');
+      showView('overzicht');
       renderGrid();
       showToast('Klant toegevoegd', 'success');
     }
@@ -1644,6 +1646,19 @@ async function saveKlant() {
   } finally {
     btn.textContent = 'Opslaan'; btn.disabled = false;
   }
+}
+
+async function deleteKlant() {
+  const k = klanten.find(c => c.id === AKid); if (!k) return;
+  const naam = (k.voornaam || '') + (k.achternaam ? ' ' + k.achternaam : '');
+  if (!confirm(`Klant "${naam}" definitief verwijderen? Alle bijhorende data (trainingen, metingen, enquêtes) gaat verloren.`)) return;
+  const { error } = await sb.from('klanten').delete().eq('id', AKid);
+  if (error) return showToast('Fout: ' + error.message, 'error');
+  klanten = klanten.filter(c => c.id !== AKid);
+  AKid = null;
+  showView('overzicht');
+  renderGrid();
+  showToast(`${naam} verwijderd`, 'success');
 }
 
 // ══════════════════════════════════════════════════════════════════════
