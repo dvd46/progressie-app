@@ -1131,7 +1131,7 @@ textarea { resize: vertical; min-height: 58px; }
       <label for="mLeaderboard" class="form-label" style="margin:0;cursor:pointer;">Deelnemen aan Leaderboard</label>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('modalKlant')">Annuleer</button>
+      <button class="btn btn-ghost" id="modalKlantAnnuleerBtn" onclick="closeModal('modalKlant')">Annuleer</button>
       <button class="btn btn-primary" onclick="saveKlant()" id="saveKlantBtn">Opslaan</button>
     </div>
   </div>
@@ -1257,7 +1257,11 @@ function openModal(id) { document.getElementById(id).classList.remove('hidden');
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
 document.querySelectorAll('.modal-bg').forEach(bg =>
-  bg.addEventListener('click', e => { if (e.target === bg) bg.classList.add('hidden'); })
+  bg.addEventListener('click', e => {
+    if (e.target !== bg) return;
+    if (bg.id === 'modalKlant' && isOnboarding) return;
+    bg.classList.add('hidden');
+  })
 );
 
 function leeftijd(geb) {
@@ -3691,10 +3695,26 @@ async function initClientApp(user, klant) {
   showClientView('client-profiel');
   renderClientProfiel();
   loadLifestyles(klant.id);
+  if (!klant.voornaam) openOnboardingProfiel();
 }
 
 let clientChartFilter = {};
 let coachChartFilter = {};
+let isOnboarding = false;
+
+function openOnboardingProfiel() {
+  isOnboarding = true;
+  const k = currentKlant;
+  const map = {mVoornaam:'voornaam',mAchternaam:'achternaam',mGeslacht:'geslacht',mGewicht:'gewicht',mLengte:'lengte',mEmail:'email',mTelefoon:'telefoon',mBedrijfsnaam:'bedrijfsnaam',mDoelstelling:'doelstelling',mMedisch:'medisch',mFysiekeKlachten:'fysieke_klachten',mNotities:'notities'};
+  Object.entries(map).forEach(([id, key]) => document.getElementById(id).value = k[key] || '');
+  setDatePickerValue('m', k.geboortedatum);
+  document.getElementById('mLeaderboard').checked = k.leaderboard_deelname ?? true;
+  document.getElementById('mEmail').disabled = true;
+  document.getElementById('modalKlantTitle').textContent = '👋 Welkom! Vul je profiel in';
+  document.getElementById('modalKlantAnnuleerBtn').style.display = 'none';
+  document.getElementById('saveKlantBtn').onclick = saveKlantSelf;
+  openModal('modalKlant');
+}
 
 // ── CHART ZOOM MODAL ──────────────────────────────────────────────
 const lsChartRegistry = {};
@@ -3962,11 +3982,14 @@ async function saveKlantSelf() {
   btn.textContent = 'Opslaan'; btn.disabled = false;
   btn.onclick = saveKlant; // herstel originele handler
   document.getElementById('mEmail').disabled = false;
+  document.getElementById('modalKlantAnnuleerBtn').style.display = '';
+  isOnboarding = false;
   if (error) return showToast('Fout: ' + error.message, 'error');
   Object.assign(currentKlant, updates);
   closeModal('modalKlant');
+  document.getElementById('modalKlantTitle').textContent = 'Klant bewerken';
   renderClientProfiel();
-  showToast('Profiel bijgewerkt', 'success');
+  showToast('Profiel bijgewerkt ✓', 'success');
 }
 
 function renderClientGegevens() {
