@@ -1093,6 +1093,18 @@ textarea { resize: vertical; min-height: 58px; }
 
 
 
+<!-- MODAL COACH ONBOARDING -->
+<div class="modal-bg hidden" id="modalCoachOnboarding">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-title">👋 Welkom! Stel je naam in</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Vul je naam in zodat klanten weten wie hun coach is.</p>
+    <div class="form-group"><label class="form-label">Naam *</label><input type="text" id="coachOnboardingNaam" placeholder="bv. Thomas Peeters" /></div>
+    <div class="modal-footer" style="margin-top:16px;">
+      <button class="btn btn-primary" style="width:100%;" onclick="saveCoachOnboarding()">Opslaan &amp; verder</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL KLANT -->
 <div class="modal-bg hidden" id="modalKlant">
   <div class="modal">
@@ -1259,7 +1271,7 @@ function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 document.querySelectorAll('.modal-bg').forEach(bg =>
   bg.addEventListener('click', e => {
     if (e.target !== bg) return;
-    if (bg.id === 'modalKlant' && isOnboarding) return;
+    if ((bg.id === 'modalKlant' && isOnboarding) || bg.id === 'modalCoachOnboarding') return;
     bg.classList.add('hidden');
   })
 );
@@ -1418,6 +1430,7 @@ async function initApp(user) {
       document.getElementById('settingsNaam').value = currentCoach?.naam || '';
       document.getElementById('settingsEmail').value = user.email || '';
       showView('overzicht');
+      if (!currentCoach?.naam) openModal('modalCoachOnboarding');
       return;
     }
     else {
@@ -1440,6 +1453,7 @@ async function initApp(user) {
           document.getElementById('settingsNaam').value = newCoach.naam || '';
           document.getElementById('settingsEmail').value = user.email || '';
           showView('overzicht');
+          if (!newCoach.naam) openModal('modalCoachOnboarding');
           return;
         }
       }
@@ -3417,6 +3431,21 @@ async function saveSettings() {
     document.getElementById('navUser').textContent = naam;
     showToast('Instellingen opgeslagen', 'success');
   } catch(e) { showToast('Fout: '+e.message, 'error'); }
+}
+
+async function saveCoachOnboarding() {
+  const naam = document.getElementById('coachOnboardingNaam').value.trim();
+  if (!naam) return showToast('Naam is verplicht.', 'error');
+  const btn = document.querySelector('#modalCoachOnboarding .btn-primary');
+  btn.textContent = 'Opslaan…'; btn.disabled = true;
+  const { error } = await sb.from('coaches').update({ naam }).eq('id', currentUser.id);
+  btn.textContent = 'Opslaan & verder'; btn.disabled = false;
+  if (error) return showToast('Fout: ' + error.message, 'error');
+  if (currentCoach) currentCoach.naam = naam;
+  document.getElementById('navUser').textContent = naam;
+  document.getElementById('settingsNaam').value = naam;
+  closeModal('modalCoachOnboarding');
+  showToast('Welkom, ' + naam + '! 🎉', 'success');
 }
 
 async function changePassword() {
