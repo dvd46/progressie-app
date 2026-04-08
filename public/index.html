@@ -733,55 +733,13 @@ textarea { resize: vertical; min-height: 58px; }
       </div>
     </div>
 
-    <!-- GARMIN -->
-    <div class="connectie-card" style="opacity:0.6;">
-      <div class="connectie-header">
-        <div class="connectie-logo" style="background:#000;">
-          <svg viewBox="0 0 24 24" width="26" height="26" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
-        </div>
-        <div>
-          <div class="connectie-naam">Garmin Connect</div>
-          <span class="badge-soon">Binnenkort beschikbaar</span>
-        </div>
-      </div>
-      <div class="connectie-desc">Koppel je Garmin horloge en importeer hartslag, slaap en trainingsdata.</div>
-      <button class="btn btn-ghost" style="width:100%;" disabled>Binnenkort</button>
-    </div>
-
-    <!-- APPLE HEALTH -->
-    <div class="connectie-card" style="opacity:0.6;">
-      <div class="connectie-header">
-        <div class="connectie-logo" style="background:#0d0d0d;">
-          <svg viewBox="0 0 24 24" width="26" height="26" fill="white"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>
-        </div>
-        <div>
-          <div class="connectie-naam">Apple Health</div>
-          <span class="badge-soon">Binnenkort beschikbaar</span>
-        </div>
-      </div>
-      <div class="connectie-desc">Synchroniseer stappen, hartslag en activiteiten vanuit Apple Health.</div>
-      <button class="btn btn-ghost" style="width:100%;" disabled>Binnenkort</button>
-    </div>
-
-    <!-- GOOGLE FIT -->
-    <div class="connectie-card" style="opacity:0.6;">
-      <div class="connectie-header">
-        <div class="connectie-logo" style="background:#0d0d0d;">
-          <svg viewBox="0 0 24 24" width="26" height="26" fill="white"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-11h2v6h-2zm0-4h2v2h-2z"/></svg>
-        </div>
-        <div>
-          <div class="connectie-naam">Google Fit</div>
-          <span class="badge-soon">Binnenkort beschikbaar</span>
-        </div>
-      </div>
-      <div class="connectie-desc">Importeer activiteiten en gezondheidsdata vanuit Google Fit.</div>
-      <button class="btn btn-ghost" style="width:100%;" disabled>Binnenkort</button>
-    </div>
-
   </div>
 
   <!-- MAANDRAPPORT COACH -->
   <div id="coachMaandrapport" style="margin-top:28px;"></div>
+
+  <!-- MAANDRAPPORT GYM (Trainin) -->
+  <div id="coachGymRapport" style="margin-top:32px;"></div>
 </div>
 
 <!-- VIEW: LEADERBOARD -->
@@ -1435,6 +1393,8 @@ async function initApp(user) {
   if (clientChart) { clientChart.destroy(); clientChart = null; }
   const mrEl = document.getElementById('coachMaandrapport');
   if (mrEl) mrEl.innerHTML = '';
+  const grEl = document.getElementById('coachGymRapport');
+  if (grEl) grEl.innerHTML = '';
   currentUser = user;
   loading(true);
   try {
@@ -1534,7 +1494,7 @@ function showView(name) {
   if (name === 'overzicht') laadEnRenderKlanten();
   if (name === 'instellingen') renderInstellingen();
   if (name === 'leaderboard') initLeaderboard();
-  if (name === 'connecties') { renderCoachConnecties(); renderMaandrapport(); }
+  if (name === 'connecties') { renderCoachConnecties(); renderMaandrapport(); renderGymRapport(); }
   if (name === 'coaches') renderCoachesView();
   if (window.innerWidth < 768) document.getElementById('mainNav').classList.remove('open');
 }
@@ -3109,6 +3069,102 @@ async function renderMaandrapport() {
         <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">${isExpired ? 'Je Strava-koppeling is verlopen. Koppel opnieuw om je maandrapport te bekijken.' : e.message}</div>
         ${isExpired ? `<button class="btn btn-primary" style="background:#FC4C02;border-color:#FC4C02;" onclick="${connectFn}">Opnieuw koppelen</button>` : ''}
       </div>`;
+  }
+}
+
+// ── MAANDRAPPORT GYM (Trainin / metingen) ──────────────────────────
+async function renderGymRapport() {
+  const el = document.getElementById('coachGymRapport');
+  if (!el) return;
+
+  const nu = new Date();
+  const jaar = nu.getFullYear();
+  const maand = nu.getMonth();
+  const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+  const maandLabel = `${maandNamen[maand]} ${jaar}`;
+
+  const header = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <div style="width:4px;height:28px;background:#6EF08C;border-radius:2px;"></div>
+      <h3 style="font-size:17px;font-weight:700;">Maandrapport Gym — ${maandLabel}</h3>
+      <span style="font-size:11px;color:#6EF08C;font-weight:600;background:#6EF08C15;padding:2px 8px;border-radius:10px;">via Trainin</span>
+    </div>`;
+
+  el.innerHTML = header + `<div class="empty">Laden…</div>`;
+
+  try {
+    // Haal alle klanten + hun metingen op voor de huidige maand
+    const startDatum = `${jaar}-${String(maand+1).padStart(2,'0')}-01`;
+    const eindDatum  = `${jaar}-${String(maand+2).padStart(2,'0')}-01`;
+
+    const { data: mts, error } = await sb.from('metingen')
+      .select('klant_id, datum, oefening_id, oefeningen(naam)')
+      .gte('datum', startDatum)
+      .lt('datum', eindDatum)
+      .order('datum', { ascending: false });
+
+    if (error) throw error;
+
+    if (!mts || !mts.length) {
+      el.innerHTML = header + `<div class="empty">Geen gym-sessies gevonden voor ${maandLabel}.</div>`;
+      return;
+    }
+
+    // Unieke sessiedatums (per dag = 1 sessie)
+    const sessiedatums = [...new Set(mts.map(m => m.datum))];
+    const aantalSessies = sessiedatums.length;
+
+    // Populairste oefening
+    const oefTelling = {};
+    mts.forEach(m => {
+      const naam = m.oefeningen?.naam || m.oefening_id;
+      oefTelling[naam] = (oefTelling[naam] || 0) + 1;
+    });
+    const populairst = Object.entries(oefTelling).sort((a,b) => b[1]-a[1])[0];
+    const populairstNaam = populairst ? populairst[0] : '—';
+
+    // Inzet-badge op basis van sessies
+    let inzetLabel, inzetBadge;
+    if (aantalSessies >= 16)      { inzetLabel = '🔥 Op schema'; inzetBadge = '#6EF08C'; }
+    else if (aantalSessies >= 10) { inzetLabel = '💪 Goed bezig'; inzetBadge = '#6EF08C'; }
+    else if (aantalSessies >= 5)  { inzetLabel = '👍 Regelmatig'; inzetBadge = '#facc15'; }
+    else                           { inzetLabel = '📈 Kom op'; inzetBadge = '#e63946'; }
+
+    // Unieke klanten deze maand
+    const uniekeKlanten = new Set(mts.map(m => m.klant_id)).size;
+
+    // Laatste 3 sessies
+    const recenteSessies = sessiedatums.slice(0, 3);
+    const sessieLijst = recenteSessies.map(datum => {
+      const sessieOefs = mts.filter(m => m.datum === datum);
+      const namen = [...new Set(sessieOefs.map(m => m.oefeningen?.naam))].filter(Boolean).slice(0, 3).join(', ');
+      const datumFmt = new Date(datum).toLocaleDateString('nl-BE', { weekday:'short', day:'numeric', month:'short' });
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div>
+          <div style="font-weight:600;font-size:13px;">🏋️ ${namen || 'Training'}</div>
+          <div style="font-size:11px;color:var(--muted);">${datumFmt}</div>
+        </div>
+        <span style="font-size:12px;color:var(--muted);">${sessieOefs.length} sets</span>
+      </div>`;
+    }).join('');
+
+    el.innerHTML = `
+      ${header}
+      <div class="maand-grid" style="margin-bottom:20px;">
+        <div class="maand-stat"><div class="maand-stat-val">${aantalSessies}</div><div class="maand-stat-lbl">Sessies</div></div>
+        <div class="maand-stat"><div class="maand-stat-val">${uniekeKlanten}</div><div class="maand-stat-lbl">Actieve klanten</div></div>
+        <div class="maand-stat" style="overflow:hidden;"><div class="maand-stat-val" style="font-size:16px;line-height:1.2;padding-top:4px;">${populairstNaam}</div><div class="maand-stat-lbl">Populairste oefening</div></div>
+        <div class="maand-stat"><div class="maand-stat-val" style="font-size:18px;color:${inzetBadge};">${inzetLabel}</div><div class="maand-stat-lbl">Inzet</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title" style="margin-bottom:8px;">📋 Laatste gym-sessies</div>
+        ${sessieLijst || '<div class="empty" style="font-size:13px;">Nog geen sessies.</div>'}
+      </div>`;
+
+  } catch(e) {
+    el.innerHTML = header + `<div style="background:var(--card);border-radius:12px;padding:24px;text-align:center;border:2px dashed var(--border);">
+      <div style="font-size:14px;color:var(--muted);">${e.message}</div>
+    </div>`;
   }
 }
 
