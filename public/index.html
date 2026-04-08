@@ -1468,7 +1468,19 @@ async function initApp(user) {
         await initClientApp(user, klant);
         return;
       }
-      // Geen coach of klant → member-modus (beperkte toegang)
+      // Geen bestaande klant → auto-aanmaken als zelfgeregistreerde klant
+      const naamMeta = user.user_metadata?.naam || '';
+      const naamDelen = naamMeta.trim().split(' ');
+      const voornaamNieuwe = naamDelen[0] || '';
+      const achternaamNieuwe = naamDelen.slice(1).join(' ') || null;
+      const { data: nieuweKlant, error: insertKlantErr } = await sb.from('klanten')
+        .insert({ id: user.id, email: user.email, voornaam: voornaamNieuwe, achternaam: achternaamNieuwe, actief: true })
+        .select().single();
+      if (!insertKlantErr && nieuweKlant) {
+        await initClientApp(user, nieuweKlant);
+        return;
+      }
+      // Fallback member-modus als insert mislukt
       await initMemberApp(user);
     }
   } catch(e) {
