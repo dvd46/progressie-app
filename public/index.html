@@ -2965,7 +2965,10 @@ async function renderTraininBlok(klantId) {
   const el = document.getElementById('traininBlok');
   if (!el || !klantId) return;
   const k = klanten.find(c => c.id === klantId);
-  if (!k?.email) { el.style.display = 'none'; return; }
+  if (!k) { el.style.display = 'none'; return; }
+
+  const volledigeNaam = ((k.voornaam || '') + ' ' + (k.achternaam || '')).trim();
+  if (!volledigeNaam) { el.style.display = 'none'; return; }
 
   const nu = new Date();
   const maand = nu.getMonth() + 1;
@@ -2976,7 +2979,7 @@ async function renderTraininBlok(klantId) {
 
   const { data: sessies } = await sb.from('trainin_sessies')
     .select('*')
-    .eq('klant_email', k.email.toLowerCase())
+    .ilike('klant_naam', volledigeNaam)
     .gte('start_tijd', van)
     .lt('start_tijd', tot)
     .order('start_tijd', { ascending: false });
