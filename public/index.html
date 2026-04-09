@@ -2964,11 +2964,17 @@ async function syncTrainin() {
 async function renderTraininBlok(klantId) {
   const el = document.getElementById('traininBlok');
   if (!el || !klantId) return;
-  const k = klanten.find(c => c.id === klantId);
-  if (!k) { el.style.display = 'none'; return; }
+
+  // Haal klant op uit lokale array OF rechtstreeks uit Supabase
+  let k = klanten.find(c => c.id === klantId);
+  if (!k) {
+    const { data } = await sb.from('klanten').select('voornaam,achternaam').eq('id', klantId).maybeSingle();
+    k = data;
+  }
+  if (!k) { el.style.display = 'block'; el.innerHTML = '<div class="empty">Klant niet gevonden.</div>'; return; }
 
   const volledigeNaam = ((k.voornaam || '') + ' ' + (k.achternaam || '')).trim();
-  if (!volledigeNaam) { el.style.display = 'none'; return; }
+  if (!volledigeNaam) { el.style.display = 'block'; el.innerHTML = '<div class="empty">Naam onbekend.</div>'; return; }
 
   const nu = new Date();
   const maand = nu.getMonth() + 1;
