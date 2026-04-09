@@ -2956,7 +2956,6 @@ async function syncTrainin() {
     if (!r.ok) throw new Error(`Edge Function fout: ${r.status}`);
     const data = await r.json();
     showToast(`✅ ${data.gesynchroniseerd} sessies gesynchroniseerd!`, 'success');
-    renderTraininBlok(AKid);
   } catch(e) {
     showToast('Fout: ' + e.message, 'error');
   }
