@@ -764,7 +764,7 @@ textarea { resize: vertical; min-height: 58px; }
   <div id="coachMaandrapport" style="margin-top:28px;"></div>
   <div id="traininBlok" class="panel" style="margin-top:20px;display:none;"></div>
 
-</div>
+</div><!-- /view-profiel -->
 
 <!-- VIEW: LEADERBOARD -->
 <div class="view" id="view-leaderboard">
@@ -2984,7 +2984,7 @@ async function renderTraininBlok(klantId) {
     .lt('start_tijd', tot)
     .order('start_tijd', { ascending: false });
 
-  el.style.display = '';
+  el.style.display = 'block';
 
   const aantalSessies = sessies?.length || 0;
   const totalMin = (sessies || []).reduce((s, r) => s + (r.duur_minuten || 0), 0);
