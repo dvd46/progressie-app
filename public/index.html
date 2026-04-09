@@ -1477,7 +1477,7 @@ async function initApp(user) {
         .insert({ id: user.id, email: user.email, voornaam: voornaamNieuwe, achternaam: achternaamNieuwe, actief: true })
         .select().single();
       if (!insertKlantErr && nieuweKlant) {
-        await initClientApp(user, nieuweKlant);
+        await initClientApp(user, nieuweKlant, true);
         return;
       }
       // Fallback member-modus als insert mislukt
@@ -3737,7 +3737,7 @@ async function changeMemberPassword() {
 // ══════════════════════════════════════════════════════════════════════
 //  CLIENT PLATFORM
 // ══════════════════════════════════════════════════════════════════════
-async function initClientApp(user, klant) {
+async function initClientApp(user, klant, forceOnboarding = false) {
   currentKlant = klant;
   AKid = klant.id;
   isClientMode = true;
@@ -3754,7 +3754,7 @@ async function initClientApp(user, klant) {
   showClientView('client-profiel');
   renderClientProfiel();
   loadLifestyles(klant.id);
-  if (!klant.voornaam) openOnboardingProfiel();
+  if (!klant.voornaam || forceOnboarding) openOnboardingProfiel();
 }
 
 let clientChartFilter = {};
