@@ -2944,64 +2944,18 @@ async function renderLeaderboard() {
 //  CONNECTIES (Strava + Trainin)
 // ══════════════════════════════════════════════════════════════════════
 async function syncTrainin() {
-  const BASE_URL = "https://api.trainin.app/integrations/tenant/gymloft";
-  const hdrs = { "Authorization": `Bearer ${TRAININ_TOKEN}`, "Accept": "application/json" };
-
-  async function haalAllePaginas(endpoint) {
-    const resultaten = [];
-    let pagina = 1;
-    while (true) {
-      const r = await fetch(`${BASE_URL}${endpoint}${endpoint.includes('?') ? '&' : '?'}page=${pagina}`, { headers: hdrs });
-      if (!r.ok) throw new Error(`Trainin fout: ${r.status}`);
-      const data = await r.json();
-      resultaten.push(...data.data);
-      if (pagina >= data.last_page) break;
-      pagina++;
-    }
-    return resultaten;
-  }
-
   showToast('Trainin synchroniseren…');
   try {
-    // Alle klanten ophalen voor e-mail koppeling
-    const klanten = await haalAllePaginas('/clients');
-    const emailMap = {};
-    klanten.forEach(k => { if (k.email) emailMap[k.ref] = k.email.toLowerCase(); });
-
-    // Alle sessies van dit jaar ophalen
-    const nu = new Date();
-    const van = `${nu.getFullYear()}-01-01`;
-    const tot = `${nu.getFullYear()}-12-31`;
-    const sessies = await haalAllePaginas(`/sessions?include=bookings&from=${van}&until=${tot}`);
-
-    // Verwerken
-    const rijen = [];
-    sessies.forEach(sessie => {
-      const start = new Date(sessie.start);
-      const eind = new Date(sessie.end);
-      const duur = Math.round((eind - start) / 60000);
-      (sessie.bookings || []).forEach(boeking => {
-        const client = boeking.client;
-        if (!client) return;
-        const email = emailMap[client.ref];
-        if (!email) return;
-        rijen.push({
-          klant_email: email,
-          klant_naam: client.name,
-          sessie_ref: boeking.ref,
-          sessie_naam: sessie.name,
-          start_tijd: sessie.start,
-          eind_tijd: sessie.end,
-          duur_minuten: duur
-        });
-      });
+    const r = await fetch('https://tlxpoaqdzpwottiulkzg.supabase.co/functions/v1/trainin-sync', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      }
     });
-
-    if (rijen.length === 0) { showToast('Geen sessies gevonden.', 'error'); return; }
-
-    const { error } = await sb.from('trainin_sessies').upsert(rijen, { onConflict: 'sessie_ref' });
-    if (error) throw error;
-    showToast(`✅ ${rijen.length} sessies gesynchroniseerd!`, 'success');
+    if (!r.ok) throw new Error(`Edge Function fout: ${r.status}`);
+    const data = await r.json();
+    showToast(`✅ ${data.gesynchroniseerd} sessies gesynchroniseerd!`, 'success');
     renderTraininBlok(AKid);
   } catch(e) {
     showToast('Fout: ' + e.message, 'error');
