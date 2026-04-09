@@ -2984,26 +2984,27 @@ async function renderTraininBlok(klantId) {
     .lt('start_tijd', tot)
     .order('start_tijd', { ascending: false });
 
-  if (!sessies || !sessies.length) { el.style.display = 'none'; return; }
   el.style.display = '';
 
-  const aantalSessies = sessies.length;
-  const totalMin = sessies.reduce((s, r) => s + (r.duur_minuten || 0), 0);
+  const aantalSessies = sessies?.length || 0;
+  const totalMin = (sessies || []).reduce((s, r) => s + (r.duur_minuten || 0), 0);
   const uren = Math.floor(totalMin / 60);
   const min = totalMin % 60;
-  const tijdTxt = uren > 0 ? `${uren}u ${min}m` : `${min}m`;
+  const tijdTxt = totalMin > 0 ? (uren > 0 ? `${uren}u ${min}m` : `${min}m`) : '—';
 
   const naamTelling = {};
-  sessies.forEach(s => { naamTelling[s.sessie_naam] = (naamTelling[s.sessie_naam] || 0) + 1; });
+  (sessies || []).forEach(s => { naamTelling[s.sessie_naam] = (naamTelling[s.sessie_naam] || 0) + 1; });
   const populairst = Object.entries(naamTelling).sort((a,b) => b[1]-a[1])[0]?.[0] || '—';
 
-  const recenteLijst = sessies.slice(0, 5).map(s => {
-    const d = new Date(s.start_tijd).toLocaleDateString('nl-BE', { weekday:'short', day:'numeric', month:'short' });
-    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
-      <div><div style="font-weight:600;">${s.sessie_naam || 'Training'}</div><div style="font-size:11px;color:var(--muted);">${d}</div></div>
-      <span style="color:var(--muted);font-size:12px;">${s.duur_minuten}min</span>
-    </div>`;
-  }).join('');
+  const recenteLijst = aantalSessies === 0
+    ? `<div class="empty" style="font-size:13px;">Geen sessies gevonden voor ${maandNamen[maand-1]}.</div>`
+    : (sessies || []).slice(0, 5).map(s => {
+        const d = new Date(s.start_tijd).toLocaleDateString('nl-BE', { weekday:'short', day:'numeric', month:'short' });
+        return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+          <div><div style="font-weight:600;">${s.sessie_naam || 'Training'}</div><div style="font-size:11px;color:var(--muted);">${d}</div></div>
+          <span style="color:var(--muted);font-size:12px;">${s.duur_minuten}min</span>
+        </div>`;
+      }).join('');
 
   el.innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
