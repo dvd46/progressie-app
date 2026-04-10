@@ -2983,17 +2983,15 @@ async function renderTraininOverzicht() {
   const maandNaam = maandNamen[maand];
 
   if (isClientMode && currentKlant) {
-    // KLANT: enkel eigen sessies op naam
+    // KLANT: eigen sessies huidige maand + laatste 12 maanden voor grafiek
     const volledigeNaam = [currentKlant.voornaam, currentKlant.achternaam].filter(Boolean).join(' ');
-    const { data: sessies, error } = await sb.from('trainin_sessies')
-      .select('*')
-      .ilike('klant_naam', `%${volledigeNaam}%`)
-      .gte('start_tijd', van)
-      .lt('start_tijd', tot)
-      .order('start_tijd', { ascending: false });
-
+    const van12 = new Date(jaar, maand - 11, 1).toISOString();
+    const [{ data: sessies, error }, { data: historiek }] = await Promise.all([
+      sb.from('trainin_sessies').select('*').ilike('klant_naam', `%${volledigeNaam}%`).gte('start_tijd', van).lt('start_tijd', tot).order('start_tijd', { ascending: false }),
+      sb.from('trainin_sessies').select('start_tijd').ilike('klant_naam', `%${volledigeNaam}%`).gte('start_tijd', van12).lt('start_tijd', tot)
+    ]);
     if (error) { el.innerHTML = `<div class="empty">Fout: ${error.message}</div>`; return; }
-    el.innerHTML = renderTraininKlantBlok(volledigeNaam, sessies || [], maandNaam, jaar, true);
+    renderTraininKlantView(el, volledigeNaam, sessies || [], historiek || [], maandNaam, jaar, true);
     return;
   }
 
@@ -3032,7 +3030,7 @@ async function renderTraininOverzicht() {
   updateTraininResultaten(maandNaam, jaar);
 }
 
-function updateTraininResultaten(maandNaam, jaar) {
+async function updateTraininResultaten(maandNaam, jaar) {
   const res = document.getElementById('traininResultaten');
   if (!res) return;
 
@@ -3048,40 +3046,100 @@ function updateTraininResultaten(maandNaam, jaar) {
     res.innerHTML = `<div class="empty">Geen klanten gevonden voor "${traininZoekterm}".</div>`;
     return;
   }
-  res.innerHTML = gefilterdeNamen.map(naam => {
+
+  res.innerHTML = '<div class="empty" style="font-size:13px;">Laden…</div>';
+
+  // Haal 12-maanden historiek op voor elke gevonden klant
+  const maand = new Date().getMonth();
+  const van12 = new Date(jaar, maand - 11, 1).toISOString();
+  const tot = new Date(jaar, maand + 1, 1).toISOString();
+
+  for (const naam of gefilterdeNamen) {
+    const { data: historiek } = await sb.from('trainin_sessies')
+      .select('start_tijd')
+      .eq('klant_naam', naam)
+      .gte('start_tijd', van12)
+      .lt('start_tijd', tot);
     const ks = traininAlleSessies.filter(s => s.klant_naam === naam);
-    return renderTraininKlantBlok(naam, ks, maandNaam, jaar, false);
-  }).join('');
+    const div = document.createElement('div');
+    renderTraininKlantView(div, naam, ks, historiek || [], maandNaam, jaar, false);
+    if (naam === gefilterdeNamen[0]) res.innerHTML = '';
+    res.appendChild(div);
+  }
 }
 
-function renderTraininKlantBlok(naam, sessies, maandNaam, jaar, toonNaam) {
+function renderTraininKlantView(container, naam, sessies, historiek, maandNaam, jaar, toonNaam) {
   const totMin = sessies.reduce((s, r) => s + (r.duur_minuten || 0), 0);
   const u = Math.floor(totMin / 60); const m = totMin % 60;
   const tijdTxt = totMin > 0 ? (u > 0 ? `${u}u ${m}m` : `${m}m`) : '—';
+  const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+  const chartId = 'traininChart_' + naam.replace(/\W/g,'_');
 
-  if (sessies.length === 0) {
-    return `<div class="empty">Geen sessies gevonden voor ${naam} in ${maandNaam}.</div>`;
+  // Bouw 12-maanden labels + data
+  const nu = new Date();
+  const labels = [], counts = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(nu.getFullYear(), nu.getMonth() - i, 1);
+    labels.push(maandNamen[d.getMonth()].slice(0,3) + ' ' + String(d.getFullYear()).slice(2));
+    const y = d.getFullYear(), mo = d.getMonth();
+    counts.push((historiek || []).filter(s => {
+      const sd = new Date(s.start_tijd);
+      return sd.getFullYear() === y && sd.getMonth() === mo;
+    }).length);
   }
 
-  const rijen = sessies.map(s => {
-    const d = new Date(s.start_tijd).toLocaleDateString('nl-BE', { weekday:'short', day:'numeric', month:'short' });
-    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
-      <div><div style="font-weight:500;">${s.sessie_naam || 'Training'}</div><div style="font-size:11px;color:var(--muted);">${d}</div></div>
-      <span style="color:var(--muted);font-size:12px;white-space:nowrap;">${s.duur_minuten ?? '—'}min</span>
-    </div>`;
-  }).join('');
+  const rijen = sessies.length === 0
+    ? `<div class="empty" style="font-size:13px;">Geen sessies in ${maandNaam}.</div>`
+    : sessies.map(s => {
+        const d = new Date(s.start_tijd).toLocaleDateString('nl-BE', { weekday:'short', day:'numeric', month:'short' });
+        return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+          <div><div style="font-weight:500;">${s.sessie_naam || 'Training'}</div><div style="font-size:11px;color:var(--muted);">${d}</div></div>
+          <span style="color:var(--muted);font-size:12px;white-space:nowrap;">${s.duur_minuten ?? '—'}min</span>
+        </div>`;
+      }).join('');
 
-  return `<div style="margin-bottom:20px;">
-    ${toonNaam ? '' : `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <span style="font-size:15px;font-weight:700;">${naam}</span>
-      <span style="font-size:12px;color:var(--muted);">${sessies.length} sessies · ${tijdTxt}</span>
-    </div>`}
-    ${toonNaam ? `<div style="display:flex;gap:8px;margin-bottom:12px;">
-      <div class="maand-stat"><div class="maand-stat-val">${sessies.length}</div><div class="maand-stat-lbl">Sessies</div></div>
-      <div class="maand-stat"><div class="maand-stat-val">${tijdTxt}</div><div class="maand-stat-lbl">Beweegtijd</div></div>
-    </div>` : ''}
-    ${rijen}
-  </div>`;
+  container.innerHTML = `
+    <div style="margin-bottom:24px;">
+      ${!toonNaam ? `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <span style="font-size:15px;font-weight:700;">${naam}</span>
+        <span style="font-size:12px;color:var(--muted);">${sessies.length} sessies · ${tijdTxt}</span>
+      </div>` : ''}
+      ${toonNaam ? `<div style="display:flex;gap:8px;margin-bottom:16px;">
+        <div class="maand-stat"><div class="maand-stat-val">${sessies.length}</div><div class="maand-stat-lbl">Sessies</div></div>
+        <div class="maand-stat"><div class="maand-stat-val">${tijdTxt}</div><div class="maand-stat-lbl">Beweegtijd</div></div>
+      </div>` : ''}
+      <div class="panel" style="margin-bottom:16px;padding:16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Sessies per maand — laatste 12 maanden</div>
+        <canvas id="${chartId}" height="90"></canvas>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">${maandNaam} ${jaar}</div>
+      ${rijen}
+    </div>`;
+
+  // Teken grafiek na DOM-insert
+  requestAnimationFrame(() => {
+    const ctx = document.getElementById(chartId);
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          data: counts,
+          backgroundColor: counts.map((_, i) => i === 11 ? '#6EF08C' : '#6EF08C55'),
+          borderRadius: 6,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+        }
+      }
+    });
+  });
 }
 const STRAVA_CLIENT_ID = '215811';
 const STRAVA_CLIENT_SECRET = 'a4d8ec53521fec1d494722a76ea002a7069170fe';
