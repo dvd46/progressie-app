@@ -3007,29 +3007,11 @@ async function renderTraininOverzicht() {
   if (error) { el.innerHTML = `<div class="empty">Fout: ${error.message}</div>`; return; }
   traininAlleSessies = sessies || [];
   traininZoekterm = '';
-  renderTraininCoachView(maandNaam, jaar);
-}
-
-function renderTraininCoachView(maandNaam, jaar) {
-  const el = document.getElementById('traininOverzicht');
-  if (!el) return;
-
-  const zoek = traininZoekterm.toLowerCase().trim();
-  const namen = [...new Set(traininAlleSessies.map(s => s.klant_naam).filter(Boolean))].sort();
-  const gefilterdeNamen = zoek ? namen.filter(n => n.toLowerCase().includes(zoek)) : [];
 
   const totaal = traininAlleSessies.length;
-  const uniekeKlanten = namen.length;
+  const uniekeKlanten = [...new Set(traininAlleSessies.map(s => s.klant_naam).filter(Boolean))].length;
 
-  const resultatenHtml = gefilterdeNamen.length > 0
-    ? gefilterdeNamen.map(naam => {
-        const ks = traininAlleSessies.filter(s => s.klant_naam === naam);
-        return renderTraininKlantBlok(naam, ks, maandNaam, jaar, false);
-      }).join('')
-    : zoek
-      ? `<div class="empty">Geen klanten gevonden voor "${traininZoekterm}".</div>`
-      : `<div class="empty" style="font-size:13px;">Zoek een klant om hun sessies te bekijken.</div>`;
-
+  // Render de vaste structuur eenmalig — zoekbalk behoudt focus
   el.innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
       <div style="width:4px;height:28px;background:#6EF08C;border-radius:2px;"></div>
@@ -3039,10 +3021,37 @@ function renderTraininCoachView(maandNaam, jaar) {
       <div class="maand-stat"><div class="maand-stat-val">${totaal}</div><div class="maand-stat-lbl">Sessies</div></div>
       <div class="maand-stat"><div class="maand-stat-val">${uniekeKlanten}</div><div class="maand-stat-lbl">Klanten</div></div>
     </div>
-    <input type="text" class="form-control" placeholder="Zoek op naam…" value="${traininZoekterm.replace(/"/g,'&quot;')}"
-      oninput="traininZoekterm=this.value; renderTraininCoachView('${maandNaam}',${jaar})"
+    <input type="text" id="traininZoekInput" class="form-control" placeholder="Zoek op naam…"
       style="margin-bottom:16px;" />
-    ${resultatenHtml}`;
+    <div id="traininResultaten"></div>`;
+
+  document.getElementById('traininZoekInput').addEventListener('input', function() {
+    traininZoekterm = this.value;
+    updateTraininResultaten(maandNaam, jaar);
+  });
+  updateTraininResultaten(maandNaam, jaar);
+}
+
+function updateTraininResultaten(maandNaam, jaar) {
+  const res = document.getElementById('traininResultaten');
+  if (!res) return;
+
+  const zoek = traininZoekterm.toLowerCase().trim();
+  const namen = [...new Set(traininAlleSessies.map(s => s.klant_naam).filter(Boolean))].sort();
+  const gefilterdeNamen = zoek ? namen.filter(n => n.toLowerCase().includes(zoek)) : [];
+
+  if (!zoek) {
+    res.innerHTML = `<div class="empty" style="font-size:13px;">Zoek een klant om hun sessies te bekijken.</div>`;
+    return;
+  }
+  if (gefilterdeNamen.length === 0) {
+    res.innerHTML = `<div class="empty">Geen klanten gevonden voor "${traininZoekterm}".</div>`;
+    return;
+  }
+  res.innerHTML = gefilterdeNamen.map(naam => {
+    const ks = traininAlleSessies.filter(s => s.klant_naam === naam);
+    return renderTraininKlantBlok(naam, ks, maandNaam, jaar, false);
+  }).join('');
 }
 
 function renderTraininKlantBlok(naam, sessies, maandNaam, jaar, toonNaam) {
