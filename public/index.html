@@ -717,27 +717,24 @@ textarea { resize: vertical; min-height: 58px; }
 <div class="view" id="view-connecties">
   <div style="margin-bottom:20px;">
     <h2 style="font-size:20px;font-weight:600;">Activiteiten</h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px;">Koppel externe apps en sporthorloges om je activiteiten automatisch te synchroniseren.</p>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px;" id="activiteitenSubtitel">Koppel externe apps en sporthorloges om je activiteiten automatisch te synchroniseren.</p>
   </div>
   <div class="connectie-grid">
 
     <!-- TRAININ SYNC -->
-<div class="connectie-card" id="traininCard">
-    <div class="connectie-header">
-        <div class="connectie-logo" style="background:#0d0d0d;">
-            🏋️
-        </div>
+    <div class="connectie-card" id="traininCard">
+      <div class="connectie-header">
+        <div class="connectie-logo" style="background:#0d0d0d;">🏋️</div>
         <div>
-            <div class="connectie-naam">Trainin</div>
-            <div><span class="badge-soon">Gymloft sessies</span></div>
+          <div class="connectie-naam">Trainin</div>
+          <div><span class="badge-soon">Gymloft sessies</span></div>
         </div>
+      </div>
+      <div class="connectie-desc">Synchroniseer de Gymloft-trainingen om beweegtijd bij te houden.</div>
+      <button class="btn btn-primary" style="width:100%;" onclick="syncTrainin()">🔄 Synchroniseer Trainin</button>
     </div>
-    <div class="connectie-desc">Synchroniseer je Gymloft trainingen om je beweegtijd bij te houden.</div>
-    <button class="btn btn-primary" style="width:100%;" onclick="syncTrainin()">
-        🔄 Synchroniseer Trainin
-    </button>
-</div>
-    <!-- STRAVA -->
+
+    <!-- STRAVA (klanten/members) -->
     <div class="connectie-card" id="coachStravaCard">
       <div class="connectie-header">
         <div class="connectie-logo" style="background:#FC4C02;">
@@ -758,13 +755,28 @@ textarea { resize: vertical; min-height: 58px; }
       </div>
     </div>
 
+    <!-- SELECTEER KLANT (coaches) -->
+    <div class="connectie-card" id="coachKlantZoekCard" style="display:none;">
+      <div class="connectie-header">
+        <div class="connectie-logo" style="background:var(--accent-dark,#1a1a2e);">👤</div>
+        <div>
+          <div class="connectie-naam">Selecteer klant</div>
+          <div><span class="badge-soon">Trainingsanalyse</span></div>
+        </div>
+      </div>
+      <div class="connectie-desc">Kies een klant om hun beweegtijd en Gymloft-sessies te analyseren.</div>
+      <input type="text" id="coachKlantZoekInput" class="form-control" placeholder="Naam klant…" style="margin-top:4px;"
+        oninput="zoekCoachKlant(this.value)" autocomplete="off" />
+      <div id="coachKlantZoekResultaten" style="margin-top:6px;"></div>
+    </div>
+
   </div>
 
-  <!-- MAANDRAPPORT COACH (Strava) -->
+  <!-- MAANDRAPPORT COACH (Strava, enkel voor niet-coaches) -->
   <div id="coachMaandrapport" style="margin-top:28px;"></div>
 
-  <!-- TRAININ GYMLOFT OVERZICHT -->
-  <div id="traininOverzicht" class="panel" style="margin-top:28px;display:none;"></div>
+  <!-- TRAININ / ANALYSE OVERZICHT -->
+  <div id="traininOverzicht" style="margin-top:28px;"></div>
 
 </div><!-- /view-connecties -->
 
@@ -1558,7 +1570,7 @@ function showView(name) {
   if (name === 'overzicht') laadEnRenderKlanten();
   if (name === 'instellingen') renderInstellingen();
   if (name === 'leaderboard') initLeaderboard();
-  if (name === 'connecties') { renderCoachConnecties(); renderMaandrapport(); renderTraininOverzicht(); }
+  if (name === 'connecties') { renderCoachConnecties(); if (isClientMode || isMemberMode) renderMaandrapport(); renderTraininOverzicht(); }
   if (name === 'coaches') renderCoachesView();
   if (window.innerWidth < 768) document.getElementById('mainNav').classList.remove('open');
 }
@@ -2995,77 +3007,55 @@ async function renderTraininOverzicht() {
     return;
   }
 
-  // COACH: alle sessies laden
-  const { data: sessies, error } = await sb.from('trainin_sessies')
-    .select('*')
-    .gte('start_tijd', van)
-    .lt('start_tijd', tot)
-    .order('start_tijd', { ascending: false });
-
-  if (error) { el.innerHTML = `<div class="empty">Fout: ${error.message}</div>`; return; }
-  traininAlleSessies = sessies || [];
-  traininZoekterm = '';
-
-  const totaal = traininAlleSessies.length;
-  const uniekeKlanten = [...new Set(traininAlleSessies.map(s => s.klant_naam).filter(Boolean))].length;
-
-  // Render de vaste structuur eenmalig — zoekbalk behoudt focus
-  el.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-      <div style="width:4px;height:28px;background:#6EF08C;border-radius:2px;"></div>
-      <h3 style="font-size:17px;font-weight:700;margin:0;">🏋️ Gymloft — ${maandNaam} ${jaar}</h3>
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-      <div class="maand-stat"><div class="maand-stat-val">${totaal}</div><div class="maand-stat-lbl">Sessies</div></div>
-      <div class="maand-stat"><div class="maand-stat-val">${uniekeKlanten}</div><div class="maand-stat-lbl">Klanten</div></div>
-    </div>
-    <input type="text" id="traininZoekInput" class="form-control" placeholder="Zoek op naam…"
-      style="margin-bottom:16px;" />
-    <div id="traininResultaten"></div>`;
-
-  document.getElementById('traininZoekInput').addEventListener('input', function() {
-    traininZoekterm = this.value;
-    updateTraininResultaten(maandNaam, jaar);
-  });
-  updateTraininResultaten(maandNaam, jaar);
+  // COACH: lege staat — klant wordt geselecteerd via de zoekkaart
+  el.innerHTML = `<div class="empty" style="padding:32px 0;">Zoek een klant om de voortgang en beweegtijd te analyseren.</div>`;
 }
 
-async function updateTraininResultaten(maandNaam, jaar) {
-  const res = document.getElementById('traininResultaten');
+// Zoek klanten via de kaart (live filter op klanten-array)
+function zoekCoachKlant(zoekterm) {
+  const res = document.getElementById('coachKlantZoekResultaten');
   if (!res) return;
+  const z = zoekterm.trim().toLowerCase();
+  if (!z) { res.innerHTML = ''; return; }
+  const matches = klanten.filter(k => {
+    const naam = [k.voornaam, k.achternaam].filter(Boolean).join(' ').toLowerCase();
+    return naam.includes(z);
+  }).slice(0, 6);
+  if (!matches.length) { res.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:4px 0;">Geen klanten gevonden.</div>`; return; }
+  res.innerHTML = matches.map(k => {
+    const naam = [k.voornaam, k.achternaam].filter(Boolean).join(' ');
+    return `<button class="enq-chip" style="margin:2px;font-size:13px;" onclick="selecteerCoachKlant('${naam.replace(/'/g,"\\'")}','${k.id}')">${naam}</button>`;
+  }).join('');
+}
 
-  const zoek = traininZoekterm.toLowerCase().trim();
-  const namen = [...new Set(traininAlleSessies.map(s => s.klant_naam).filter(Boolean))].sort();
-  const gefilterdeNamen = zoek ? namen.filter(n => n.toLowerCase().includes(zoek)) : [];
+async function selecteerCoachKlant(naam, klantId) {
+  // Reset zoekbalk
+  const inp = document.getElementById('coachKlantZoekInput');
+  if (inp) inp.value = naam;
+  const res = document.getElementById('coachKlantZoekResultaten');
+  if (res) res.innerHTML = '';
 
-  if (!zoek) {
-    res.innerHTML = `<div class="empty" style="font-size:13px;">Zoek een klant om hun sessies te bekijken.</div>`;
-    return;
-  }
-  if (gefilterdeNamen.length === 0) {
-    res.innerHTML = `<div class="empty">Geen klanten gevonden voor "${traininZoekterm}".</div>`;
-    return;
-  }
+  const el = document.getElementById('traininOverzicht');
+  if (!el) return;
+  el.innerHTML = `<div class="empty">Data laden voor ${naam}…</div>`;
 
-  res.innerHTML = '<div class="empty" style="font-size:13px;">Laden…</div>';
-
-  // Haal 12-maanden historiek op voor elke gevonden klant
-  const maand = new Date().getMonth();
-  const van12 = new Date(jaar, maand - 11, 1).toISOString();
+  const nu = new Date();
+  const maand = nu.getMonth();
+  const jaar = nu.getFullYear();
+  const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+  const maandNaam = maandNamen[maand];
+  const van = new Date(jaar, maand, 1).toISOString();
   const tot = new Date(jaar, maand + 1, 1).toISOString();
+  const van12 = new Date(jaar, maand - 11, 1).toISOString();
 
-  for (const naam of gefilterdeNamen) {
-    const { data: historiek } = await sb.from('trainin_sessies')
-      .select('start_tijd')
-      .eq('klant_naam', naam)
-      .gte('start_tijd', van12)
-      .lt('start_tijd', tot);
-    const ks = traininAlleSessies.filter(s => s.klant_naam === naam);
-    const div = document.createElement('div');
-    renderTraininKlantView(div, naam, ks, historiek || [], maandNaam, jaar, false);
-    if (naam === gefilterdeNamen[0]) res.innerHTML = '';
-    res.appendChild(div);
-  }
+  // Laad huidige maand (alle velden) + 12 maanden historiek (beweegtijd)
+  const [{ data: sessies, error }, { data: historiek }] = await Promise.all([
+    sb.from('trainin_sessies').select('*').ilike('klant_naam', `%${naam}%`).gte('start_tijd', van).lt('start_tijd', tot).order('start_tijd', { ascending: false }),
+    sb.from('trainin_sessies').select('start_tijd,duur_minuten').ilike('klant_naam', `%${naam}%`).gte('start_tijd', van12).lt('start_tijd', tot)
+  ]);
+
+  if (error) { el.innerHTML = `<div class="empty">Fout: ${error.message}</div>`; return; }
+  renderTraininKlantView(el, naam, sessies || [], historiek || [], maandNaam, jaar, false);
 }
 
 function renderTraininKlantView(container, naam, sessies, historiek, maandNaam, jaar, toonNaam) {
@@ -3075,17 +3065,17 @@ function renderTraininKlantView(container, naam, sessies, historiek, maandNaam, 
   const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
   const chartId = 'traininChart_' + naam.replace(/\W/g,'_');
 
-  // Bouw 12-maanden labels + data
+  // Bouw 12-maanden labels + beweegtijd in uren per maand
   const nu = new Date();
   const labels = [], counts = [];
   for (let i = 11; i >= 0; i--) {
     const d = new Date(nu.getFullYear(), nu.getMonth() - i, 1);
-    labels.push(maandNamen[d.getMonth()].slice(0,3) + ' ' + String(d.getFullYear()).slice(2));
+    labels.push(maandNamen[d.getMonth()].slice(0,3) + ' \'' + String(d.getFullYear()).slice(2));
     const y = d.getFullYear(), mo = d.getMonth();
-    counts.push((historiek || []).filter(s => {
-      const sd = new Date(s.start_tijd);
-      return sd.getFullYear() === y && sd.getMonth() === mo;
-    }).length);
+    const minuten = (historiek || [])
+      .filter(s => { const sd = new Date(s.start_tijd); return sd.getFullYear() === y && sd.getMonth() === mo; })
+      .reduce((sum, s) => sum + (s.duur_minuten || 0), 0);
+    counts.push(Math.round(minuten / 60 * 10) / 10); // uren met 1 decimaal
   }
 
   const rijen = sessies.length === 0
@@ -3109,7 +3099,7 @@ function renderTraininKlantView(container, naam, sessies, historiek, maandNaam, 
         <div class="maand-stat"><div class="maand-stat-val">${tijdTxt}</div><div class="maand-stat-lbl">Beweegtijd</div></div>
       </div>` : ''}
       <div class="panel" style="margin-bottom:16px;padding:16px;">
-        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">Sessies per maand — laatste 12 maanden</div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">🏋️ Beweegtijd per maand — laatste 12 maanden</div>
         <canvas id="${chartId}" height="90"></canvas>
       </div>
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">${maandNaam} ${jaar}</div>
@@ -3132,10 +3122,17 @@ function renderTraininKlantView(container, naam, sessies, historiek, maandNaam, 
         }]
       },
       options: {
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.parsed.y}u beweegtijd`
+            }
+          }
+        },
         scales: {
           x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-          y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          y: { beginAtZero: true, ticks: { font: { size: 11 }, callback: v => v + 'u' }, grid: { color: 'rgba(255,255,255,0.05)' } }
         }
       }
     });
@@ -3379,6 +3376,18 @@ async function handleCoachStravaCallback() {
   renderCoachConnecties();
 }
 function renderCoachConnecties() {
+  // Voor coaches: toon klant-zoekkaart, verberg Strava-kaart + subtitle aanpassen
+  const isCoach = !isClientMode && !isMemberMode;
+  const stravaCard = document.getElementById('coachStravaCard');
+  const klantCard = document.getElementById('coachKlantZoekCard');
+  const subtitel = document.getElementById('activiteitenSubtitel');
+  if (stravaCard) stravaCard.style.display = isCoach ? 'none' : '';
+  if (klantCard) klantCard.style.display = isCoach ? '' : 'none';
+  if (subtitel) subtitel.textContent = isCoach
+    ? 'Zoek een klant om de voortgang en beweegtijd te analyseren.'
+    : 'Koppel externe apps en sporthorloges om je activiteiten automatisch te synchroniseren.';
+  if (isCoach) return; // Strava-kaart niet verder renderen voor coaches
+
   const conn = JSON.parse(localStorage.getItem(`strava_coach_${currentUser?.id}`) || 'null');
   const card = document.getElementById('coachStravaCard');
   const badge = document.getElementById('coachStravaBadge');
