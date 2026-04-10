@@ -3084,7 +3084,7 @@ async function selecteerCoachKlant(naam, klantId) {
       const sr = await fetch(`https://www.strava.com/api/v3/athlete/activities?after=${after}&before=${before}&per_page=200`, { headers: { 'Authorization': `Bearer ${token}` } });
       if (sr.ok) {
         const acts = await sr.json();
-        stravaData = acts.map(a => ({ datum: new Date(a.start_date), minuten: Math.round((a.moving_time || 0) / 60) }));
+        stravaData = acts.map(a => ({ datum: new Date(a.start_date), minuten: Math.round((a.moving_time || 0) / 60), type: a.type || 'Workout', naam: a.name }));
       }
     } catch(e) { /* Strava niet beschikbaar, toon enkel Gymloft */ }
   }
@@ -3146,9 +3146,9 @@ function renderTraininKlantView(container, naam, sessies, historiek, stravaData,
           </div>` : ''}
         </div>
         <canvas id="${chartId}" height="90"></canvas>
+        <div style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center;">Klik op een maand voor details</div>
       </div>
-      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">${maandNaam} ${jaar}</div>
-      ${rijen}
+      <div id="maandDetail_${chartId}"></div>
     </div>`;
 
   // Teken grafiek na DOM-insert
@@ -3175,17 +3175,26 @@ function renderTraininKlantView(container, naam, sessies, historiek, stravaData,
         stack: 'beweegtijd'
       });
     }
-    new Chart(ctx, {
+    // Bouw maanden-index: van 11 maanden terug tot huidige maand
+    const maandIndex = [];
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(nu.getFullYear(), nu.getMonth() - i, 1);
+      maandIndex.push({ jaar: d.getFullYear(), maand: d.getMonth() });
+    }
+
+    const chart = new Chart(ctx, {
       type: 'bar',
       data: { labels, datasets },
       options: {
+        onClick: (evt, elements) => {
+          if (!elements.length) return;
+          const idx = elements[0].index;
+          const { jaar: y, maand: mo } = maandIndex[idx];
+          renderMaandDetail(`maandDetail_${chartId}`, y, mo, historiek, stravaData, heeftStrava);
+        },
         plugins: {
           legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: c => `${c.dataset.label}: ${c.parsed.y}u`
-            }
-          }
+          tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}u` } }
         },
         scales: {
           x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
@@ -3193,7 +3202,78 @@ function renderTraininKlantView(container, naam, sessies, historiek, stravaData,
         }
       }
     });
+
+    // Toon huidige maand standaard
+    renderMaandDetail(`maandDetail_${chartId}`, nu.getFullYear(), nu.getMonth(), historiek, stravaData, heeftStrava);
   });
+}
+
+function renderMaandDetail(containerId, jaar, maand, historiek, stravaData, heeftStrava) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+  const maandNaam = maandNamen[maand];
+  const typeEmoji = { Run:'🏃', Ride:'🚴', Swim:'🏊', Walk:'🚶', Hike:'🥾', WeightTraining:'🏋️', Yoga:'🧘', Workout:'💪', VirtualRide:'🖥️', MountainBikeRide:'🚵', CrossFit:'⚡', Tennis:'🎾', Soccer:'⚽', AlpineSki:'⛷️', Rowing:'🚣' };
+
+  // Gymloft data voor deze maand
+  const gymSessies = (historiek || []).filter(s => {
+    const d = new Date(s.start_tijd);
+    return d.getFullYear() === jaar && d.getMonth() === maand;
+  });
+  const gymSessieCount = gymSessies.length;
+  const gymMin = gymSessies.reduce((s, r) => s + (r.duur_minuten || 0), 0);
+  const gymU = Math.floor(gymMin / 60), gymM = gymMin % 60;
+  const gymTijd = gymMin > 0 ? `${gymU}u ${gymM}m` : '—';
+
+  // Strava per type voor deze maand
+  const stravaActies = (stravaData || []).filter(a => a.datum.getFullYear() === jaar && a.datum.getMonth() === maand);
+  const perType = {};
+  stravaActies.forEach(a => {
+    if (!perType[a.type]) perType[a.type] = { count: 0, minuten: 0 };
+    perType[a.type].count++;
+    perType[a.type].minuten += a.minuten;
+  });
+
+  const stravaHtml = Object.entries(perType).sort((a,b) => b[1].minuten - a[1].minuten).map(([type, d]) => {
+    const em = typeEmoji[type] || '🏅';
+    const u = Math.floor(d.minuten / 60), m = d.minuten % 60;
+    const tijd = d.minuten > 0 ? `${u}u ${m}m` : '—';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:22px;width:32px;text-align:center;">${em}</span>
+      <div style="flex:1;font-size:13px;font-weight:500;color:var(--muted);">${type}</div>
+      <span style="font-size:13px;color:#FC4C02;font-weight:600;">${d.count}×</span>
+      <span style="font-size:12px;color:var(--muted);min-width:52px;text-align:right;">⏱ ${tijd}</span>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:14px;">${maandNaam} ${jaar}</div>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="display:inline-block;width:10px;height:10px;background:#6EF08C;border-radius:2px;flex-shrink:0;"></span>
+        <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Gymloft</span>
+      </div>
+      ${gymSessieCount === 0
+        ? `<div style="font-size:12px;color:var(--muted);padding:4px 0 12px;">Geen sessies</div>`
+        : `<div style="display:flex;align-items:center;gap:16px;padding:6px 0 12px;">
+            <span style="font-size:22px;">🏋️</span>
+            <span style="font-size:13px;font-weight:600;">${gymSessieCount} sessies</span>
+            <span style="font-size:12px;color:var(--muted);">⏱ ${gymTijd}</span>
+          </div>`}
+
+      ${heeftStrava ? `
+      <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="display:inline-block;width:10px;height:10px;background:#FC4C02;border-radius:2px;flex-shrink:0;"></span>
+          <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Strava</span>
+        </div>
+        ${stravaActies.length === 0
+          ? `<div style="font-size:12px;color:var(--muted);">Geen activiteiten</div>`
+          : stravaHtml}
+      </div>` : ''}
+    </div>`;
 }
 const STRAVA_CLIENT_ID = '215811';
 const STRAVA_CLIENT_SECRET = 'a4d8ec53521fec1d494722a76ea002a7069170fe';
