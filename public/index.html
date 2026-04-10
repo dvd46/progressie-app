@@ -3109,6 +3109,20 @@ async function renderMaandrapport() {
   const nu = new Date();
   const jaar = nu.getFullYear();
   const maand = nu.getMonth();
+
+  // Trainin sessies ophalen voor huidige maand
+  const eersteVanMaand = new Date(jaar, maand, 1).toISOString();
+  const eersteVolgendeMaand = new Date(jaar, maand + 1, 1).toISOString();
+  const { data: trainingSessies } = await sb
+    .from('trainin_sessies')
+    .select('*')
+    .gte('start_tijd', eersteVanMaand)
+    .lt('start_tijd', eersteVolgendeMaand)
+    .order('start_tijd', { ascending: false });
+  const totaalSessies = trainingSessies?.length || 0;
+  const totaalMinuten = (trainingSessies || []).reduce((s, t) => s + (t.duur_minuten || 0), 0);
+  const trainUren = Math.floor(totaalMinuten / 60);
+  const trainMinuten = totaalMinuten % 60;
   const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
 
   const userId = currentUser?.id;
@@ -3250,6 +3264,34 @@ async function renderMaandrapport() {
           ${typeHtml}
         </div>
       </div>`;
+
+    // Trainin sectie toevoegen als er data is
+    if (totaalSessies > 0) {
+      el.innerHTML += `
+        <div style="margin-bottom:24px;margin-top:24px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="width:4px;height:28px;background:#6EF08C;border-radius:2px;"></div>
+            <h3 style="font-size:17px;font-weight:700;">🏋️ Gymloft Trainingen — ${maandNamen[maand]} ${jaar}</h3>
+          </div>
+          <div class="maand-grid">
+            <div class="maand-stat"><div class="maand-stat-val">${totaalSessies}</div><div class="maand-stat-lbl">Sessies</div></div>
+            <div class="maand-stat"><div class="maand-stat-val">${trainUren > 0 ? trainUren + 'u ' : ''}${trainMinuten}m</div><div class="maand-stat-lbl">Beweegtijd</div></div>
+          </div>
+          <div class="panel" style="margin-top:12px;">
+            <div class="panel-title">Recente sessies</div>
+            ${(trainingSessies || []).slice(0, 10).map(s => {
+              const datum = new Date(s.start_tijd).toLocaleDateString('nl-BE', { weekday:'short', day:'numeric', month:'short' });
+              return `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+                <div>
+                  <div style="font-weight:600;font-size:13px;">🏋️ ${s.sessie_naam || 'Training'}</div>
+                  <div style="font-size:11px;color:var(--muted);">${datum}</div>
+                </div>
+                <div style="font-weight:600;font-size:13px;color:var(--accent);">${s.duur_minuten ?? '—'}min</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+    }
 
   } catch(e) {
     const connectFn = 'connectCoachStrava()';
