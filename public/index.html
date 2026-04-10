@@ -1558,7 +1558,7 @@ function showView(name) {
   if (name === 'overzicht') laadEnRenderKlanten();
   if (name === 'instellingen') renderInstellingen();
   if (name === 'leaderboard') initLeaderboard();
-  if (name === 'connecties') { renderCoachConnecties(); renderMaandrapport(); traininFilter = new Set(); traininAlleSessies = []; renderTraininOverzicht(); }
+  if (name === 'connecties') { renderCoachConnecties(); renderMaandrapport(); renderTraininOverzicht(); }
   if (name === 'coaches') renderCoachesView();
   if (window.innerWidth < 768) document.getElementById('mainNav').classList.remove('open');
 }
@@ -2962,9 +2962,11 @@ async function syncTrainin() {
   }
 }
 
-// Geselecteerde klanten voor Trainin-filter (leeg = alles tonen)
-let traininFilter = new Set();
+// ══════════════════════════════════════════════════════════════════════
+//  GYMLOFT TRAININGEN OVERZICHT
+// ══════════════════════════════════════════════════════════════════════
 let traininAlleSessies = [];
+let traininZoekterm = '';
 
 async function renderTraininOverzicht() {
   const el = document.getElementById('traininOverzicht');
@@ -2973,12 +2975,29 @@ async function renderTraininOverzicht() {
   el.innerHTML = '<div class="empty">Gymloft-sessies laden…</div>';
 
   const nu = new Date();
-  const maand = nu.getMonth() + 1;
+  const maand = nu.getMonth();
   const jaar = nu.getFullYear();
-  const van = `${jaar}-${String(maand).padStart(2,'0')}-01`;
-  const tot = maand < 12 ? `${jaar}-${String(maand+1).padStart(2,'0')}-01` : `${jaar+1}-01-01`;
+  const van = new Date(jaar, maand, 1).toISOString();
+  const tot = new Date(jaar, maand + 1, 1).toISOString();
   const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+  const maandNaam = maandNamen[maand];
 
+  if (isClientMode && currentKlant) {
+    // KLANT: enkel eigen sessies op naam
+    const volledigeNaam = [currentKlant.voornaam, currentKlant.achternaam].filter(Boolean).join(' ');
+    const { data: sessies, error } = await sb.from('trainin_sessies')
+      .select('*')
+      .ilike('klant_naam', `%${volledigeNaam}%`)
+      .gte('start_tijd', van)
+      .lt('start_tijd', tot)
+      .order('start_tijd', { ascending: false });
+
+    if (error) { el.innerHTML = `<div class="empty">Fout: ${error.message}</div>`; return; }
+    el.innerHTML = renderTraininKlantBlok(volledigeNaam, sessies || [], maandNaam, jaar, true);
+    return;
+  }
+
+  // COACH: alle sessies laden
   const { data: sessies, error } = await sb.from('trainin_sessies')
     .select('*')
     .gte('start_tijd', van)
@@ -2986,80 +3005,74 @@ async function renderTraininOverzicht() {
     .order('start_tijd', { ascending: false });
 
   if (error) { el.innerHTML = `<div class="empty">Fout: ${error.message}</div>`; return; }
-  if (!sessies?.length) {
-    el.innerHTML = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="width:4px;height:28px;background:#6EF08C;border-radius:2px;"></div><h3 style="font-size:17px;font-weight:700;margin:0;">🏋️ Gymloft — ${maandNamen[maand-1]} ${jaar}</h3></div><div class="empty">Geen sessies gevonden voor ${maandNamen[maand-1]}. Synchroniseer eerst via de knop hierboven.</div>`;
-    return;
-  }
-
-  traininAlleSessies = sessies;
-  // Standaard alles geselecteerd
-  if (traininFilter.size === 0) {
-    const namen = [...new Set(sessies.map(s => s.klant_naam).filter(Boolean))].sort();
-    namen.forEach(n => traininFilter.add(n));
-  }
-  renderTraininFilter(maandNamen[maand-1], jaar);
+  traininAlleSessies = sessies || [];
+  traininZoekterm = '';
+  renderTraininCoachView(maandNaam, jaar);
 }
 
-function renderTraininFilter(maandNaam, jaar) {
+function renderTraininCoachView(maandNaam, jaar) {
   const el = document.getElementById('traininOverzicht');
   if (!el) return;
 
+  const zoek = traininZoekterm.toLowerCase().trim();
   const namen = [...new Set(traininAlleSessies.map(s => s.klant_naam).filter(Boolean))].sort();
-  const gefilterd = traininAlleSessies.filter(s => traininFilter.has(s.klant_naam));
-  const totaalSessies = gefilterd.length;
-  const totaalMin = gefilterd.reduce((s, r) => s + (r.duur_minuten || 0), 0);
-  const uren = Math.floor(totaalMin / 60);
-  const restMin = totaalMin % 60;
-  const tijdTxt = totaalMin > 0 ? (uren > 0 ? `${uren}u ${restMin}m` : `${restMin}m`) : '—';
+  const gefilterdeNamen = zoek ? namen.filter(n => n.toLowerCase().includes(zoek)) : [];
 
-  // Chips
-  const chips = namen.map(naam => {
-    const sel = traininFilter.has(naam);
-    return `<button class="enq-chip${sel ? ' selected' : ''}" onclick="toggleTraininKlant('${naam.replace(/'/g,"\\'")}','${maandNaam}','${jaar}')">${naam}</button>`;
-  }).join('');
+  const totaal = traininAlleSessies.length;
+  const uniekeKlanten = namen.length;
 
-  // Sessies per geselecteerde klant
-  const geselecteerdeNamen = namen.filter(n => traininFilter.has(n));
-  const sessieBlokken = geselecteerdeNamen.map(naam => {
-    const ks = gefilterd.filter(s => s.klant_naam === naam);
-    const kMin = ks.reduce((s, r) => s + (r.duur_minuten || 0), 0);
-    const kU = Math.floor(kMin / 60); const kR = kMin % 60;
-    const kTijd = kMin > 0 ? (kU > 0 ? `${kU}u ${kR}m` : `${kR}m`) : '—';
-    const rijen = ks.slice(0, 5).map(s => {
-      const d = new Date(s.start_tijd).toLocaleDateString('nl-BE', { weekday:'short', day:'numeric', month:'short' });
-      return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;">
-        <div><div style="font-weight:500;">${s.sessie_naam || 'Training'}</div><div style="font-size:11px;color:var(--muted);">${d}</div></div>
-        <span style="color:var(--muted);font-size:12px;white-space:nowrap;">${s.duur_minuten ?? '—'}min</span>
-      </div>`;
-    }).join('');
-    const meer = ks.length > 5 ? `<div style="font-size:12px;color:var(--muted);padding-top:6px;">+${ks.length - 5} sessies meer</div>` : '';
-    return `<div style="margin-bottom:20px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <span style="font-size:14px;font-weight:700;">${naam}</span>
-        <span style="font-size:12px;color:var(--muted);">${ks.length} sessies · ${kTijd}</span>
-      </div>
-      ${rijen}${meer}
-    </div>`;
-  }).join('');
+  const resultatenHtml = gefilterdeNamen.length > 0
+    ? gefilterdeNamen.map(naam => {
+        const ks = traininAlleSessies.filter(s => s.klant_naam === naam);
+        return renderTraininKlantBlok(naam, ks, maandNaam, jaar, false);
+      }).join('')
+    : zoek
+      ? `<div class="empty">Geen klanten gevonden voor "${traininZoekterm}".</div>`
+      : `<div class="empty" style="font-size:13px;">Zoek een klant om hun sessies te bekijken.</div>`;
 
   el.innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
       <div style="width:4px;height:28px;background:#6EF08C;border-radius:2px;"></div>
       <h3 style="font-size:17px;font-weight:700;margin:0;">🏋️ Gymloft — ${maandNaam} ${jaar}</h3>
     </div>
-    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">${chips}</div>
-    <div style="display:flex;gap:8px;margin-bottom:20px;">
-      <div class="maand-stat"><div class="maand-stat-val">${totaalSessies}</div><div class="maand-stat-lbl">Sessies</div></div>
-      <div class="maand-stat"><div class="maand-stat-val">${tijdTxt}</div><div class="maand-stat-lbl">Beweegtijd</div></div>
-      <div class="maand-stat"><div class="maand-stat-val">${traininFilter.size}</div><div class="maand-stat-lbl">Klanten</div></div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <div class="maand-stat"><div class="maand-stat-val">${totaal}</div><div class="maand-stat-lbl">Sessies</div></div>
+      <div class="maand-stat"><div class="maand-stat-val">${uniekeKlanten}</div><div class="maand-stat-lbl">Klanten</div></div>
     </div>
-    ${geselecteerdeNamen.length === 0 ? '<div class="empty">Geen klanten geselecteerd.</div>' : sessieBlokken}`;
+    <input type="text" class="form-control" placeholder="Zoek op naam…" value="${traininZoekterm.replace(/"/g,'&quot;')}"
+      oninput="traininZoekterm=this.value; renderTraininCoachView('${maandNaam}',${jaar})"
+      style="margin-bottom:16px;" />
+    ${resultatenHtml}`;
 }
 
-function toggleTraininKlant(naam, maandNaam, jaar) {
-  if (traininFilter.has(naam)) traininFilter.delete(naam);
-  else traininFilter.add(naam);
-  renderTraininFilter(maandNaam, jaar);
+function renderTraininKlantBlok(naam, sessies, maandNaam, jaar, toonNaam) {
+  const totMin = sessies.reduce((s, r) => s + (r.duur_minuten || 0), 0);
+  const u = Math.floor(totMin / 60); const m = totMin % 60;
+  const tijdTxt = totMin > 0 ? (u > 0 ? `${u}u ${m}m` : `${m}m`) : '—';
+
+  if (sessies.length === 0) {
+    return `<div class="empty">Geen sessies gevonden voor ${naam} in ${maandNaam}.</div>`;
+  }
+
+  const rijen = sessies.map(s => {
+    const d = new Date(s.start_tijd).toLocaleDateString('nl-BE', { weekday:'short', day:'numeric', month:'short' });
+    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <div><div style="font-weight:500;">${s.sessie_naam || 'Training'}</div><div style="font-size:11px;color:var(--muted);">${d}</div></div>
+      <span style="color:var(--muted);font-size:12px;white-space:nowrap;">${s.duur_minuten ?? '—'}min</span>
+    </div>`;
+  }).join('');
+
+  return `<div style="margin-bottom:20px;">
+    ${toonNaam ? '' : `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span style="font-size:15px;font-weight:700;">${naam}</span>
+      <span style="font-size:12px;color:var(--muted);">${sessies.length} sessies · ${tijdTxt}</span>
+    </div>`}
+    ${toonNaam ? `<div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div class="maand-stat"><div class="maand-stat-val">${sessies.length}</div><div class="maand-stat-lbl">Sessies</div></div>
+      <div class="maand-stat"><div class="maand-stat-val">${tijdTxt}</div><div class="maand-stat-lbl">Beweegtijd</div></div>
+    </div>` : ''}
+    ${rijen}
+  </div>`;
 }
 const STRAVA_CLIENT_ID = '215811';
 const STRAVA_CLIENT_SECRET = 'a4d8ec53521fec1d494722a76ea002a7069170fe';
@@ -3109,20 +3122,6 @@ async function renderMaandrapport() {
   const nu = new Date();
   const jaar = nu.getFullYear();
   const maand = nu.getMonth();
-
-  // Trainin sessies ophalen voor huidige maand
-  const eersteVanMaand = new Date(jaar, maand, 1).toISOString();
-  const eersteVolgendeMaand = new Date(jaar, maand + 1, 1).toISOString();
-  const { data: trainingSessies } = await sb
-    .from('trainin_sessies')
-    .select('*')
-    .gte('start_tijd', eersteVanMaand)
-    .lt('start_tijd', eersteVolgendeMaand)
-    .order('start_tijd', { ascending: false });
-  const totaalSessies = trainingSessies?.length || 0;
-  const totaalMinuten = (trainingSessies || []).reduce((s, t) => s + (t.duur_minuten || 0), 0);
-  const trainUren = Math.floor(totaalMinuten / 60);
-  const trainMinuten = totaalMinuten % 60;
   const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
 
   const userId = currentUser?.id;
@@ -3265,33 +3264,7 @@ async function renderMaandrapport() {
         </div>
       </div>`;
 
-    // Trainin sectie toevoegen als er data is
-    if (totaalSessies > 0) {
-      el.innerHTML += `
-        <div style="margin-bottom:24px;margin-top:24px;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-            <div style="width:4px;height:28px;background:#6EF08C;border-radius:2px;"></div>
-            <h3 style="font-size:17px;font-weight:700;">🏋️ Gymloft Trainingen — ${maandNamen[maand]} ${jaar}</h3>
-          </div>
-          <div class="maand-grid">
-            <div class="maand-stat"><div class="maand-stat-val">${totaalSessies}</div><div class="maand-stat-lbl">Sessies</div></div>
-            <div class="maand-stat"><div class="maand-stat-val">${trainUren > 0 ? trainUren + 'u ' : ''}${trainMinuten}m</div><div class="maand-stat-lbl">Beweegtijd</div></div>
-          </div>
-          <div class="panel" style="margin-top:12px;">
-            <div class="panel-title">Recente sessies</div>
-            ${(trainingSessies || []).slice(0, 10).map(s => {
-              const datum = new Date(s.start_tijd).toLocaleDateString('nl-BE', { weekday:'short', day:'numeric', month:'short' });
-              return `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
-                <div>
-                  <div style="font-weight:600;font-size:13px;">🏋️ ${s.sessie_naam || 'Training'}</div>
-                  <div style="font-size:11px;color:var(--muted);">${datum}</div>
-                </div>
-                <div style="font-weight:600;font-size:13px;color:var(--accent);">${s.duur_minuten ?? '—'}min</div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
-    }
+
 
   } catch(e) {
     const connectFn = 'connectCoachStrava()';
@@ -4061,7 +4034,7 @@ function showClientView(name) {
   const nb = { 'client-profiel': 'cNavProfiel', 'client-leaderboard': 'cNavLeaderboard', 'client-lifestyle': 'cNavLifestyle', 'connecties': 'cNavConnecties' }[name];
   if (nb) document.getElementById(nb).classList.add('active');
   if (name === 'client-leaderboard') initClientLeaderboard();
-  if (name === 'connecties') renderCoachConnecties();
+  if (name === 'connecties') { renderCoachConnecties(); renderTraininOverzicht(); }
   if (name === 'client-lifestyle') {
     switchClientLsTab('enquete');
     const inner = document.getElementById('clientLifestyleFormInner');
