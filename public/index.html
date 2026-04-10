@@ -3000,10 +3000,11 @@ async function renderTraininOverzicht() {
     const van12 = new Date(jaar, maand - 11, 1).toISOString();
     const [{ data: sessies, error }, { data: historiek }] = await Promise.all([
       sb.from('trainin_sessies').select('*').ilike('klant_naam', `%${volledigeNaam}%`).gte('start_tijd', van).lt('start_tijd', tot).order('start_tijd', { ascending: false }),
-      sb.from('trainin_sessies').select('start_tijd').ilike('klant_naam', `%${volledigeNaam}%`).gte('start_tijd', van12).lt('start_tijd', tot)
+      sb.from('trainin_sessies').select('start_tijd,duur_minuten').ilike('klant_naam', `%${volledigeNaam}%`).gte('start_tijd', van12).lt('start_tijd', tot)
     ]);
     if (error) { el.innerHTML = `<div class="empty">Fout: ${error.message}</div>`; return; }
-    renderTraininKlantView(el, volledigeNaam, sessies || [], historiek || [], maandNaam, jaar, true);
+    // Klant ziet enkel eigen Gymloft-data (geen Strava via coach)
+    renderTraininKlantView(el, volledigeNaam, sessies || [], historiek || [], [], null, maandNaam, jaar, true);
     return;
   }
 
@@ -3029,7 +3030,6 @@ function zoekCoachKlant(zoekterm) {
 }
 
 async function selecteerCoachKlant(naam, klantId) {
-  // Reset zoekbalk
   const inp = document.getElementById('coachKlantZoekInput');
   if (inp) inp.value = naam;
   const res = document.getElementById('coachKlantZoekResultaten');
@@ -3048,34 +3048,73 @@ async function selecteerCoachKlant(naam, klantId) {
   const tot = new Date(jaar, maand + 1, 1).toISOString();
   const van12 = new Date(jaar, maand - 11, 1).toISOString();
 
-  // Laad huidige maand (alle velden) + 12 maanden historiek (beweegtijd)
-  const [{ data: sessies, error }, { data: historiek }] = await Promise.all([
+  // Trainin + klant Strava-token parallel laden
+  const [
+    { data: sessies, error },
+    { data: historiek },
+    { data: klantRow }
+  ] = await Promise.all([
     sb.from('trainin_sessies').select('*').ilike('klant_naam', `%${naam}%`).gte('start_tijd', van).lt('start_tijd', tot).order('start_tijd', { ascending: false }),
-    sb.from('trainin_sessies').select('start_tijd,duur_minuten').ilike('klant_naam', `%${naam}%`).gte('start_tijd', van12).lt('start_tijd', tot)
+    sb.from('trainin_sessies').select('start_tijd,duur_minuten').ilike('klant_naam', `%${naam}%`).gte('start_tijd', van12).lt('start_tijd', tot),
+    sb.from('klanten').select('strava_access_token,strava_refresh_token,strava_expires_at,strava_athlete').eq('id', klantId).maybeSingle()
   ]);
 
   if (error) { el.innerHTML = `<div class="empty">Fout: ${error.message}</div>`; return; }
-  renderTraininKlantView(el, naam, sessies || [], historiek || [], maandNaam, jaar, false);
+
+  // Strava-activiteiten ophalen als klant gekoppeld is
+  let stravaData = []; // [{ maand_idx, minuten }] voor 12 maanden
+  if (klantRow?.strava_access_token) {
+    try {
+      // Token refreshen indien nodig
+      let token = klantRow.strava_access_token;
+      const nowSec = Date.now() / 1000;
+      if (!klantRow.strava_expires_at || (klantRow.strava_expires_at - nowSec) < 300) {
+        const rr = await fetch('https://www.strava.com/oauth/token', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_id: STRAVA_CLIENT_ID, client_secret: STRAVA_CLIENT_SECRET, refresh_token: klantRow.strava_refresh_token, grant_type: 'refresh_token' })
+        });
+        const rd = await rr.json();
+        if (rd.access_token) {
+          token = rd.access_token;
+          await sb.from('klanten').update({ strava_access_token: rd.access_token, strava_refresh_token: rd.refresh_token || klantRow.strava_refresh_token, strava_expires_at: rd.expires_at }).eq('id', klantId);
+        }
+      }
+      const after  = Math.floor(new Date(jaar, maand - 11, 1).getTime() / 1000);
+      const before = Math.floor(new Date(jaar, maand + 1, 1).getTime() / 1000);
+      const sr = await fetch(`https://www.strava.com/api/v3/athlete/activities?after=${after}&before=${before}&per_page=200`, { headers: { 'Authorization': `Bearer ${token}` } });
+      if (sr.ok) {
+        const acts = await sr.json();
+        stravaData = acts.map(a => ({ datum: new Date(a.start_date), minuten: Math.round((a.moving_time || 0) / 60) }));
+      }
+    } catch(e) { /* Strava niet beschikbaar, toon enkel Gymloft */ }
+  }
+
+  renderTraininKlantView(el, naam, sessies || [], historiek || [], stravaData, klantRow, maandNaam, jaar, false);
 }
 
-function renderTraininKlantView(container, naam, sessies, historiek, maandNaam, jaar, toonNaam) {
+function renderTraininKlantView(container, naam, sessies, historiek, stravaData, klantRow, maandNaam, jaar, toonNaam) {
   const totMin = sessies.reduce((s, r) => s + (r.duur_minuten || 0), 0);
   const u = Math.floor(totMin / 60); const m = totMin % 60;
   const tijdTxt = totMin > 0 ? (u > 0 ? `${u}u ${m}m` : `${m}m`) : '—';
   const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
   const chartId = 'traininChart_' + naam.replace(/\W/g,'_');
+  const heeftStrava = Array.isArray(stravaData) && stravaData.length > 0;
 
-  // Bouw 12-maanden labels + beweegtijd in uren per maand
+  // Bouw 12-maanden labels + beweegtijd per maand (Gymloft + optioneel Strava)
   const nu = new Date();
-  const labels = [], counts = [];
+  const labels = [], gymCounts = [], stravaCounts = [];
   for (let i = 11; i >= 0; i--) {
     const d = new Date(nu.getFullYear(), nu.getMonth() - i, 1);
     labels.push(maandNamen[d.getMonth()].slice(0,3) + ' \'' + String(d.getFullYear()).slice(2));
     const y = d.getFullYear(), mo = d.getMonth();
-    const minuten = (historiek || [])
+    const gymMin = (historiek || [])
       .filter(s => { const sd = new Date(s.start_tijd); return sd.getFullYear() === y && sd.getMonth() === mo; })
       .reduce((sum, s) => sum + (s.duur_minuten || 0), 0);
-    counts.push(Math.round(minuten / 60 * 10) / 10); // uren met 1 decimaal
+    gymCounts.push(Math.round(gymMin / 60 * 10) / 10);
+    const stravaMin = (stravaData || [])
+      .filter(a => a.datum.getFullYear() === y && a.datum.getMonth() === mo)
+      .reduce((sum, a) => sum + a.minuten, 0);
+    stravaCounts.push(Math.round(stravaMin / 60 * 10) / 10);
   }
 
   const rijen = sessies.length === 0
@@ -3099,7 +3138,13 @@ function renderTraininKlantView(container, naam, sessies, historiek, maandNaam, 
         <div class="maand-stat"><div class="maand-stat-val">${tijdTxt}</div><div class="maand-stat-lbl">Beweegtijd</div></div>
       </div>` : ''}
       <div class="panel" style="margin-bottom:16px;padding:16px;">
-        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;">🏋️ Beweegtijd per maand — laatste 12 maanden</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Beweegtijd per maand — laatste 12 maanden</div>
+          ${heeftStrava ? `<div style="display:flex;gap:12px;font-size:11px;">
+            <span><span style="display:inline-block;width:10px;height:10px;background:#6EF08C;border-radius:2px;margin-right:4px;"></span>Gymloft</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#FC4C02;border-radius:2px;margin-right:4px;"></span>Strava</span>
+          </div>` : ''}
+        </div>
         <canvas id="${chartId}" height="90"></canvas>
       </div>
       <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">${maandNaam} ${jaar}</div>
@@ -3110,29 +3155,41 @@ function renderTraininKlantView(container, naam, sessies, historiek, maandNaam, 
   requestAnimationFrame(() => {
     const ctx = document.getElementById(chartId);
     if (!ctx) return;
+    const datasets = [
+      {
+        label: 'Gymloft',
+        data: gymCounts,
+        backgroundColor: gymCounts.map((_, i) => i === 11 ? '#6EF08C' : '#6EF08C66'),
+        borderRadius: heeftStrava ? 0 : 6,
+        borderSkipped: false,
+        stack: 'beweegtijd'
+      }
+    ];
+    if (heeftStrava) {
+      datasets.push({
+        label: 'Strava',
+        data: stravaCounts,
+        backgroundColor: stravaCounts.map((_, i) => i === 11 ? '#FC4C02' : '#FC4C0266'),
+        borderRadius: 6,
+        borderSkipped: false,
+        stack: 'beweegtijd'
+      });
+    }
     new Chart(ctx, {
       type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          data: counts,
-          backgroundColor: counts.map((_, i) => i === 11 ? '#6EF08C' : '#6EF08C55'),
-          borderRadius: 6,
-          borderSkipped: false
-        }]
-      },
+      data: { labels, datasets },
       options: {
         plugins: {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: ctx => `${ctx.parsed.y}u beweegtijd`
+              label: c => `${c.dataset.label}: ${c.parsed.y}u`
             }
           }
         },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-          y: { beginAtZero: true, ticks: { font: { size: 11 }, callback: v => v + 'u' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
+          y: { stacked: true, beginAtZero: true, ticks: { font: { size: 11 }, callback: v => v + 'u' }, grid: { color: 'rgba(255,255,255,0.05)' } }
         }
       }
     });
@@ -3352,8 +3409,12 @@ function connectCoachStrava() {
   const redirectUri = encodeURIComponent(window.location.href.split('?')[0]);
   window.location.href = `https://www.strava.com/oauth/authorize?client_id=${STRAVA_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=code&approval_prompt=force&scope=read,activity:read_all&state=strava_coach`;
 }
-function disconnectCoachStrava() {
+async function disconnectCoachStrava() {
   localStorage.removeItem(`strava_coach_${currentUser.id}`);
+  await sb.from('klanten').update({
+    strava_access_token: null, strava_refresh_token: null,
+    strava_expires_at: null, strava_athlete: null
+  }).eq('id', currentUser.id);
   renderCoachConnecties();
   showToast('Strava ontkoppeld', 'success');
 }
@@ -3370,7 +3431,15 @@ async function handleCoachStravaCallback() {
     });
     const data = await res.json();
     if (!data.access_token) throw new Error(data.message || 'Koppeling mislukt');
-    localStorage.setItem(`strava_coach_${currentUser.id}`, JSON.stringify({ access_token: data.access_token, refresh_token: data.refresh_token, expires_at: data.expires_at, athlete: data.athlete, gekoppeld_op: new Date().toISOString() }));
+    const connData = { access_token: data.access_token, refresh_token: data.refresh_token, expires_at: data.expires_at, athlete: data.athlete, gekoppeld_op: new Date().toISOString() };
+    localStorage.setItem(`strava_coach_${currentUser.id}`, JSON.stringify(connData));
+    // Ook opslaan in Supabase zodat coaches dit kunnen opvragen per klant
+    await sb.from('klanten').update({
+      strava_access_token: data.access_token,
+      strava_refresh_token: data.refresh_token,
+      strava_expires_at: data.expires_at,
+      strava_athlete: data.athlete
+    }).eq('id', currentUser.id);
     showToast('Strava succesvol gekoppeld!', 'success');
   } catch(e) { showToast('Strava fout: ' + e.message, 'error'); }
   renderCoachConnecties();
