@@ -3155,11 +3155,25 @@ function renderTraininKlantView(container, naam, sessies, historiek, stravaData,
   requestAnimationFrame(() => {
     const ctx = document.getElementById(chartId);
     if (!ctx) return;
+
+    // Huidige maand = index 11 (laatste)
+    let geselecteerd = 11;
+
+    const maandIndex = [];
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(nu.getFullYear(), nu.getMonth() - i, 1);
+      maandIndex.push({ jaar: d.getFullYear(), maand: d.getMonth() });
+    }
+
+    function gymKleur(i) { return i === geselecteerd ? '#6EF08C' : '#6EF08C33'; }
+    function stravaKleur(i) { return i === geselecteerd ? '#FC4C02' : '#FC4C0233'; }
+
     const datasets = [
       {
         label: 'Gymloft',
         data: gymCounts,
-        backgroundColor: gymCounts.map((_, i) => i === 11 ? '#6EF08C' : '#6EF08C66'),
+        backgroundColor: gymCounts.map((_, i) => gymKleur(i)),
+        hoverBackgroundColor: gymCounts.map((_, i) => i === geselecteerd ? '#6EF08C' : '#6EF08C88'),
         borderRadius: heeftStrava ? 0 : 6,
         borderSkipped: false,
         stack: 'beweegtijd'
@@ -3169,17 +3183,12 @@ function renderTraininKlantView(container, naam, sessies, historiek, stravaData,
       datasets.push({
         label: 'Strava',
         data: stravaCounts,
-        backgroundColor: stravaCounts.map((_, i) => i === 11 ? '#FC4C02' : '#FC4C0266'),
+        backgroundColor: stravaCounts.map((_, i) => stravaKleur(i)),
+        hoverBackgroundColor: stravaCounts.map((_, i) => i === geselecteerd ? '#FC4C02' : '#FC4C0288'),
         borderRadius: 6,
         borderSkipped: false,
         stack: 'beweegtijd'
       });
-    }
-    // Bouw maanden-index: van 11 maanden terug tot huidige maand
-    const maandIndex = [];
-    for (let i = 11; i >= 0; i--) {
-      const d = new Date(nu.getFullYear(), nu.getMonth() - i, 1);
-      maandIndex.push({ jaar: d.getFullYear(), maand: d.getMonth() });
     }
 
     const chart = new Chart(ctx, {
@@ -3188,8 +3197,16 @@ function renderTraininKlantView(container, naam, sessies, historiek, stravaData,
       options: {
         onClick: (evt, elements) => {
           if (!elements.length) return;
-          const idx = elements[0].index;
-          const { jaar: y, maand: mo } = maandIndex[idx];
+          geselecteerd = elements[0].index;
+          // Update kleuren
+          chart.data.datasets[0].backgroundColor = gymCounts.map((_, i) => gymKleur(i));
+          chart.data.datasets[0].hoverBackgroundColor = gymCounts.map((_, i) => i === geselecteerd ? '#6EF08C' : '#6EF08C88');
+          if (heeftStrava) {
+            chart.data.datasets[1].backgroundColor = stravaCounts.map((_, i) => stravaKleur(i));
+            chart.data.datasets[1].hoverBackgroundColor = stravaCounts.map((_, i) => i === geselecteerd ? '#FC4C02' : '#FC4C0288');
+          }
+          chart.update('none'); // 'none' = geen animatie, voelt direct aan
+          const { jaar: y, maand: mo } = maandIndex[geselecteerd];
           renderMaandDetail(`maandDetail_${chartId}`, y, mo, historiek, stravaData, heeftStrava);
         },
         plugins: {
