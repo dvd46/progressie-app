@@ -2995,7 +2995,6 @@ async function renderTraininOverzicht() {
   const maandNaam = maandNamen[maand];
 
   if (isClientMode && currentKlant) {
-    // KLANT: eigen sessies huidige maand + laatste 12 maanden voor grafiek
     const volledigeNaam = [currentKlant.voornaam, currentKlant.achternaam].filter(Boolean).join(' ');
     const van12 = new Date(jaar, maand - 11, 1).toISOString();
     const [{ data: sessies, error }, { data: historiek }] = await Promise.all([
@@ -3003,8 +3002,27 @@ async function renderTraininOverzicht() {
       sb.from('trainin_sessies').select('start_tijd,duur_minuten').ilike('klant_naam', `%${volledigeNaam}%`).gte('start_tijd', van12).lt('start_tijd', tot)
     ]);
     if (error) { el.innerHTML = `<div class="empty">Fout: ${error.message}</div>`; return; }
-    // Klant ziet enkel eigen Gymloft-data (geen Strava via coach)
-    renderTraininKlantView(el, volledigeNaam, sessies || [], historiek || [], [], null, maandNaam, jaar, true);
+
+    // Eigen Strava-data ophalen uit localStorage
+    let stravaData = [];
+    const storageKey = `strava_coach_${currentKlant.id}`;
+    const conn = JSON.parse(localStorage.getItem(storageKey) || 'null');
+    if (conn?.access_token) {
+      try {
+        let token = await stravaRefreshToken(storageKey);
+        if (token) {
+          const after  = Math.floor(new Date(jaar, maand - 11, 1).getTime() / 1000);
+          const before = Math.floor(new Date(jaar, maand + 1, 1).getTime() / 1000);
+          const sr = await fetch(`https://www.strava.com/api/v3/athlete/activities?after=${after}&before=${before}&per_page=200`, { headers: { 'Authorization': `Bearer ${token}` } });
+          if (sr.ok) {
+            const acts = await sr.json();
+            stravaData = acts.map(a => ({ datum: new Date(a.start_date), minuten: Math.round((a.moving_time || 0) / 60), type: a.type || 'Workout', naam: a.name }));
+          }
+        }
+      } catch(e) { /* Strava niet beschikbaar */ }
+    }
+
+    renderTraininKlantView(el, volledigeNaam, sessies || [], historiek || [], stravaData, conn, maandNaam, jaar, true);
     return;
   }
 
