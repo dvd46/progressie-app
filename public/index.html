@@ -3589,6 +3589,15 @@ async function stravaRefreshToken(storageKey) {
         conn.expires_at = data.expires_at;
         conn.refresh_token = data.refresh_token || conn.refresh_token;
         localStorage.setItem(storageKey, JSON.stringify(conn));
+        // Sync vernieuwd token terug naar Supabase zodat andere sessies/apparaten ook bijgewerkt worden
+        const klantId = storageKey.replace('strava_coach_', '');
+        if (klantId) {
+          sb.from('klanten').update({
+            strava_access_token: conn.access_token,
+            strava_refresh_token: conn.refresh_token,
+            strava_expires_at: conn.expires_at
+          }).eq('id', klantId).then(() => {});
+        }
         return data.access_token;
       }
     } catch(e) {}
@@ -4410,6 +4419,20 @@ async function initClientApp(user, klant, forceOnboarding = false) {
   currentKlant = klant;
   AKid = klant.id;
   isClientMode = true;
+  // Sync Strava tokens Supabase → localStorage zodat koppeling bewaard blijft over sessies/apparaten
+  if (klant.strava_access_token) {
+    const storageKey = `strava_coach_${user.id}`;
+    const existing = JSON.parse(localStorage.getItem(storageKey) || 'null');
+    if (!existing?.access_token || (klant.strava_expires_at || 0) > (existing.expires_at || 0)) {
+      localStorage.setItem(storageKey, JSON.stringify({
+        access_token: klant.strava_access_token,
+        refresh_token: klant.strava_refresh_token,
+        expires_at: klant.strava_expires_at,
+        athlete: klant.strava_athlete,
+        gekoppeld_op: existing?.gekoppeld_op || new Date().toISOString()
+      }));
+    }
+  }
   const { data: oefs } = await sb.from('oefeningen').select('*').order('naam');
   clientOefeningen = oefs || [];
   const { data: kl } = await sb.rpc('get_leaderboard_klanten');
