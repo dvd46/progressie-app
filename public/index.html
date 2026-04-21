@@ -3257,26 +3257,8 @@ function renderTraininKlantView(container, naam, sessies, historiek, stravaData,
   const totMin = sessies.reduce((s, r) => s + (r.duur_minuten || 0), 0);
   const u = Math.floor(totMin / 60); const m = totMin % 60;
   const tijdTxt = totMin > 0 ? (u > 0 ? `${u}u ${m}m` : `${m}m`) : '—';
-  const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
   const chartId = 'traininChart_' + naam.replace(/\W/g,'_');
   const heeftStrava = Array.isArray(stravaData) && stravaData.length > 0;
-
-  // Bouw 12-maanden labels + beweegtijd per maand (Gymloft + optioneel Strava)
-  const nu = new Date();
-  const labels = [], gymCounts = [], stravaCounts = [];
-  for (let i = 11; i >= 0; i--) {
-    const d = new Date(nu.getFullYear(), nu.getMonth() - i, 1);
-    labels.push(maandNamen[d.getMonth()].slice(0,3) + ' \'' + String(d.getFullYear()).slice(2));
-    const y = d.getFullYear(), mo = d.getMonth();
-    const gymMin = (historiek || [])
-      .filter(s => { const sd = new Date(s.start_tijd); return sd.getFullYear() === y && sd.getMonth() === mo; })
-      .reduce((sum, s) => sum + (s.duur_minuten || 0), 0);
-    gymCounts.push(Math.round(gymMin / 60 * 10) / 10);
-    const stravaMin = (stravaData || [])
-      .filter(a => a.datum.getFullYear() === y && a.datum.getMonth() === mo)
-      .reduce((sum, a) => sum + a.minuten, 0);
-    stravaCounts.push(Math.round(stravaMin / 60 * 10) / 10);
-  }
 
   const rijen = sessies.length === 0
     ? `<div class="empty" style="font-size:13px;">Geen sessies in ${maandNaam}.</div>`
@@ -3299,91 +3281,155 @@ function renderTraininKlantView(container, naam, sessies, historiek, stravaData,
         <div class="maand-stat"><div class="maand-stat-val">${tijdTxt}</div><div class="maand-stat-lbl">Beweegtijd</div></div>
       </div>` : ''}
       <div class="panel" style="margin-bottom:16px;padding:16px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;">Beweegtijd per maand — laatste 12 maanden</div>
-          ${heeftStrava ? `<div style="display:flex;gap:12px;font-size:11px;">
-            <span><span style="display:inline-block;width:10px;height:10px;background:#6EF08C;border-radius:2px;margin-right:4px;"></span>Gymloft</span>
-            <span><span style="display:inline-block;width:10px;height:10px;background:#FC4C02;border-radius:2px;margin-right:4px;"></span>Strava</span>
-          </div>` : ''}
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+          <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;" id="beweegtijdTitel_${chartId}">Beweegtijd per maand — laatste 12 maanden</div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            ${heeftStrava ? `<div style="display:flex;gap:10px;font-size:11px;margin-right:4px;">
+              <span><span style="display:inline-block;width:10px;height:10px;background:#6EF08C;border-radius:2px;margin-right:4px;"></span>Gymloft</span>
+              <span><span style="display:inline-block;width:10px;height:10px;background:#FC4C02;border-radius:2px;margin-right:4px;"></span>Strava</span>
+            </div>` : ''}
+            <div style="display:flex;gap:4px;">
+              <button id="btnMaand_${chartId}" onclick="setBeweegtijdMode('${chartId}','maand')" style="padding:4px 10px;font-size:11px;font-weight:600;border-radius:6px;border:1px solid var(--accent);background:var(--accent);color:#000;cursor:pointer;">Per maand</button>
+              <button id="btnWeek_${chartId}" onclick="setBeweegtijdMode('${chartId}','week')" style="padding:4px 10px;font-size:11px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;">Per week</button>
+            </div>
+          </div>
         </div>
         <canvas id="${chartId}" height="90"></canvas>
-        <div style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center;">Klik op een maand voor details</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center;" id="beweegtijdHint_${chartId}">Klik op een maand voor details</div>
       </div>
-      <div id="maandDetail_${chartId}"></div>
+      <div id="periodeDetail_${chartId}"></div>
     </div>`;
 
-  // Teken grafiek na DOM-insert
-  requestAnimationFrame(() => {
-    const ctx = document.getElementById(chartId);
-    if (!ctx) return;
+  // Sla data op voor hergebruik bij toggle
+  window._beweegtijdData = window._beweegtijdData || {};
+  window._beweegtijdData[chartId] = { historiek, stravaData, heeftStrava };
+  window._beweegtijdCharts = window._beweegtijdCharts || {};
 
-    // Huidige maand = index 11 (laatste)
-    let geselecteerd = 11;
+  requestAnimationFrame(() => buildBeweegtijdChart(chartId, 'maand', historiek, stravaData, heeftStrava));
+}
 
-    const maandIndex = [];
+function setBeweegtijdMode(chartId, mode) {
+  const d = window._beweegtijdData?.[chartId];
+  if (!d) return;
+  // Toggle button stijlen
+  const btnMaand = document.getElementById('btnMaand_' + chartId);
+  const btnWeek  = document.getElementById('btnWeek_'  + chartId);
+  if (btnMaand) { btnMaand.style.background = mode === 'maand' ? 'var(--accent)' : 'transparent'; btnMaand.style.color = mode === 'maand' ? '#000' : 'var(--text)'; btnMaand.style.borderColor = mode === 'maand' ? 'var(--accent)' : 'var(--border)'; }
+  if (btnWeek)  { btnWeek.style.background  = mode === 'week'  ? 'var(--accent)' : 'transparent'; btnWeek.style.color  = mode === 'week'  ? '#000' : 'var(--text)'; btnWeek.style.borderColor  = mode === 'week'  ? 'var(--accent)' : 'var(--border)'; }
+  const titel = document.getElementById('beweegtijdTitel_' + chartId);
+  if (titel) titel.textContent = mode === 'maand' ? 'Beweegtijd per maand — laatste 12 maanden' : 'Beweegtijd per week — laatste 52 weken';
+  const hint = document.getElementById('beweegtijdHint_' + chartId);
+  if (hint) hint.textContent = mode === 'maand' ? 'Klik op een maand voor details' : 'Klik op een week voor details';
+  const detail = document.getElementById('periodeDetail_' + chartId);
+  if (detail) detail.innerHTML = '';
+  buildBeweegtijdChart(chartId, mode, d.historiek, d.stravaData, d.heeftStrava);
+}
+
+function buildBeweegtijdChart(chartId, mode, historiek, stravaData, heeftStrava) {
+  const ctx = document.getElementById(chartId);
+  if (!ctx) return;
+
+  // Vernietig vorige instantie
+  if (window._beweegtijdCharts?.[chartId]) {
+    window._beweegtijdCharts[chartId].destroy();
+    delete window._beweegtijdCharts[chartId];
+  }
+
+  const nu = new Date();
+  const labels = [], gymCounts = [], stravaCounts = [], periodeIndex = [];
+
+  if (mode === 'maand') {
+    const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
     for (let i = 11; i >= 0; i--) {
       const d = new Date(nu.getFullYear(), nu.getMonth() - i, 1);
-      maandIndex.push({ jaar: d.getFullYear(), maand: d.getMonth() });
+      labels.push(maandNamen[d.getMonth()].slice(0,3) + ' \'' + String(d.getFullYear()).slice(2));
+      const y = d.getFullYear(), mo = d.getMonth();
+      periodeIndex.push({ type: 'maand', jaar: y, maand: mo });
+      gymCounts.push(Math.round((historiek || []).filter(s => { const sd = new Date(s.start_tijd); return sd.getFullYear() === y && sd.getMonth() === mo; }).reduce((sum, s) => sum + (s.duur_minuten || 0), 0) / 60 * 10) / 10);
+      stravaCounts.push(Math.round((stravaData || []).filter(a => a.datum.getFullYear() === y && a.datum.getMonth() === mo).reduce((sum, a) => sum + a.minuten, 0) / 60 * 10) / 10);
     }
-
-    function gymKleur(i) { return i === geselecteerd ? '#6EF08C' : '#6EF08C33'; }
-    function stravaKleur(i) { return i === geselecteerd ? '#FC4C02' : '#FC4C0233'; }
-
-    const datasets = [
-      {
-        label: 'Gymloft',
-        data: gymCounts,
-        backgroundColor: gymCounts.map((_, i) => gymKleur(i)),
-        hoverBackgroundColor: gymCounts.map((_, i) => i === geselecteerd ? '#6EF08C' : '#6EF08C88'),
-        borderRadius: heeftStrava ? 0 : 6,
-        borderSkipped: false,
-        stack: 'beweegtijd'
-      }
-    ];
-    if (heeftStrava) {
-      datasets.push({
-        label: 'Strava',
-        data: stravaCounts,
-        backgroundColor: stravaCounts.map((_, i) => stravaKleur(i)),
-        hoverBackgroundColor: stravaCounts.map((_, i) => i === geselecteerd ? '#FC4C02' : '#FC4C0288'),
-        borderRadius: 6,
-        borderSkipped: false,
-        stack: 'beweegtijd'
-      });
+  } else {
+    // 52 weken terug: elke week begint op maandag
+    for (let i = 51; i >= 0; i--) {
+      const weekMaandag = new Date(nu);
+      weekMaandag.setHours(0,0,0,0);
+      const dag = (weekMaandag.getDay() + 6) % 7; // 0=ma
+      weekMaandag.setDate(weekMaandag.getDate() - dag - i * 7);
+      const weekZondag = new Date(weekMaandag);
+      weekZondag.setDate(weekMaandag.getDate() + 6);
+      const lbl = weekMaandag.getDate() + ' ' + weekMaandag.toLocaleDateString('nl-BE', { month: 'short' });
+      labels.push(lbl);
+      periodeIndex.push({ type: 'week', van: new Date(weekMaandag), tot: new Date(weekZondag) });
+      const inWeek = d => d >= weekMaandag && d <= weekZondag;
+      gymCounts.push(Math.round((historiek || []).filter(s => inWeek(new Date(s.start_tijd))).reduce((sum, s) => sum + (s.duur_minuten || 0), 0) / 60 * 10) / 10);
+      stravaCounts.push(Math.round((stravaData || []).filter(a => inWeek(a.datum)).reduce((sum, a) => sum + a.minuten, 0) / 60 * 10) / 10);
     }
+  }
 
-    const chart = new Chart(ctx, {
-      type: 'bar',
-      data: { labels, datasets },
-      options: {
-        onClick: (evt, elements) => {
-          if (!elements.length) return;
-          geselecteerd = elements[0].index;
-          // Update kleuren
-          chart.data.datasets[0].backgroundColor = gymCounts.map((_, i) => gymKleur(i));
-          chart.data.datasets[0].hoverBackgroundColor = gymCounts.map((_, i) => i === geselecteerd ? '#6EF08C' : '#6EF08C88');
-          if (heeftStrava) {
-            chart.data.datasets[1].backgroundColor = stravaCounts.map((_, i) => stravaKleur(i));
-            chart.data.datasets[1].hoverBackgroundColor = stravaCounts.map((_, i) => i === geselecteerd ? '#FC4C02' : '#FC4C0288');
-          }
-          chart.update('none'); // 'none' = geen animatie, voelt direct aan
-          const { jaar: y, maand: mo } = maandIndex[geselecteerd];
-          renderMaandDetail(`maandDetail_${chartId}`, y, mo, historiek, stravaData, heeftStrava);
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}u` } }
-        },
-        scales: {
-          x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
-          y: { stacked: true, beginAtZero: true, ticks: { font: { size: 11 }, callback: v => v + 'u' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-        }
-      }
+  const defaultIdx = mode === 'maand' ? labels.length - 1 : labels.length - 1;
+  let geselecteerd = defaultIdx;
+
+  function gymKleur(i) { return i === geselecteerd ? '#6EF08C' : '#6EF08C33'; }
+  function stravaKleur(i) { return i === geselecteerd ? '#FC4C02' : '#FC4C0233'; }
+
+  const datasets = [{
+    label: 'Gymloft',
+    data: gymCounts,
+    backgroundColor: gymCounts.map((_, i) => gymKleur(i)),
+    hoverBackgroundColor: gymCounts.map((_, i) => i === geselecteerd ? '#6EF08C' : '#6EF08C88'),
+    borderRadius: heeftStrava ? 0 : 6,
+    borderSkipped: false,
+    stack: 'beweegtijd'
+  }];
+  if (heeftStrava) {
+    datasets.push({
+      label: 'Strava',
+      data: stravaCounts,
+      backgroundColor: stravaCounts.map((_, i) => stravaKleur(i)),
+      hoverBackgroundColor: stravaCounts.map((_, i) => i === geselecteerd ? '#FC4C02' : '#FC4C0288'),
+      borderRadius: 6,
+      borderSkipped: false,
+      stack: 'beweegtijd'
     });
+  }
 
-    // Toon huidige maand standaard
-    renderMaandDetail(`maandDetail_${chartId}`, nu.getFullYear(), nu.getMonth(), historiek, stravaData, heeftStrava);
+  const tickFontSize = mode === 'week' ? 9 : 11;
+  const maxTicksLimit = mode === 'week' ? 13 : undefined;
+
+  const chart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      onClick: (evt, elements) => {
+        if (!elements.length) return;
+        geselecteerd = elements[0].index;
+        chart.data.datasets[0].backgroundColor = gymCounts.map((_, i) => gymKleur(i));
+        chart.data.datasets[0].hoverBackgroundColor = gymCounts.map((_, i) => i === geselecteerd ? '#6EF08C' : '#6EF08C88');
+        if (heeftStrava) {
+          chart.data.datasets[1].backgroundColor = stravaCounts.map((_, i) => stravaKleur(i));
+          chart.data.datasets[1].hoverBackgroundColor = stravaCounts.map((_, i) => i === geselecteerd ? '#FC4C02' : '#FC4C0288');
+        }
+        chart.update('none');
+        const p = periodeIndex[geselecteerd];
+        if (p.type === 'maand') renderMaandDetail(`periodeDetail_${chartId}`, p.jaar, p.maand, historiek, stravaData, heeftStrava);
+        else renderWeekDetail(`periodeDetail_${chartId}`, p.van, p.tot, historiek, stravaData, heeftStrava);
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}u` } }
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { size: tickFontSize }, maxTicksLimit, maxRotation: mode === 'week' ? 45 : 0 } },
+        y: { stacked: true, beginAtZero: true, ticks: { font: { size: 11 }, callback: v => v + 'u' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      }
+    }
   });
+  window._beweegtijdCharts[chartId] = chart;
+
+  // Toon meest recente periode standaard
+  const last = periodeIndex[periodeIndex.length - 1];
+  if (last.type === 'maand') renderMaandDetail(`periodeDetail_${chartId}`, last.jaar, last.maand, historiek, stravaData, heeftStrava);
+  else renderWeekDetail(`periodeDetail_${chartId}`, last.van, last.tot, historiek, stravaData, heeftStrava);
 }
 
 function renderMaandDetail(containerId, jaar, maand, historiek, stravaData, heeftStrava) {
@@ -3453,6 +3499,62 @@ function renderMaandDetail(containerId, jaar, maand, historiek, stravaData, heef
       </div>` : ''}
     </div>`;
 }
+function renderWeekDetail(containerId, van, tot, historiek, stravaData, heeftStrava) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const fmt = d => d.toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' });
+  const titel = fmt(van) + ' – ' + fmt(tot);
+  const typeEmoji = { Run:'🏃', Ride:'🚴', Swim:'🏊', Walk:'🚶', Hike:'🥾', WeightTraining:'🏋️', Yoga:'🧘', Workout:'💪', VirtualRide:'🖥️', MountainBikeRide:'🚵', CrossFit:'⚡', Tennis:'🎾', Soccer:'⚽', AlpineSki:'⛷️', Rowing:'🚣' };
+  const inWeek = d => d >= van && d <= tot;
+  const gymSessies = (historiek || []).filter(s => inWeek(new Date(s.start_tijd)));
+  const gymMin = gymSessies.reduce((s, r) => s + (r.duur_minuten || 0), 0);
+  const gymU = Math.floor(gymMin / 60), gymM = gymMin % 60;
+  const gymTijd = gymMin > 0 ? `${gymU}u ${gymM}m` : '—';
+  const stravaActies = (stravaData || []).filter(a => inWeek(a.datum));
+  const perType = {};
+  stravaActies.forEach(a => {
+    if (!perType[a.type]) perType[a.type] = { count: 0, minuten: 0 };
+    perType[a.type].count++;
+    perType[a.type].minuten += a.minuten;
+  });
+  const stravaHtml = Object.entries(perType).sort((a,b) => b[1].minuten - a[1].minuten).map(([type, d]) => {
+    const em = typeEmoji[type] || '🏅';
+    const u = Math.floor(d.minuten / 60), m = d.minuten % 60;
+    const tijd = d.minuten > 0 ? `${u}u ${m}m` : '—';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:22px;width:32px;text-align:center;">${em}</span>
+      <div style="flex:1;font-size:13px;font-weight:500;color:var(--muted);">${type}</div>
+      <span style="font-size:13px;color:#FC4C02;font-weight:600;">${d.count}×</span>
+      <span style="font-size:12px;color:var(--muted);min-width:52px;text-align:right;">⏱ ${tijd}</span>
+    </div>`;
+  }).join('');
+  el.innerHTML = `
+    <div style="border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:14px;font-weight:700;margin-bottom:14px;">${titel}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="display:inline-block;width:10px;height:10px;background:#6EF08C;border-radius:2px;flex-shrink:0;"></span>
+        <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Gymloft</span>
+      </div>
+      ${gymSessies.length === 0
+        ? `<div style="font-size:12px;color:var(--muted);padding:4px 0 12px;">Geen sessies</div>`
+        : `<div style="display:flex;align-items:center;gap:16px;padding:6px 0 12px;">
+            <span style="font-size:22px;">🏋️</span>
+            <span style="font-size:13px;font-weight:600;">${gymSessies.length} sessies</span>
+            <span style="font-size:12px;color:var(--muted);">⏱ ${gymTijd}</span>
+          </div>`}
+      ${heeftStrava ? `
+      <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="display:inline-block;width:10px;height:10px;background:#FC4C02;border-radius:2px;flex-shrink:0;"></span>
+          <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Strava</span>
+        </div>
+        ${stravaActies.length === 0
+          ? `<div style="font-size:12px;color:var(--muted);">Geen activiteiten</div>`
+          : stravaHtml}
+      </div>` : ''}
+    </div>`;
+}
+
 const STRAVA_CLIENT_ID = '215811';
 const STRAVA_CLIENT_SECRET = 'a4d8ec53521fec1d494722a76ea002a7069170fe';
 
