@@ -494,9 +494,13 @@ textarea { resize: vertical; min-height: 58px; }
   <div class="tab-content" id="tab-lifestyle">
     <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
       <div class="panel">
-        <div class="panel-title">Lifestyle Enqu&ecirc;te</div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
+        <div onclick="toggleEnqForm('lsFormBody')" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;margin-bottom:4px;">
+          <div class="panel-title" style="margin-bottom:0;">Lifestyle Enqu&ecirc;te</div>
+          <svg id="lsFormArrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--muted);transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
         <div id="lsLaatstIngevuld"></div>
+        <div id="lsFormBody" style="display:none;">
         <div class="form-group"><label class="form-label">Datum</label><input type="date" id="lsDatum"/></div>
 
         <div class="enq-section">
@@ -538,6 +542,7 @@ textarea { resize: vertical; min-height: 58px; }
 
         <div class="form-group"><label class="form-label">Extra opmerkingen</label><textarea id="lsNotities" placeholder="Vrije notities&hellip;" rows="2"></textarea></div>
         <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="saveLifestyle()">Opslaan</button>
+        </div><!-- /lsFormBody -->
       </div>
       <div class="panel">
         <div class="panel-title">Overzicht</div>
@@ -1043,10 +1048,16 @@ textarea { resize: vertical; min-height: 58px; }
     <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
     <div id="lsLaatstIngevuld_c" style="max-width:720px;"></div>
     <div class="panel" id="clientLifestyleForm" style="max-width:720px;">
-      <div class="form-group"><label class="form-label">Datum</label><input type="date" id="lsDatum2" onchange="document.getElementById('lsDatum').value=this.value"/></div>
+      <div onclick="toggleEnqForm('cLsFormBody')" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;margin-bottom:4px;">
+        <div class="panel-title" style="margin-bottom:0;">Enquête invullen</div>
+        <svg id="cLsFormArrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--muted);transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div id="cLsFormBody" style="display:none;">
+      <div class="form-group" style="margin-top:12px;"><label class="form-label">Datum</label><input type="date" id="lsDatum2" onchange="document.getElementById('lsDatum').value=this.value"/></div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">Scroll omlaag om alle vragen te beantwoorden.</div>
       <div id="clientLifestyleFormInner"></div>
       <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="saveClientLifestyle()">Opslaan</button>
+      </div><!-- /cLsFormBody -->
     </div>
     <div class="panel" style="max-width:720px;margin-top:16px;">
       <div class="panel-title" style="margin-bottom:12px;">Ingevulde enquêtes</div>
@@ -2609,6 +2620,16 @@ function renderLsLaatstIngevuld() {
   if (client) client.innerHTML = html;
 }
 
+function toggleEnqForm(bodyId) {
+  const body = document.getElementById(bodyId);
+  if (!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : '';
+  const arrowId = bodyId === 'lsFormBody' ? 'lsFormArrow' : 'cLsFormArrow';
+  const arrow = document.getElementById(arrowId);
+  if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
+}
+
 function syncLsDatum2() {
   const d2 = document.getElementById('lsDatum2');
   const d1 = document.getElementById('lsDatum');
@@ -2808,6 +2829,11 @@ async function saveLifestyle() {
   const saw = document.getElementById('lsStressAndersWrap'); if(saw) saw.style.display='none';
   const sa = document.getElementById('lsStressAnders'); if(sa) sa.value='';
   renderExtraFormSecties('lifestyle');
+  // Inklappen na opslaan
+  const lsBody = document.getElementById('lsFormBody');
+  if (lsBody) { lsBody.style.display = 'none'; const a = document.getElementById('lsFormArrow'); if(a) a.style.transform = ''; }
+  const cBody = document.getElementById('cLsFormBody');
+  if (cBody) { cBody.style.display = 'none'; const a = document.getElementById('cLsFormArrow'); if(a) a.style.transform = ''; }
   showToast('Lifestyle opgeslagen', 'success');
 }
 
@@ -2931,6 +2957,11 @@ function loadLifestyleIntoForm(id) {
     if (saw) saw.style.display = 'none';
     if (sa) sa.value = '';
   }
+  // Formulier openklappen bij bewerken
+  ['lsFormBody', 'cLsFormBody'].forEach(id => {
+    const body = document.getElementById(id);
+    if (body) { body.style.display = ''; const arrowId = id === 'lsFormBody' ? 'lsFormArrow' : 'cLsFormArrow'; const a = document.getElementById(arrowId); if(a) a.style.transform = 'rotate(180deg)'; }
+  });
   const formEl = document.getElementById('clientLifestyleForm') || document.querySelector('#tab-lifestyle .panel');
   if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
