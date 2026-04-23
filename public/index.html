@@ -4448,7 +4448,8 @@ async function initClientApp(user, klant, forceOnboarding = false) {
   showClientView('client-profiel');
   renderClientProfiel();
   loadLifestyles(klant.id);
-  if (!klant.voornaam || forceOnboarding) openOnboardingProfiel();
+  const isNieuweKlant = forceOnboarding || !klant.created_at || (Date.now() - new Date(klant.created_at).getTime()) < 5 * 60 * 1000;
+  if (!klant.voornaam && isNieuweKlant) openOnboardingProfiel();
 }
 
 let clientChartFilter = {};
