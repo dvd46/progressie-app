@@ -2277,6 +2277,7 @@ async function renderBenchmarkVergelijking(metingen, klantId, oefId, panelId = '
   html += `</div>`;
   el.innerHTML = html;
   panel.style.display = '';
+  return peers.length > 0 ? { gem: peers.reduce((s,m)=>s+parseFloat(m.waarde),0)/peers.length, geslachtLabel } : null;
 }
 
 async function renderChart() {
@@ -2314,8 +2315,8 @@ async function renderChart() {
     }
   } else { document.getElementById('statsRow').style.display='none'; }
 
-  // Benchmark vergelijking
-  await renderBenchmarkVergelijking(metingen, AKid, AOefId);
+  // Benchmark vergelijking (geeft gemiddelde terug voor gebruik in grafiek)
+  const benchmark = await renderBenchmarkVergelijking(metingen, AKid, AOefId);
 
   const ctx = document.getElementById('progressieChart').getContext('2d');
   if (mainChart) mainChart.destroy();
@@ -2335,26 +2336,55 @@ async function renderChart() {
   const pointBdColors = values.map(v => isBadge(v) ? 'transparent' : '#fff');
   const pointBdWidths = values.map(v => isBadge(v) ? 0 : 2);
 
+  // Benchmark horizontale lijn als extra dataset
+  const datasets = [{
+    data: values,
+    borderColor:'#6EF08C', backgroundColor:'rgba(110,240,140,0.07)', borderWidth:2.5,
+    pointStyle: pointStyles, pointRadius: pointRadii, pointHoverRadius: pointHRadii,
+    pointBackgroundColor: pointBgColors, pointBorderColor: pointBdColors, pointBorderWidth: pointBdWidths,
+    fill:true, tension:0.3
+  }];
+  if (benchmark) {
+    datasets.push({
+      data: values.map(() => benchmark.gem),
+      borderColor:'#0d0d0d', borderWidth:2, borderDash:[6,4],
+      pointRadius:0, pointHoverRadius:0, fill:false, tension:0,
+      label:'__benchmark__'
+    });
+  }
+
+  // Inline plugin voor het label rechts op de benchmarklijn
+  const benchmarkLabelPlugin = benchmark ? [{
+    id:'benchmarkLabel',
+    afterDraw(chart) {
+      const ds = chart.data.datasets.findIndex(d=>d.label==='__benchmark__');
+      if (ds < 0) return;
+      const meta = chart.getDatasetMeta(ds);
+      if (!meta.data.length) return;
+      const lastPt = meta.data[meta.data.length-1];
+      const c = chart.ctx;
+      c.save();
+      c.font = '600 11px DM Sans, sans-serif';
+      c.fillStyle = '#0d0d0d';
+      c.textAlign = 'right';
+      c.textBaseline = 'bottom';
+      c.fillText(`Gem. eerste meting ${benchmark.geslachtLabel}: ${benchmark.gem.toFixed(1)}`, chart.scales.x.right - 4, lastPt.y - 4);
+      c.restore();
+    }
+  }] : [];
+
   mainChart = new Chart(ctx, {
     type:'line',
-    data:{
-      labels: metingen.map(m=>fmtD(m.datum)),
-      datasets:[{
-        data: values,
-        borderColor:'#6EF08C', backgroundColor:'rgba(110,240,140,0.07)', borderWidth:2.5,
-        pointStyle: pointStyles, pointRadius: pointRadii, pointHoverRadius: pointHRadii,
-        pointBackgroundColor: pointBgColors, pointBorderColor: pointBdColors, pointBorderWidth: pointBdWidths,
-        fill:true, tension:0.3
-      }]
-    },
+    data:{ labels: metingen.map(m=>fmtD(m.datum)), datasets },
     options:{
       responsive:true, maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+parseFloat(c.parsed.y).toFixed(1),afterLabel:c=>{ const m=metingen[c.dataIndex]; return m&&m.opmerking ? '💬 '+m.opmerking : ''; }}},datalabels:false},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=> c.dataset.label==='__benchmark__' ? null : ' '+parseFloat(c.parsed.y).toFixed(1), afterLabel:c=>{ if(c.dataset.label==='__benchmark__') return null; const m=metingen[c.dataIndex]; return m&&m.opmerking ? '💬 '+m.opmerking : ''; }}},datalabels:false},
       scales:{
         x:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{family:'DM Sans',size:12},color:'#6b6b6b'},title:{display:true,text:'Datum',font:{size:12,weight:'500'},color:'#0d0d0d'}},
         y:{reverse:!higherIsBetter,grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{family:'DM Mono',size:12},color:'#6b6b6b'},title:{display:true,text:'Waarde',font:{size:12,weight:'500'},color:'#0d0d0d'}}
       }
-    }
+    },
+    plugins: benchmarkLabelPlugin
   });
   document.getElementById('metingenLijst').innerHTML = [...metingen].reverse().map(m =>
     `<div class="entry-item" style="flex-wrap:wrap;gap:4px;">
@@ -4801,8 +4831,8 @@ async function renderClientChart() {
     p.className = 'stat-value ' + (d===0?'':(improving?'up':'down'));
   } else { document.getElementById('cStatsRow').style.display = 'none'; }
 
-  // Benchmark vergelijking voor klant
-  await renderBenchmarkVergelijking(metingen, currentKlant.id, clientAOefId, 'cBenchmarkPanel', 'cEersteMetingVergelijking');
+  // Benchmark vergelijking voor klant (geeft gemiddelde terug voor gebruik in grafiek)
+  const cBenchmark = await renderBenchmarkVergelijking(metingen, currentKlant.id, clientAOefId, 'cBenchmarkPanel', 'cEersteMetingVergelijking');
 
   const ctx = document.getElementById('clientProgressieChart').getContext('2d');
   if (clientChart) clientChart.destroy();
@@ -4819,10 +4849,14 @@ async function renderClientChart() {
   const pointBgColors = values.map(v => isBadge(v) ? 'transparent' : '#6EF08C');
   const pointBdColors = values.map(v => isBadge(v) ? 'transparent' : '#fff');
   const pointBdWidths = values.map(v => isBadge(v) ? 0 : 2);
+  const cDatasets = [{ data: values, borderColor:'#6EF08C', backgroundColor:'rgba(110,240,140,0.07)', borderWidth:2.5, pointStyle: pointStyles, pointRadius: pointRadii, pointHoverRadius: pointHRadii, pointBackgroundColor: pointBgColors, pointBorderColor: pointBdColors, pointBorderWidth: pointBdWidths, fill:true, tension:0.3 }];
+  if (cBenchmark) cDatasets.push({ data: values.map(()=>cBenchmark.gem), borderColor:'#0d0d0d', borderWidth:2, borderDash:[6,4], pointRadius:0, pointHoverRadius:0, fill:false, tension:0, label:'__benchmark__' });
+  const cBenchmarkPlugin = cBenchmark ? [{ id:'cBenchmarkLabel', afterDraw(chart) { const ds=chart.data.datasets.findIndex(d=>d.label==='__benchmark__'); if(ds<0) return; const meta=chart.getDatasetMeta(ds); if(!meta.data.length) return; const lp=meta.data[meta.data.length-1]; const c=chart.ctx; c.save(); c.font='600 11px DM Sans,sans-serif'; c.fillStyle='#0d0d0d'; c.textAlign='right'; c.textBaseline='bottom'; c.fillText(`Gem. eerste meting ${cBenchmark.geslachtLabel}: ${cBenchmark.gem.toFixed(1)}`,chart.scales.x.right-4,lp.y-4); c.restore(); }}] : [];
   clientChart = new Chart(ctx, {
     type:'line',
-    data:{ labels: metingen.map(m=>fmtD(m.datum)), datasets:[{ data: values, borderColor:'#6EF08C', backgroundColor:'rgba(110,240,140,0.07)', borderWidth:2.5, pointStyle: pointStyles, pointRadius: pointRadii, pointHoverRadius: pointHRadii, pointBackgroundColor: pointBgColors, pointBorderColor: pointBdColors, pointBorderWidth: pointBdWidths, fill:true, tension:0.3 }] },
-    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+parseFloat(c.parsed.y).toFixed(1),afterLabel:c=>{ const m=metingen[c.dataIndex]; return m&&m.opmerking ? '💬 '+m.opmerking : ''; }}},datalabels:false}, scales:{ x:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{family:'DM Sans',size:12},color:'#6b6b6b'}}, y:{reverse:!higherIsBetter,grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{family:'DM Mono',size:12},color:'#6b6b6b'}} } }
+    data:{ labels: metingen.map(m=>fmtD(m.datum)), datasets: cDatasets },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label==='__benchmark__'?null:' '+parseFloat(c.parsed.y).toFixed(1),afterLabel:c=>{ if(c.dataset.label==='__benchmark__') return null; const m=metingen[c.dataIndex]; return m&&m.opmerking?'💬 '+m.opmerking:''; }}},datalabels:false}, scales:{ x:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{family:'DM Sans',size:12},color:'#6b6b6b'}}, y:{reverse:!higherIsBetter,grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{family:'DM Mono',size:12},color:'#6b6b6b'}} } },
+    plugins: cBenchmarkPlugin
   });
   document.getElementById('cMetingenLijst').innerHTML = [...metingen].reverse().map(m => {
     const opm = opmMap[m.datum];
