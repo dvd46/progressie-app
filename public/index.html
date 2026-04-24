@@ -2201,19 +2201,17 @@ async function renderBenchmarkVergelijking(metingen, klantId, oefId, panelId = '
 
   const eigenEerste = parseFloat(metingen[0].waarde);
   const higherBetter = !getLagerIsBeter(oefId);
-  const huidigKlant = klanten.find(k => k.id === klantId);
+
+  // Geslacht ophalen: via klanten-array (coach) of via currentKlant (klantplatform)
+  const huidigKlant = klanten.find(k => k.id === klantId) || currentKlant || null;
   const geslacht = huidigKlant?.geslacht || null;
   const geslachtLabel = geslacht === 'man' ? 'mannen' : geslacht === 'vrouw' ? 'vrouwen' : 'alle klanten';
 
-  // Alle metingen voor deze oefening ophalen, gefilterd op de klanten van deze coach
-  // (vermijdt RLS-blokkering bij cross-client queries)
-  const klantIds = klanten.map(k => k.id);
-  const { data: alle } = await sb
-    .from('metingen')
-    .select('klant_id, waarde, datum')
-    .eq('oefening_id', oefId)
-    .in('klant_id', klantIds)
-    .order('datum', { ascending: true });
+  // Alle metingen voor deze oefening ophalen
+  // Op coachplatform: filter op eigen klanten (RLS). Op klantplatform: geen filter nodig want RLS laat alle klanten door via policy.
+  let metingenQuery = sb.from('metingen').select('klant_id, waarde, datum').eq('oefening_id', oefId);
+  if (klanten.length > 0) metingenQuery = metingenQuery.in('klant_id', klanten.map(k => k.id));
+  const { data: alle } = await metingenQuery.order('datum', { ascending: true });
 
   // Eerste meting per klant bepalen
   const eerstePerKlant = {};
@@ -2222,10 +2220,14 @@ async function renderBenchmarkVergelijking(metingen, klantId, oefId, panelId = '
   }
 
   // Andere klanten filteren op hetzelfde geslacht
+  // Op coachplatform: geslacht opzoeken in klanten-array. Op klantplatform: geslacht onbekend van anderen → toon allen.
   const peers = Object.values(eerstePerKlant).filter(m => {
     if (m.klant_id === klantId) return false;
     if (!geslacht) return true;
-    return klanten.find(k => k.id === m.klant_id)?.geslacht === geslacht;
+    const k = klanten.find(k => k.id === m.klant_id);
+    // Op klantplatform hebben we geen toegang tot geslacht van andere klanten → iedereen meenemen
+    if (!k) return true;
+    return k.geslacht === geslacht;
   });
 
   // HTML opbouwen
