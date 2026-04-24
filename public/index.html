@@ -2219,15 +2219,24 @@ async function renderBenchmarkVergelijking(metingen, klantId, oefId, panelId = '
     if (!(m.klant_id in eerstePerKlant)) eerstePerKlant[m.klant_id] = m;
   }
 
-  // Andere klanten filteren op hetzelfde geslacht
-  // Op coachplatform: geslacht opzoeken in klanten-array. Op klantplatform: geslacht onbekend van anderen → toon allen.
+  // Geslacht van andere klanten opzoeken
+  // Op coachplatform: via klanten-array. Op klantplatform (klanten leeg): extra query op id+geslacht.
+  let geslachtMap = {};
+  if (klanten.length > 0) {
+    klanten.forEach(k => { geslachtMap[k.id] = k.geslacht; });
+  } else {
+    const andereIds = Object.keys(eerstePerKlant).filter(id => id !== klantId);
+    if (andereIds.length > 0) {
+      const { data: gData } = await sb.from('klanten').select('id, geslacht').in('id', andereIds);
+      (gData || []).forEach(k => { geslachtMap[k.id] = k.geslacht; });
+    }
+  }
+
+  // Filteren op hetzelfde geslacht
   const peers = Object.values(eerstePerKlant).filter(m => {
     if (m.klant_id === klantId) return false;
     if (!geslacht) return true;
-    const k = klanten.find(k => k.id === m.klant_id);
-    // Op klantplatform hebben we geen toegang tot geslacht van andere klanten → iedereen meenemen
-    if (!k) return true;
-    return k.geslacht === geslacht;
+    return geslachtMap[m.klant_id] === geslacht;
   });
 
   // HTML opbouwen
