@@ -1030,6 +1030,10 @@ textarea { resize: vertical; min-height: 58px; }
           <div class="panel-title">Alle metingen</div>
           <div id="cMetingenLijst"><div class="empty">Geen metingen.</div></div>
         </div>
+        <div class="panel" id="cBenchmarkPanel" style="display:none;margin-top:14px;">
+          <div class="section-hdr"><div class="panel-title" style="margin-bottom:0;">Benchmark vergelijking</div></div>
+          <div id="cEersteMetingVergelijking"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -2188,9 +2192,9 @@ function renderChartEmpty() {
   if (mainChart) { mainChart.destroy(); mainChart = null; }
 }
 
-async function renderBenchmarkVergelijking(metingen, klantId, oefId) {
-  const el = document.getElementById('eersteMetingVergelijking');
-  const panel = document.getElementById('benchmarkPanel');
+async function renderBenchmarkVergelijking(metingen, klantId, oefId, panelId = 'benchmarkPanel', elId = 'eersteMetingVergelijking') {
+  const el = document.getElementById(elId);
+  const panel = document.getElementById(panelId);
   if (!el || !panel) return;
   panel.style.display = 'none';
   if (!metingen || metingen.length < 1) return;
@@ -4794,6 +4798,10 @@ async function renderClientChart() {
     p.textContent = (d>=0?'+':'') + parseFloat(d).toFixed(1) + ' (' + pct + '%)';
     p.className = 'stat-value ' + (d===0?'':(improving?'up':'down'));
   } else { document.getElementById('cStatsRow').style.display = 'none'; }
+
+  // Benchmark vergelijking voor klant
+  await renderBenchmarkVergelijking(metingen, currentKlant.id, clientAOefId, 'cBenchmarkPanel', 'cEersteMetingVergelijking');
+
   const ctx = document.getElementById('clientProgressieChart').getContext('2d');
   if (clientChart) clientChart.destroy();
   if (!metingen.length) { clientChart = null; document.getElementById('cMetingenLijst').innerHTML = '<div class="empty">Nog geen metingen.</div>'; return; }
