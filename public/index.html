@@ -117,10 +117,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
 /* ── TRAINING ── */
 .training-layout { display: grid; grid-template-columns: 240px 1fr; gap: 16px; align-items: start; }
-.oef-item { padding: 10px 14px; background: var(--bg); border-radius: 10px; border: 1.5px solid transparent; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: space-between; transition: all 0.12s; margin-bottom: 6px; }
+.oef-item { padding: 10px 14px; background: var(--bg); border-radius: 10px; border: 1.5px solid transparent; cursor: pointer; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between; transition: all 0.12s; margin-bottom: 6px; }
 .oef-item:hover { border-color: var(--accent); background: var(--accent-light); }
 .oef-item.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 .oef-count { font-size: 11px; opacity: 0.7; font-family: 'DM Mono',monospace; }
+@media (max-width: 600px) { .oef-item { font-size: 13px; } }
 .chart-wrap { position: relative; height: 280px; }
 .stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap: 10px; margin-top: 16px; }
 .stat-card { background: #0d0d0d; border-radius: 8px; padding: 12px 14px; border: none; }
@@ -2052,14 +2053,10 @@ async function loadOefList() {
   const verborgen = oefeningen.filter(o => hidden.includes(o.id));
 
   el.innerHTML = zichtbaar.map(o => {
-    const cnt = countMap[o.id] || 0;
-    const thumb = o.foto ? `<img src="${o.foto}" style="width:26px;height:26px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : '';
     return `<div class="oef-item${AOefId===o.id?' active':''}" onclick="selectOef('${o.id}','${o.naam.replace(/'/g,"\\'")}')">
-      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">${thumb}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${o.naam}</span></div>
-      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-        <span class="oef-count">${cnt>0?cnt+'x':''}</span>
-        <button onclick="tempHideOef('${o.id}',event)" title="Tijdelijk verbergen" style="background:none;border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:10px;color:var(--muted);cursor:pointer;line-height:1.5;white-space:nowrap;">Wis</button>
-      </div></div>`;
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${o.naam}</span>
+      <button onclick="tempHideOef('${o.id}',event)" title="Tijdelijk verbergen" style="background:none;border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:10px;color:var(--muted);cursor:pointer;line-height:1.5;white-space:nowrap;flex-shrink:0;text-transform:none;font-weight:400;letter-spacing:0;">Wis</button>
+    </div>`;
   }).join('');
 
   if (verborgen.length) {
@@ -4799,11 +4796,8 @@ async function renderClientOefList() {
   const zichtbaar = clientOefeningen.filter(o => countMap[o.id]);
   if (!zichtbaar.length) { el.innerHTML = '<div class="empty">Geen oefeningen met metingen.</div>'; return; }
   el.innerHTML = zichtbaar.map(o => {
-    const cnt = countMap[o.id] || 0;
-    const thumb = o.foto ? `<img src="${o.foto}" style="width:26px;height:26px;object-fit:cover;border-radius:6px;flex-shrink:0;">` : '';
     return `<div class="oef-item${clientAOefId===o.id?' active':''}" onclick="selectClientOef('${o.id}','${o.naam.replace(/'/g,"\\'")}')">
-      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0;">${thumb}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${o.naam}</span></div>
-      <span class="oef-count">${cnt}x</span>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${o.naam}</span>
     </div>`;
   }).join('');
 }
