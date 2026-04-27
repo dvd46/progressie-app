@@ -502,9 +502,9 @@ textarea { resize: vertical; min-height: 58px; }
       <div id="lifestyleLijst"><div class="empty">Nog geen enquêtes.</div></div>
     </div>
     <div class="panel">
-        <div onclick="toggleEnqForm('lsFormBody')" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
           <div class="panel-title" style="margin-bottom:0;">Lifestyle Enqu&ecirc;te</div>
-          <svg id="lsFormArrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--muted);transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+          <button id="lsFormToggleBtn" class="btn btn-primary btn-sm" onclick="toggleEnqForm('lsFormBody')">+ Nieuwe enqu&ecirc;te</button>
         </div>
         <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
         <div id="lsLaatstIngevuld"></div>
@@ -1058,9 +1058,9 @@ textarea { resize: vertical; min-height: 58px; }
     </div>
     <div id="lsLaatstIngevuld_c"></div>
     <div class="panel" id="clientLifestyleForm">
-      <div onclick="toggleEnqForm('cLsFormBody')" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;margin-bottom:4px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
         <div class="panel-title" style="margin-bottom:0;">Enquête invullen</div>
-        <svg id="cLsFormArrow" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--muted);transition:transform .2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+        <button id="cLsFormToggleBtn" class="btn btn-primary btn-sm" onclick="toggleEnqForm('cLsFormBody')">+ Nieuwe enqu&ecirc;te</button>
       </div>
       <div id="cLsFormBody" style="display:none;">
       <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Alle vragen gaan over de afgelopen 4 weken. Beantwoord zo eerlijk mogelijk.</div>
@@ -2762,9 +2762,9 @@ function toggleEnqForm(bodyId) {
   if (!body) return;
   const open = body.style.display !== 'none';
   body.style.display = open ? 'none' : '';
-  const arrowId = bodyId === 'lsFormBody' ? 'lsFormArrow' : 'cLsFormArrow';
-  const arrow = document.getElementById(arrowId);
-  if (arrow) arrow.style.transform = open ? '' : 'rotate(180deg)';
+  const btnId = bodyId === 'lsFormBody' ? 'lsFormToggleBtn' : 'cLsFormToggleBtn';
+  const btn = document.getElementById(btnId);
+  if (btn) btn.textContent = open ? '+ Nieuwe enquête' : 'Sluiten';
 }
 
 function syncLsDatum2() {
@@ -2964,9 +2964,9 @@ async function saveLifestyle() {
   renderExtraFormSecties('lifestyle');
   // Inklappen na opslaan
   const lsBody = document.getElementById('lsFormBody');
-  if (lsBody) { lsBody.style.display = 'none'; const a = document.getElementById('lsFormArrow'); if(a) a.style.transform = ''; }
+  if (lsBody) { lsBody.style.display = 'none'; const b = document.getElementById('lsFormToggleBtn'); if(b) b.textContent = '+ Nieuwe enquête'; }
   const cBody = document.getElementById('cLsFormBody');
-  if (cBody) { cBody.style.display = 'none'; const a = document.getElementById('cLsFormArrow'); if(a) a.style.transform = ''; }
+  if (cBody) { cBody.style.display = 'none'; const b = document.getElementById('cLsFormToggleBtn'); if(b) b.textContent = '+ Nieuwe enquête'; }
   showToast('Lifestyle opgeslagen', 'success');
 }
 
@@ -3070,7 +3070,7 @@ function loadLifestyleIntoForm(id) {
   // Formulier openklappen bij bewerken
   ['lsFormBody', 'cLsFormBody'].forEach(id => {
     const body = document.getElementById(id);
-    if (body) { body.style.display = ''; const arrowId = id === 'lsFormBody' ? 'lsFormArrow' : 'cLsFormArrow'; const a = document.getElementById(arrowId); if(a) a.style.transform = 'rotate(180deg)'; }
+    if (body) { body.style.display = ''; const btnId = id === 'lsFormBody' ? 'lsFormToggleBtn' : 'cLsFormToggleBtn'; const b = document.getElementById(btnId); if(b) b.textContent = 'Sluiten'; }
   });
   const formEl = document.getElementById('clientLifestyleForm') || document.querySelector('#tab-lifestyle .panel');
   if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
