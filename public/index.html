@@ -2053,9 +2053,10 @@ async function loadOefList() {
   const verborgen = oefeningen.filter(o => hidden.includes(o.id));
 
   el.innerHTML = zichtbaar.map(o => {
+    const korteNaam = o.naam.split(':')[0].trim();
     return `<div class="oef-item${AOefId===o.id?' active':''}" onclick="selectOef('${o.id}','${o.naam.replace(/'/g,"\\'")}')">
-      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${o.naam}</span>
-      <button onclick="tempHideOef('${o.id}',event)" title="Tijdelijk verbergen" style="background:none;border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:10px;color:var(--muted);cursor:pointer;line-height:1.5;white-space:nowrap;flex-shrink:0;text-transform:none;font-weight:400;letter-spacing:0;">Wis</button>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${korteNaam}</span>
+      <button onclick="tempHideOef('${o.id}',event)" title="Tijdelijk verbergen" style="background:none;border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:10px;color:var(--muted);cursor:pointer;line-height:1.5;white-space:nowrap;flex-shrink:0;text-transform:none;font-weight:400;letter-spacing:0;margin-left:6px;">Wis</button>
     </div>`;
   }).join('');
 
@@ -4796,8 +4797,9 @@ async function renderClientOefList() {
   const zichtbaar = clientOefeningen.filter(o => countMap[o.id]);
   if (!zichtbaar.length) { el.innerHTML = '<div class="empty">Geen oefeningen met metingen.</div>'; return; }
   el.innerHTML = zichtbaar.map(o => {
+    const korteNaam = o.naam.split(':')[0].trim();
     return `<div class="oef-item${clientAOefId===o.id?' active':''}" onclick="selectClientOef('${o.id}','${o.naam.replace(/'/g,"\\'")}')">
-      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${o.naam}</span>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">${korteNaam}</span>
     </div>`;
   }).join('');
 }
