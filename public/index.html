@@ -2085,6 +2085,9 @@ async function selectOef(id, naam) {
   } else {
     bigWrap.style.display = 'none';
   }
+  if (window.innerWidth <= 720) {
+    document.getElementById('progressieChart')?.closest('.panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function toggleAddOef() {
@@ -4813,6 +4816,9 @@ async function selectClientOef(id, naam) {
   clientAOefId = id; clientAOefNaam = naam;
   renderClientOefList();
   await renderClientChart();
+  if (window.innerWidth <= 720) {
+    document.getElementById('clientProgressieChart')?.closest('.panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 async function renderClientChart() {
