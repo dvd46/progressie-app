@@ -3614,29 +3614,31 @@ function renderMaandDetail(containerId, jaar, maand, historiek, stravaData, heef
   el.innerHTML = `
     <div style="border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
       <div style="font-size:14px;font-weight:700;margin-bottom:14px;">${maandNaam} ${jaar}</div>
-
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="display:inline-block;width:10px;height:10px;background:#6EF08C;border-radius:2px;flex-shrink:0;"></span>
-        <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Gymloft</span>
-      </div>
-      ${gymSessieCount === 0
-        ? `<div style="font-size:12px;color:var(--muted);padding:4px 0 12px;">Geen sessies</div>`
-        : `<div style="display:flex;align-items:center;gap:16px;padding:6px 0 12px;">
-            <span style="font-size:22px;">🏋️</span>
-            <span style="font-size:13px;font-weight:600;">${gymSessieCount} sessies</span>
-            <span style="font-size:12px;color:var(--muted);">⏱ ${gymTijd}</span>
-          </div>`}
-
-      ${heeftStrava ? `
-      <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <span style="display:inline-block;width:10px;height:10px;background:#FC4C02;border-radius:2px;flex-shrink:0;"></span>
-          <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Strava</span>
+      <div style="display:grid;grid-template-columns:${heeftStrava ? '1fr 1fr' : '1fr'};gap:16px;align-items:start;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="display:inline-block;width:10px;height:10px;background:#6EF08C;border-radius:2px;flex-shrink:0;"></span>
+            <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Gymloft</span>
+          </div>
+          ${gymSessieCount === 0
+            ? `<div style="font-size:12px;color:var(--muted);padding:4px 0;">Geen sessies</div>`
+            : `<div style="display:flex;align-items:center;gap:12px;padding:4px 0;">
+                <span style="font-size:20px;">🏋️</span>
+                <span style="font-size:13px;font-weight:600;">${gymSessieCount} sessies</span>
+                <span style="font-size:12px;color:var(--muted);">⏱ ${gymTijd}</span>
+              </div>`}
         </div>
-        ${stravaActies.length === 0
-          ? `<div style="font-size:12px;color:var(--muted);">Geen activiteiten</div>`
-          : stravaHtml}
-      </div>` : ''}
+        ${heeftStrava ? `
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="display:inline-block;width:10px;height:10px;background:#FC4C02;border-radius:2px;flex-shrink:0;"></span>
+            <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Strava</span>
+          </div>
+          ${stravaActies.length === 0
+            ? `<div style="font-size:12px;color:var(--muted);">Geen activiteiten</div>`
+            : stravaHtml}
+        </div>` : ''}
+      </div>
     </div>`;
 }
 function renderWeekDetail(containerId, van, tot, historiek, stravaData, heeftStrava) {
@@ -3671,27 +3673,31 @@ function renderWeekDetail(containerId, van, tot, historiek, stravaData, heeftStr
   el.innerHTML = `
     <div style="border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;">
       <div style="font-size:14px;font-weight:700;margin-bottom:14px;">${titel}</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="display:inline-block;width:10px;height:10px;background:#6EF08C;border-radius:2px;flex-shrink:0;"></span>
-        <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Gymloft</span>
-      </div>
-      ${gymSessies.length === 0
-        ? `<div style="font-size:12px;color:var(--muted);padding:4px 0 12px;">Geen sessies</div>`
-        : `<div style="display:flex;align-items:center;gap:16px;padding:6px 0 12px;">
-            <span style="font-size:22px;">🏋️</span>
-            <span style="font-size:13px;font-weight:600;">${gymSessies.length} sessies</span>
-            <span style="font-size:12px;color:var(--muted);">⏱ ${gymTijd}</span>
-          </div>`}
-      ${heeftStrava ? `
-      <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <span style="display:inline-block;width:10px;height:10px;background:#FC4C02;border-radius:2px;flex-shrink:0;"></span>
-          <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Strava</span>
+      <div style="display:grid;grid-template-columns:${heeftStrava ? '1fr 1fr' : '1fr'};gap:16px;align-items:start;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="display:inline-block;width:10px;height:10px;background:#6EF08C;border-radius:2px;flex-shrink:0;"></span>
+            <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Gymloft</span>
+          </div>
+          ${gymSessies.length === 0
+            ? `<div style="font-size:12px;color:var(--muted);padding:4px 0;">Geen sessies</div>`
+            : `<div style="display:flex;align-items:center;gap:12px;padding:4px 0;">
+                <span style="font-size:20px;">🏋️</span>
+                <span style="font-size:13px;font-weight:600;">${gymSessies.length} sessies</span>
+                <span style="font-size:12px;color:var(--muted);">⏱ ${gymTijd}</span>
+              </div>`}
         </div>
-        ${stravaActies.length === 0
-          ? `<div style="font-size:12px;color:var(--muted);">Geen activiteiten</div>`
-          : stravaHtml}
-      </div>` : ''}
+        ${heeftStrava ? `
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span style="display:inline-block;width:10px;height:10px;background:#FC4C02;border-radius:2px;flex-shrink:0;"></span>
+            <span style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;">Strava</span>
+          </div>
+          ${stravaActies.length === 0
+            ? `<div style="font-size:12px;color:var(--muted);">Geen activiteiten</div>`
+            : stravaHtml}
+        </div>` : ''}
+      </div>
     </div>`;
 }
 
