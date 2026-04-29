@@ -3158,7 +3158,7 @@ function initLeaderboard() {
   const sel = document.getElementById('lbOefSelect');
   const huidig = sel.value;
   sel.innerHTML = '<option value="">— Kies oefening —</option>' +
-    oefeningen.map(o => `<option value="${o.id}" ${o.id===huidig?'selected':''}>${o.naam}</option>`).join('');
+    oefeningen.map(o => `<option value="${o.id}" ${o.id===huidig?'selected':''}>${o.naam.split(':')[0].trim()}</option>`).join('');
   renderLeaderboard();
 }
 
@@ -4965,7 +4965,7 @@ function initClientLeaderboard() {
   const sel = document.getElementById('cLbOefSelect');
   const huidig = sel.value;
   sel.innerHTML = '<option value="">— Kies oefening —</option>' +
-    clientOefeningen.map(o => `<option value="${o.id}" ${o.id===huidig?'selected':''}>${o.naam}</option>`).join('');
+    clientOefeningen.map(o => `<option value="${o.id}" ${o.id===huidig?'selected':''}>${o.naam.split(':')[0].trim()}</option>`).join('');
   renderClientLeaderboard();
 }
 
