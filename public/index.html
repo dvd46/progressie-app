@@ -862,14 +862,12 @@ textarea { resize: vertical; min-height: 58px; }
 
 <!-- VIEW: LEADERBOARD -->
 <div class="view" id="view-leaderboard">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
-    <h2 style="font-size:20px;font-weight:600;">Leaderboard</h2>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <label class="form-label" style="margin:0;font-size:13px;">Oefening:</label>
-      <select id="lbOefSelect" onchange="renderLeaderboard()" style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:13px;min-width:180px;">
-        <option value="">— Kies oefening —</option>
-      </select>
-    </div>
+  <h2 style="font-size:20px;font-weight:600;margin-bottom:12px;">Leaderboard</h2>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+    <label class="form-label" style="margin:0;font-size:13px;">Oefening:</label>
+    <select id="lbOefSelect" onchange="renderLeaderboard()" style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:13px;min-width:180px;">
+      <option value="">— Kies oefening —</option>
+    </select>
   </div>
   <div class="tab-bar" style="margin-bottom:16px;">
     <button class="tab active" onclick="switchLbTab('algemeen')">Algemeen</button>
@@ -1255,14 +1253,12 @@ textarea { resize: vertical; min-height: 58px; }
 
 <!-- VIEW: CLIENT LEADERBOARD -->
 <div class="view" id="view-client-leaderboard">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
-    <h2 style="font-size:20px;font-weight:600;">Leaderboard</h2>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <label class="form-label" style="margin:0;font-size:13px;">Oefening:</label>
-      <select id="cLbOefSelect" onchange="renderClientLeaderboard()" style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:13px;min-width:180px;">
-        <option value="">— Kies oefening —</option>
-      </select>
-    </div>
+  <h2 style="font-size:20px;font-weight:600;margin-bottom:12px;">Leaderboard</h2>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+    <label class="form-label" style="margin:0;font-size:13px;">Oefening:</label>
+    <select id="cLbOefSelect" onchange="renderClientLeaderboard()" style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:13px;min-width:180px;">
+      <option value="">— Kies oefening —</option>
+    </select>
   </div>
   <div class="tab-bar" style="margin-bottom:16px;">
     <button class="tab active" onclick="switchClientLbTab('algemeen')">Algemeen</button>
