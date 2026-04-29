@@ -290,6 +290,9 @@ textarea { resize: vertical; min-height: 58px; }
   .stats-row { grid-template-columns: 1fr 1fr; }
   .form-row { grid-template-columns: 1fr; }
 }
+#exitConfirmDialog { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:99999; align-items:center; justify-content:center; }
+#exitConfirmDialog.open { display:flex; }
+#exitConfirmBox { background:var(--panel); border-radius:16px; padding:28px 24px; max-width:280px; width:88%; text-align:center; }
 </style>
 </head>
 <body>
@@ -1698,6 +1701,7 @@ sb.auth.onAuthStateChange((event, session) => {
 //  VIEWS
 // ══════════════════════════════════════════════════════════════════════
 function showView(name) {
+  _pushNav({ fn: 'showView', name });
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.sidebar-nav .nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
@@ -1860,6 +1864,8 @@ async function deleteKlant() {
 //  PROFIEL
 // ══════════════════════════════════════════════════════════════════════
 async function openProfiel(id) {
+  _pushNav({ fn: 'openProfiel', id });
+  _suppressHistory = true;
   AKid = id; AOefId = null; AOefNaam = null;
   selSlaap = 0; selStress = 0;
   lsState = {};
@@ -1874,6 +1880,7 @@ async function openProfiel(id) {
   if (mainChart) { mainChart.destroy(); mainChart = null; }
   showView('profiel');
   switchTab('training');
+  _suppressHistory = false;
   renderProfielHdr();
   await loadOefList();
   renderChartEmpty();
@@ -1933,6 +1940,7 @@ async function uploadFoto(e) {
 }
 
 function switchTab(name) {
+  _pushNav({ fn: 'switchTab', name });
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['training','lifestyle','gegevens'][i]===name));
   document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
@@ -4449,6 +4457,7 @@ async function initMemberApp(user) {
 }
 
 function showMemberView(name) {
+  _pushNav({ fn: 'showMemberView', name });
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('#memberNav .nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
@@ -4743,6 +4752,7 @@ function switchClientLsTab(tab) {
 }
 
 function showClientView(name) {
+  _pushNav({ fn: 'showClientView', name });
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('#clientNav .nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
@@ -5193,6 +5203,50 @@ async function downloadPDF() {
     btn.textContent='↓ PDF rapport'; btn.disabled=false;
   }
 }
+
+// ══════════════════════════════════════════════════════════════════════
+//  HISTORY API – Android terugknop
+// ══════════════════════════════════════════════════════════════════════
+let _suppressHistory = false;
+
+function _pushNav(state) {
+  if (_suppressHistory) return;
+  history.pushState(Object.assign({ _app: true }, state), '');
+}
+
+function _restoreNav(state) {
+  _suppressHistory = true;
+  try {
+    if (state.fn === 'showView') showView(state.name);
+    else if (state.fn === 'openProfiel') openProfiel(state.id);
+    else if (state.fn === 'switchTab') switchTab(state.name);
+    else if (state.fn === 'showClientView') showClientView(state.name);
+    else if (state.fn === 'showMemberView') showMemberView(state.name);
+  } finally {
+    _suppressHistory = false;
+  }
+}
+
+window.addEventListener('popstate', function(e) {
+  if (!e.state || !e.state._app) return;
+  if (e.state.fn === '__home__') {
+    document.getElementById('exitConfirmDialog').classList.add('open');
+    history.pushState({ _app: true, fn: '__home__' }, '');
+    return;
+  }
+  _restoreNav(e.state);
+});
+
+function exitAppConfirmed() {
+  document.getElementById('exitConfirmDialog').classList.remove('open');
+  history.go(-2);
+}
+
+function exitAppCancelled() {
+  document.getElementById('exitConfirmDialog').classList.remove('open');
+}
+
+history.replaceState({ _app: true, fn: '__home__' }, '');
 </script>
 <script>
 if ('serviceWorker' in navigator) {
@@ -5203,6 +5257,15 @@ if ('serviceWorker' in navigator) {
   <div id="chartZoomBox">
     <button id="chartZoomClose" onclick="closeChartZoomBtn()">&#x2715;</button>
     <canvas id="chartZoomCanvas"></canvas>
+  </div>
+</div>
+<div id="exitConfirmDialog" onclick="exitAppCancelled()">
+  <div id="exitConfirmBox" onclick="event.stopPropagation()">
+    <p style="font-size:16px;font-weight:600;margin-bottom:20px;">Wil je de app verlaten?</p>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button class="btn btn-primary" onclick="exitAppConfirmed()">Ja</button>
+      <button class="btn" style="background:var(--bg);color:var(--text);border:1px solid var(--border);" onclick="exitAppCancelled()">Nee</button>
+    </div>
   </div>
 </div>
 </body>
