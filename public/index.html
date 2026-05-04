@@ -782,6 +782,14 @@ textarea { resize: vertical; min-height: 58px; }
   <div id="instTab-account" style="display:none;max-width:420px;">
     <div class="panel">
       <div class="panel-title">Mijn account</div>
+      <div class="form-group" style="display:flex;align-items:center;gap:16px;">
+        <div id="coachFotoPreview" onclick="document.getElementById('coachFotoInput').click()" title="Klik om foto te wijzigen" style="width:72px;height:72px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#0d0d0d;flex-shrink:0;overflow:hidden;cursor:pointer;"></div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('coachFotoInput').click()">Foto wijzigen</button>
+          <button class="btn btn-danger btn-sm" id="coachFotoRemoveBtn" style="display:none;" onclick="removeCoachFoto()">Foto verwijderen</button>
+          <input type="file" id="coachFotoInput" accept="image/*" style="display:none;" onchange="uploadCoachFoto(event)">
+        </div>
+      </div>
       <div class="form-group"><label class="form-label">Naam</label><input type="text" id="settingsNaam" placeholder="Jouw naam" /></div>
       <div class="form-group"><label class="form-label">E-mail</label><input type="email" id="settingsEmail" disabled style="opacity:0.6;" /></div>
       <button class="btn btn-primary btn-sm" onclick="saveSettings()" style="margin-bottom:16px;">Opslaan</button>
@@ -1607,8 +1615,8 @@ async function initApp(user) {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('mainNav').classList.add('visible');
       document.getElementById('sidebarToggle').classList.add('logged-in');
-      document.getElementById('navUser').textContent = currentCoach?.naam || user.email;
       document.getElementById('settingsNaam').value = currentCoach?.naam || '';
+      renderCoachFotoPreview();
       document.getElementById('settingsEmail').value = user.email || '';
       showView('overzicht');
       // Enkel modal tonen als naam écht ontbreekt én de coach pas aangemaakt is (geen created_at of < 5 min geleden)
@@ -4050,6 +4058,7 @@ function switchInstTab(tab) {
     if (btn) btn.classList.toggle('active', t === tab);
   });
   if (tab === 'oef') renderInstellingen();
+  if (tab === 'account') renderCoachFotoPreview();
 }
 
 function renderInstConfig(type) {
@@ -4283,6 +4292,54 @@ async function deleteInstOef(id, naam) {
   } catch(e) { showToast('Fout: '+e.message, 'error'); }
 }
 
+function renderCoachFotoPreview() {
+  const preview = document.getElementById('coachFotoPreview');
+  const removeBtn = document.getElementById('coachFotoRemoveBtn');
+  if (!preview) return;
+  const foto = currentCoach?.foto;
+  const letter = (currentCoach?.naam || '?').charAt(0).toUpperCase();
+  if (foto) {
+    preview.innerHTML = `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;">`;
+    if (removeBtn) removeBtn.style.display = '';
+  } else {
+    preview.textContent = letter;
+    if (removeBtn) removeBtn.style.display = 'none';
+  }
+  const navUser = document.getElementById('navUser');
+  if (navUser) {
+    const displayNaam = currentCoach?.naam || currentUser?.email || '';
+    navUser.innerHTML = foto
+      ? `<img src="${foto}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:8px;vertical-align:middle;">${displayNaam}`
+      : displayNaam;
+  }
+}
+
+async function uploadCoachFoto(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const r = new FileReader();
+  r.onload = async ev => {
+    try {
+      const { error } = await sb.from('coaches').update({ foto: ev.target.result }).eq('id', currentUser.id);
+      if (error) throw error;
+      if (currentCoach) currentCoach.foto = ev.target.result;
+      renderCoachFotoPreview();
+      showToast('Profielfoto opgeslagen', 'success');
+    } catch(err) { showToast('Fout: ' + err.message, 'error'); }
+  };
+  r.readAsDataURL(file);
+  e.target.value = '';
+}
+
+async function removeCoachFoto() {
+  try {
+    const { error } = await sb.from('coaches').update({ foto: null }).eq('id', currentUser.id);
+    if (error) throw error;
+    if (currentCoach) currentCoach.foto = null;
+    renderCoachFotoPreview();
+    showToast('Profielfoto verwijderd', 'success');
+  } catch(err) { showToast('Fout: ' + err.message, 'error'); }
+}
+
 async function saveSettings() {
   const naam = document.getElementById('settingsNaam').value.trim();
   if (!naam) return showToast('Vul een naam in.', 'error');
@@ -4290,7 +4347,7 @@ async function saveSettings() {
     const { error } = await sb.from('coaches').update({ naam }).eq('id', currentUser.id);
     if (error) throw error;
     if (currentCoach) currentCoach.naam = naam;
-    document.getElementById('navUser').textContent = naam;
+    renderCoachFotoPreview();
     showToast('Instellingen opgeslagen', 'success');
   } catch(e) { showToast('Fout: '+e.message, 'error'); }
 }
@@ -4304,8 +4361,8 @@ async function saveCoachOnboarding() {
   btn.textContent = 'Opslaan & verder'; btn.disabled = false;
   if (error) return showToast('Fout: ' + error.message, 'error');
   if (currentCoach) currentCoach.naam = naam;
-  document.getElementById('navUser').textContent = naam;
   document.getElementById('settingsNaam').value = naam;
+  renderCoachFotoPreview();
   closeModal('modalCoachOnboarding');
   showToast('Welkom, ' + naam + '! 🎉', 'success');
 }
