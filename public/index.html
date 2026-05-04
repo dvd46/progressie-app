@@ -348,7 +348,11 @@ textarea { resize: vertical; min-height: 58px; }
         <label class="form-label">Wachtwoord</label>
         <input type="password" id="regPassword" placeholder="Min. 6 tekens" />
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:4px;" onclick="doRegister()" id="registerBtn">Account aanmaken</button>
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-top:12px;">
+        <input type="checkbox" id="regPrivacy" style="width:16px;height:16px;margin-top:2px;flex-shrink:0;cursor:pointer;">
+        <label for="regPrivacy" style="font-size:13px;color:var(--text);cursor:pointer;">Ik ga akkoord met de <a href="/privacyverklaring.pdf" target="_blank" style="color:var(--accent);text-decoration:underline;">privacyverklaring</a></label>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:12px;" onclick="doRegister()" id="registerBtn">Account aanmaken</button>
     </div>
   </div>
 </div>
@@ -1326,6 +1330,10 @@ textarea { resize: vertical; min-height: 58px; }
     <div class="form-group"><label class="form-label">Medische info / blessures</label><textarea id="mMedisch" placeholder="bv. Knieblessure rechts…"></textarea></div>
     <div class="form-group"><label class="form-label">Fysieke klachten</label><textarea id="mFysiekeKlachten" placeholder="bv. Rugpijn, vermoeidheid…"></textarea></div>
     <div class="form-group"><label class="form-label">Notities</label><textarea id="mNotities" placeholder="Vrije notities…"></textarea></div>
+    <div class="form-group" style="display:flex;align-items:flex-start;gap:10px;">
+      <input type="checkbox" id="mPrivacy" style="width:18px;height:18px;margin-top:2px;flex-shrink:0;cursor:pointer;">
+      <label for="mPrivacy" class="form-label" style="margin:0;cursor:pointer;">Ik ga akkoord met de <a href="/privacyverklaring.pdf" target="_blank" style="color:var(--accent);text-decoration:underline;">privacyverklaring</a></label>
+    </div>
     <div class="form-group" style="display:flex;align-items:center;gap:10px;">
       <input type="checkbox" id="mLeaderboard" style="width:18px;height:18px;cursor:pointer;">
       <label for="mLeaderboard" class="form-label" style="margin:0;cursor:pointer;">Deelnemen aan Leaderboard</label>
@@ -1544,6 +1552,7 @@ async function doRegister() {
   const password = document.getElementById('regPassword').value;
   if (!naam || !email || !password) return showLoginError('Vul alle velden in.');
   if (password.length < 6) return showLoginError('Wachtwoord moet minstens 6 tekens zijn.');
+  if (!document.getElementById('regPrivacy').checked) return showLoginError('Je moet akkoord gaan met de privacyverklaring om te registreren.');
   const btn = document.getElementById('registerBtn');
   btn.textContent = 'Bezig…'; btn.disabled = true;
 
@@ -1791,6 +1800,7 @@ function openNieuweKlant() {
   ['mGewicht','mLengte'].forEach(id => document.getElementById(id).value = '');
   clearDatePicker('m');
   document.getElementById('mGeslacht').value = '';
+  document.getElementById('mPrivacy').checked = false;
   openModal('modalKlant');
 }
 
@@ -1802,12 +1812,14 @@ function openEditProfiel() {
   Object.entries(map).forEach(([id,key]) => document.getElementById(id).value = k[key]||'');
   setDatePickerValue('m', k.geboortedatum);
   document.getElementById('mLeaderboard').checked = !!k.leaderboard_deelname;
+  document.getElementById('mPrivacy').checked = true;
   openModal('modalKlant');
 }
 
 async function saveKlant() {
   const voornaam = document.getElementById('mVoornaam').value.trim();
   if (!voornaam) return showToast('Voornaam is verplicht.', 'error');
+  if (!document.getElementById('mPrivacy').checked) return showToast('Je moet akkoord gaan met de privacyverklaring.', 'error');
   const btn = document.getElementById('saveKlantBtn');
   btn.textContent = 'Opslaan…'; btn.disabled = true;
   const velden = {
