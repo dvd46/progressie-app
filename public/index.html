@@ -4203,21 +4203,20 @@ function renderInstellingen() {
   const el = document.getElementById('globaleOefLijst');
   if (!oefeningen.length) { el.innerHTML='<div class="empty">Geen oefeningen.</div>'; return; }
   el.innerHTML = oefeningen.map((o,i) => `
-    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
       ${o.foto
-        ? `<img class="oef-foto-thumb" src="${o.foto}" onclick="uploadInstFoto('${o.id}')" title="Wijzigen">`
-        : `<div class="oef-foto-placeholder" onclick="uploadInstFoto('${o.id}')">+</div>`}
+        ? `<img class="oef-foto-thumb" src="${o.foto}" onclick="uploadInstFoto('${o.id}')" title="Wijzigen" style="flex-shrink:0;">`
+        : `<div class="oef-foto-placeholder" onclick="uploadInstFoto('${o.id}')" style="flex-shrink:0;">+</div>`}
       <div style="flex:1;min-width:0;">
-        <div style="font-size:14px;font-weight:500;">${o.naam}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px;">${o.foto?'Foto aanwezig':'Geen foto'}</div>
-      </div>
-      <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;">
-        <button class="btn btn-ghost btn-sm" onclick="toggleLagerIsBeter('${o.id}')"
-          style="${getLagerIsBeter(o.id)?'border-color:var(--accent);color:var(--accent);background:var(--accent-light);':''}">
-          ${getLagerIsBeter(o.id)?'&#8595; Laag = beter':'&#8593; Hoog = beter'}</button>
-        <button class="btn btn-ghost btn-sm" onclick="renameInstOef('${o.id}','${o.naam.replace(/'/g,"\\'")}')">Hernoemen</button>
-        ${o.foto?`<button class="btn btn-danger btn-sm" onclick="removeInstFoto('${o.id}')">Foto weg</button>`:''}
-        <button class="btn btn-danger btn-sm" onclick="deleteInstOef('${o.id}','${o.naam.replace(/'/g,"\\'")}')">Verwijder</button>
+        <div style="font-size:14px;font-weight:600;margin-bottom:8px;word-break:break-word;">${o.naam}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <button class="btn btn-ghost btn-sm" onclick="toggleLagerIsBeter('${o.id}')"
+            style="${getLagerIsBeter(o.id)?'border-color:var(--accent);color:var(--accent);background:var(--accent-light);':''}">
+            ${getLagerIsBeter(o.id)?'&#8595; Laag = beter':'&#8593; Hoog = beter'}</button>
+          <button class="btn btn-ghost btn-sm" onclick="renameInstOef('${o.id}','${o.naam.replace(/'/g,"\\'")}')">Hernoemen</button>
+          ${o.foto?`<button class="btn btn-danger btn-sm" onclick="removeInstFoto('${o.id}')">Foto weg</button>`:''}
+          <button class="btn btn-danger btn-sm" onclick="deleteInstOef('${o.id}','${o.naam.replace(/'/g,"\\'")}')">Verwijder</button>
+        </div>
       </div>
     </div>`).join('');
 }
