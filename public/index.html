@@ -1628,9 +1628,6 @@ async function initApp(user) {
       renderCoachFotoPreview();
       document.getElementById('settingsEmail').value = user.email || '';
       showView('overzicht');
-      // Enkel modal tonen als naam écht ontbreekt én de coach pas aangemaakt is (geen created_at of < 5 min geleden)
-      const isNieuw = !currentCoach?.created_at || (Date.now() - new Date(currentCoach.created_at).getTime()) < 5 * 60 * 1000;
-      if (!currentCoach?.naam && isNieuw) openModal('modalCoachOnboarding');
       return;
     }
     else {
